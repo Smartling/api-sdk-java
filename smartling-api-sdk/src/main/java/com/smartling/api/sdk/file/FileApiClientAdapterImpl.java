@@ -18,6 +18,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
+    private static final String UTF_16 = "UTF-16";
+
     public static final String DEFAULT_ENCODING    = "UTF-8";
 
     private static String      uploadFileApiUrl    = "%s/file/upload?";
@@ -122,9 +124,9 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             int responseCode = urlConnection.getResponseCode();
 
             if (responseCode == HttpServletResponse.SC_OK)
-                return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding());
+                return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType());
 
-            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding()));
+            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType()));
         }
         catch (IOException e)
         {
@@ -145,7 +147,8 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         StringWriter writer = new StringWriter();
         try
         {
-            IOUtils.copy(inputStream, writer, encoding != null ? encoding : DEFAULT_ENCODING);
+            // unless UTF-16 explicitly specified, use default UTF-8 encoding.
+            IOUtils.copy(inputStream, writer, null == encoding || !encoding.toUpperCase().contains(UTF_16) ? DEFAULT_ENCODING : UTF_16);
         }
         catch (IOException e)
         {
