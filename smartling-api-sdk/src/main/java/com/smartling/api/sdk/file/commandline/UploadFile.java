@@ -30,7 +30,7 @@ public class UploadFile
 
         File file = new File(uploadParams.getPathToFile());
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.getBaseApiUrl(), uploadParams.getApiKey(), uploadParams.getProjectId());
-        String result = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), FileApiClientAdapterImpl.UTF_8);
+        String result = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
 
         logger.info(String.format(RESULT, file.getName(), result));
     }

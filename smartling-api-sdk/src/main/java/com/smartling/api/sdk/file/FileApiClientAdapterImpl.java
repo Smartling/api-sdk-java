@@ -1,15 +1,13 @@
 package com.smartling.api.sdk.file;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.StringWriter;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
-    public static final String UTF_8               = "UTF-8";
+    public static final String DEFAULT_ENCODING    = "UTF-8";
 
     private static String      uploadFileApiUrl    = "%s/file/upload?";
     private static String      getFileApiUrl       = "%s/file/get?";
@@ -99,9 +97,9 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             response = new DefaultHttpClient().execute(httpPost);
 
             if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode())
-                return getInputStreamContent(response.getEntity().getContent(), null);
+                return inputStreamToString(response.getEntity().getContent(), null);
 
-            throw new FileApiException(getInputStreamContent(response.getEntity().getContent(), null));
+            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null));
         }
         catch (IOException e)
         {
@@ -124,14 +122,14 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             int responseCode = urlConnection.getResponseCode();
 
             if (responseCode == HttpServletResponse.SC_OK)
-                return getInputStreamContent(urlConnection.getInputStream(), urlConnection.getContentEncoding());
+                return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding());
 
-            throw new FileApiException(getInputStreamContent(urlConnection.getInputStream(), urlConnection.getContentEncoding()));
+            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding()));
         }
         catch (IOException e)
         {
             if (null != urlConnection)
-                throw new FileApiException(getInputStreamContent(urlConnection.getErrorStream(), null));
+                throw new FileApiException(inputStreamToString(urlConnection.getErrorStream(), null));
 
             throw new FileApiException(e);
         }
@@ -142,12 +140,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
     }
 
-    private String getInputStreamContent(InputStream inputStream, String encoding) throws FileApiException
+    private String inputStreamToString(InputStream inputStream, String encoding) throws FileApiException
     {
         StringWriter writer = new StringWriter();
         try
         {
-            IOUtils.copy(inputStream, writer, encoding != null ? encoding : UTF_8);
+            IOUtils.copy(inputStream, writer, encoding != null ? encoding : DEFAULT_ENCODING);
         }
         catch (IOException e)
         {
