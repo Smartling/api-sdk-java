@@ -34,6 +34,7 @@ public class RetrieveFileTest
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
         args.add(FileApiTestHelper.getLocale());
         args.add("bin/");
+        args.add("UTF-8");
 
         return args;
     }

@@ -1,5 +1,7 @@
 package com.smartling.api.sdk.file.commandline;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.smartling.api.sdk.file.FileApiClientAdapter;
 import com.smartling.api.sdk.file.FileApiClientAdapterImpl;
 import com.smartling.api.sdk.file.FileApiException;
@@ -26,8 +28,9 @@ public class RetrieveFile
      * 2) apiKey
      * 3) projectId
      * 4) path to the property file to download (used to look up the fileUri).
-     * 5) the locale to download the file for.
+     * 5) the locale to download the file for. Can be null if the original file is desired.
      * 6) path to store the file.
+     * 7) encoding to use for the translated file. Can be null. null uses platform default.
      *
      * @throws Exception if an exception occurs in the course of downloading the specified file.
      */
@@ -47,13 +50,13 @@ public class RetrieveFile
         String result = smartlingFAPI.getFile(file.getName(), retrieveFileParams.getLocale());
 
         File translatedFile = new File(getTranslatedFilePath(file, retrieveFileParams.getLocale(), retrieveFileParams.getPathToStoreFile()));
-        FileUtils.writeStringToFile(translatedFile, result, "UTF-8");
+        FileUtils.writeStringToFile(translatedFile, result, retrieveFileParams.getEncodingOfTranslatedFile());
         return translatedFile;
     }
 
     private static RetrieveFileParams getParameters(String[] args)
     {
-        Assert.isTrue(args.length == 6, "Invalid number of arguments");
+        Assert.isTrue(args.length == 7, "Invalid number of arguments");
 
         RetrieveFileParams retrieveFileParams = new RetrieveFileParams();
         retrieveFileParams.setBaseApiUrl(args[0]);
@@ -62,6 +65,7 @@ public class RetrieveFile
         retrieveFileParams.setPathToFile(args[3]);
         retrieveFileParams.setLocale(args[4]);
         retrieveFileParams.setPathToStoreFile(args[5]);
+        retrieveFileParams.setEncodingOfTranslatedFile(args[6]);
 
         return retrieveFileParams;
     }
@@ -69,7 +73,8 @@ public class RetrieveFile
     private static String getTranslatedFilePath(File file, String localeString, String pathToStoreFile)
     {
         StringBuilder stringBuilder = new StringBuilder(pathToStoreFile);
-        stringBuilder.append(file.getName().replace(PROPERTY_FILE_EXT, LOCALE_FILENAME_SEPERATOR + localeString.replace(LOCALE_SEPERATOR, LOCALE_FILENAME_SEPERATOR) + PROPERTY_FILE_EXT));
+        String locale = StringUtils.isNotBlank(localeString) ? localeString.replace(LOCALE_SEPERATOR, LOCALE_FILENAME_SEPERATOR) : StringUtils.EMPTY;
+        stringBuilder.append(file.getName().replace(PROPERTY_FILE_EXT, LOCALE_FILENAME_SEPERATOR + locale + PROPERTY_FILE_EXT));
 
         return stringBuilder.toString();
     }
