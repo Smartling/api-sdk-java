@@ -1,5 +1,9 @@
 package com.smartling.api.sdk.file.response;
 
+import org.apache.commons.lang.builder.ToStringStyle;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class UploadData
 {
     private int     stringCount;
@@ -21,4 +25,13 @@ public class UploadData
         return overwritten;
     }
 
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("stringCount", getStringCount())
+                .append("wordCount", getWordCount())
+                .append("overwritten", isOverwritten())
+                .toString();
+    }
 }

@@ -1,5 +1,9 @@
 package com.smartling.api.sdk.file.response;
 
+import org.apache.commons.lang.builder.ToStringStyle;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class FileStatus
 {
     private String fileUri;
@@ -45,4 +49,18 @@ public class FileStatus
         return fileType;
     }
 
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("fileUri", getFileUri())
+                .append("stringCount", getStringCount())
+                .append("wordCount", getWordCount())
+                .append("approvedStringCount", getApprovedStringCount())
+                .append("completedStringCount", getCompletedStringCount())
+                .append("lastUploaded", getLastUploaded())
+                .append("fileType", getFileType())
+                .toString();
+
+    }
 }
