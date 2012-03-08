@@ -1,7 +1,9 @@
 package com.smartling.api.sdk.file;
 
-import com.smartling.api.sdk.file.FileApiException;
-
+import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.UploadData;
 
 public interface FileApiClientAdapter
 {
@@ -12,10 +14,10 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param fileName the full path of the file
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
-     * @return success string returned
+     * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception or non success is returned from the file api.
      */
-    String uploadFile(String fileType, String fileUri, String fileName, String fileEncoding) throws FileApiException;
+    ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String fileName, String fileEncoding) throws FileApiException;
 
     /**
      * Get the translated (or original file).
@@ -28,30 +30,22 @@ public interface FileApiClientAdapter
     String getFile(String fileUri, String locale) throws FileApiException;
 
     /**
-     * Get the listing of original files from the file api.
-     *
-     * @return listing of files
-     * @throws FileApiException if an exception or non success is returned from the file api.
-     */
-    String getFilesList() throws FileApiException;
-
-    /**
      * Get the listing of translated files for the specified locale.
      *
      * @param locale the locale
-     * @return listing of translated files.
+     * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception or non success is returned from the file api.
      */
-    String getFilesList(String locale) throws FileApiException;
+    ApiResponse<FileList> getFilesList(String locale) throws FileApiException;
 
     /**
      * Get the status of a file for the specified locale
      *
      * @param fileUri the identifier of the file
      * @param locale the locale
-     * @return status of the file
+     * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception or non success is returned from the file api.
      */
-    String getFileStatus(String fileUri, String locale) throws FileApiException;
+    ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException;
 
 }

@@ -2,6 +2,9 @@ package com.smartling.api.sdk.file.commandline;
 
 import com.smartling.api.sdk.file.FileApiClientAdapter;
 import com.smartling.api.sdk.file.FileApiClientAdapterImpl;
+import com.smartling.api.sdk.file.FileApiException;
+import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,7 +12,7 @@ import org.springframework.util.Assert;
 
 public class UploadFile
 {
-    private static final Log    logger                    = LogFactory.getLog("com.smartling.api.sdk.file.commandline.UploadFile");
+    private static final Log    logger = LogFactory.getLog("com.smartling.api.sdk.file.commandline.UploadFile");
 
     private static final String RESULT = "Result for %s: %s";
 
@@ -26,13 +29,19 @@ public class UploadFile
      */
     public static void main(String[] args) throws Exception
     {
+        upload(args);
+    }
+
+    protected static ApiResponse<UploadData> upload(String[] args) throws FileApiException
+    {
         UploadFileParams uploadParams = getParameters(args);
 
         File file = new File(uploadParams.getPathToFile());
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.getBaseApiUrl(), uploadParams.getApiKey(), uploadParams.getProjectId());
-        String result = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
+        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
 
-        logger.info(String.format(RESULT, file.getName(), result));
+        logger.info(String.format(RESULT, file.getName(), uploadResponse));
+        return uploadResponse;
     }
 
     private static UploadFileParams getParameters(String[] args)

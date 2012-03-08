@@ -2,76 +2,94 @@ package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
+import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.io.IOException;
-import junit.framework.Assert;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 public class FileApiClientAdapterTest
 {
-    private static final String  TEST_FILE_ENCODING = "UTF-8";
-    private static final String  TEST_FILE_LOCATION = "resources/test.properties";
-    private static final String  JAVA_PROPERTIES    = "javaProperties";
+    private static final String  TEST_FILE_ENCODING     = "UTF-8";
     private FileApiClientAdapter fileApiClientAdapter;
 
-    private String locale;
+    private String               locale;
 
     @Before
     public void setup()
     {
-        String apiKey = System.getProperty("apiKey");
-        String projectId = System.getProperty("projectId");
-        locale = System.getProperty("locale");
+        String apiKey = FileApiTestHelper.getApiKey();
+        String projectId = FileApiTestHelper.getProjectId();
+        locale = FileApiTestHelper.getLocale();
 
-        Assert.assertNotNull("The apiKey system property must be set", apiKey);
-        Assert.assertNotNull("The projectId system property must be set", projectId);
-        Assert.assertNotNull("The locale system property must be set", locale);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(FileApiTestHelper.getApiHost(), apiKey, projectId);
+    }
 
-        fileApiClientAdapter = new FileApiClientAdapterImpl("https://api.smartling.com/v1", apiKey, projectId);
+    @Test
+    public void testUploadFile() throws FileApiException
+    {
+        File fileForUpload = FileApiTestHelper.getTestFile();
+        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload);
+
+        assertEquals(FileApiTestHelper.STRING_COUNT_FROM_FILE, uploadFileResponse.getData().getStringCount());
+        assertEquals(FileApiTestHelper.WORD_COUNT_FROM_FILE, uploadFileResponse.getData().getWordCount());
     }
 
     @Test
     public void testUploadFileThenDownloadOriginal() throws FileApiException, IOException
     {
-        File fileForUpload = getTestFile();
+        File fileForUpload = FileApiTestHelper.getTestFile();
         uploadFile(fileForUpload);
 
         // Null locale returns the original content of the file
-        String fileContents = fileApiClientAdapter.getFile(fileForUpload.getName(), null);
+        String fileContents = fileApiClientAdapter.getFile(getFileUri(fileForUpload), null);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents);
     }
 
     @Test
     public void testUploadFileThenCheckListingOfFile() throws FileApiException
     {
-        File fileForUpload = getTestFile();
+        File fileForUpload = FileApiTestHelper.getTestFile();
         uploadFile(fileForUpload);
 
-        String fileListResults = fileApiClientAdapter.getFilesList();
-        assertTrue(fileListResults.contains(fileForUpload.getName()));
+        ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(null);
+        assertTrue(fileList.getData().getFileCount() >= 1);
+        verifyContainsFileUri(fileList.getData().getFileList(), getFileUri(fileForUpload));
+    }
+
+    private void verifyContainsFileUri(List<FileStatus> fileStatuses, String fileUri)
+    {
+        for (FileStatus fileStatus : fileStatuses)
+            if (fileUri.equals(fileStatus.getFileUri()))
+                return;
+
+        fail("The file could not be found in the list");
     }
 
     @Test
     public void testUploadFileThenCheckStatus() throws FileApiException
     {
-        File fileForUpload = getTestFile();
+        File fileForUpload = FileApiTestHelper.getTestFile();
         uploadFile(fileForUpload);
 
-        String fileListResults = fileApiClientAdapter.getFileStatus(fileForUpload.getName(), locale);
-        assertTrue(fileListResults.contains(fileForUpload.getName()));
+        ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(getFileUri(fileForUpload), locale);
+        assertEquals(fileStatus.getData().getFileUri(), getFileUri(fileForUpload));
     }
 
-    private void uploadFile(File fileForUpload) throws FileApiException
+    private String getFileUri(File fileForUpload)
     {
-        fileApiClientAdapter.uploadFile(JAVA_PROPERTIES, fileForUpload.getName(), fileForUpload.getAbsolutePath(), TEST_FILE_ENCODING);
+        return fileForUpload.getName();
     }
 
-    private File getTestFile()
+    private ApiResponse<UploadData> uploadFile(File fileForUpload) throws FileApiException
     {
-        return new File(FilenameUtils.separatorsToSystem(TEST_FILE_LOCATION));
+        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload.getAbsolutePath(), TEST_FILE_ENCODING);
     }
 }

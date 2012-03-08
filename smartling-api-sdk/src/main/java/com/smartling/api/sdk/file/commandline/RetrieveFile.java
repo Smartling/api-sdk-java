@@ -2,7 +2,9 @@ package com.smartling.api.sdk.file.commandline;
 
 import com.smartling.api.sdk.file.FileApiClientAdapter;
 import com.smartling.api.sdk.file.FileApiClientAdapterImpl;
+import com.smartling.api.sdk.file.FileApiException;
 import java.io.File;
+import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,13 @@ public class RetrieveFile
      */
     public static void main(String[] args) throws Exception
     {
+        File translatedFile = retrieve(args);
+
+        logger.info(String.format(RESULT, translatedFile.getName()));
+    }
+
+    protected static File retrieve(String[] args) throws FileApiException, IOException
+    {
         RetrieveFileParams retrieveFileParams = getParameters(args);
 
         File file = new File(retrieveFileParams.getPathToFile());
@@ -39,8 +48,7 @@ public class RetrieveFile
 
         File translatedFile = new File(getTranslatedFilePath(file, retrieveFileParams.getLocale(), retrieveFileParams.getPathToStoreFile()));
         FileUtils.writeStringToFile(translatedFile, result, "UTF-8");
-
-        logger.info(String.format(RESULT, translatedFile.getName()));
+        return translatedFile;
     }
 
     private static RetrieveFileParams getParameters(String[] args)
