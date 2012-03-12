@@ -1,5 +1,13 @@
 package com.smartling.api.sdk.file;
 
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import static com.smartling.api.sdk.file.FileApiParams.*;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -16,7 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -48,42 +55,28 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
     public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String fileName, String fileEncoding) throws FileApiException
     {
-        StringBuffer uploadFileParameters = new StringBuffer();
-        uploadFileParameters.append("apiKey=").append(apiKey).append("&projectId=").append(projectId).append("&fileUri=").append(fileUri).append("&fileType=").append(fileType);
-
-        String response = doPostRequest(uploadFileParameters.toString(), fileName, fileEncoding);
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType));
+        String response = doPostRequest(params, fileName, fileEncoding);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
     public String getFile(String fileUri, String locale) throws FileApiException
     {
-        StringBuffer getFileParameters = new StringBuffer();
-        getFileParameters.append("apiKey=").append(apiKey).append("&projectId=").append(projectId).append("&fileUri=").append(fileUri);
-
-        if (StringUtils.isNotBlank(locale))
-            getFileParameters.append("&locale=").append(locale);
-
-        return doGetRequest(GET_FILE_API_URL, getFileParameters.toString());
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
+        return doGetRequest(GET_FILE_API_URL, params);
     }
 
     public ApiResponse<FileList> getFilesList(String locale) throws FileApiException
     {
-        StringBuffer getFilesListParameters = new StringBuffer();
-        getFilesListParameters.append("apiKey=").append(apiKey).append("&projectId=").append(projectId);
-
-        if (null != locale)
-            getFilesListParameters.append("&locale=").append(locale);
-
-        String response = doGetRequest(GET_FILE_LIST_API_URL, getFilesListParameters.toString());
+        String params = buildParamsQuery(new BasicNameValuePair(LOCALE, locale));
+        String response = doGetRequest(GET_FILE_LIST_API_URL, params);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
 
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
-        StringBuffer getFileStatusParameters = new StringBuffer();
-        getFileStatusParameters.append("apiKey=").append(apiKey).append("&projectId=").append(projectId).append("&fileUri=").append(fileUri).append("&locale=").append(locale);
-
-        String response = doGetRequest(GET_FILE_STATUS_API_URL, getFileStatusParameters.toString());
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
+        String response = doGetRequest(GET_FILE_STATUS_API_URL, params);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
@@ -169,5 +162,25 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     {
         ApiResponseWrapper responseWrapper = new Gson().fromJson(response, responseType);
         return responseWrapper.getResponse();
+    }
+
+    private String buildParamsQuery(NameValuePair... nameValuePairs)
+    {
+        List<NameValuePair> qparams = getRequiredParams();
+
+        for(NameValuePair nameValuePair : nameValuePairs)
+            if (nameValuePair.getValue() != null)
+                qparams.add(nameValuePair);
+
+         return URLEncodedUtils.format(qparams, DEFAULT_ENCODING);
+    }
+
+    private List<NameValuePair> getRequiredParams()
+    {
+        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair(API_KEY, apiKey));
+        qparams.add(new BasicNameValuePair(PROJECT_ID, projectId));
+
+        return qparams;
     }
 }
