@@ -12,7 +12,7 @@ For a full description of the Smartling API, please read the docs at: https://do
 Quick start
 -----------
 
-Clone the repo, `git clone git@github.com:smartling/api-sdk.git`.
+Clone the repo, `git clone git@github.com:Smartling/smartling-api-sdk.git`.
 
 
 Versioning
