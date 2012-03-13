@@ -45,6 +45,7 @@ Authors
 -------
 
 Greg Jones
+
 * http://github.com/jones-smartling
 * gjones@smartling.com
 
