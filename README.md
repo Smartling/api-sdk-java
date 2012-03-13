@@ -44,8 +44,9 @@ https://github.com/Smartling/api-sdk/issues
 Authors
 -------
 
-**Greg Jones**
+Greg Jones
 * http://github.com/jones-smartling
+* gjones@smartling.com
 
 
 Copyright and license
