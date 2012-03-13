@@ -12,12 +12,12 @@ public interface FileApiClientAdapter
      *
      * @param fileType the type of file to upload
      * @param fileUri the identifier of the file
-     * @param fileName the full path of the file
+     * @param filePath the full path of the file
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception or non success is returned from the file api.
      */
-    ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String fileName, String fileEncoding) throws FileApiException;
+    ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, String fileEncoding) throws FileApiException;
 
     /**
      * Get the translated (or original file).

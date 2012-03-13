@@ -53,10 +53,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.projectId = projectId;
     }
 
-    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String fileName, String fileEncoding) throws FileApiException
+    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, String fileEncoding) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType));
-        String response = doPostRequest(params, fileName, fileEncoding);
+        String response = doPostRequest(params, filePath, fileEncoding);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
