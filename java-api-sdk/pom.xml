@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
     <groupId>smartling</groupId>
-    <artifactId>smartling-api-sdk</artifactId>
+    <artifactId>smartling-java-api-sdk</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
