@@ -1,4 +1,4 @@
-[Smartling File API](http://www.smartling.com/)
+[Smartling File API](https://docs.smartling.com/display/docs/Smartling+API)
 =================
 
 This repository contains the sdk for accessing the Smartling API.
