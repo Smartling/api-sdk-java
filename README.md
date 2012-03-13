@@ -45,7 +45,7 @@ Authors
 -------
 
 **Greg Jones**
-+ https://github.com/jones-smartling
++ http://github.com/jones-smartling
 
 
 Copyright and license
