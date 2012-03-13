@@ -12,7 +12,7 @@ public interface FileApiClientAdapter
      *
      * @param fileType the type of file to upload
      * @param fileUri the identifier of the file
-     * @param filePath the full path of the file
+     * @param filePath the full path to the file on the local filesystem.
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception or non success is returned from the file api.
