@@ -38,7 +38,7 @@ Bug tracker
 
 Have a bug? Please create an issue here on GitHub!
 
-https://github.com/Smartling/api-sdk/issues
+https://github.com/Smartling/smartling-api-sdk/issues
 
 
 Authors
