@@ -1,7 +1,7 @@
 [Smartling File API](https://docs.smartling.com/display/docs/Smartling+API)
 =================
 
-This repository contains the sdk for accessing the Smartling API.
+This repository contains the Java sdk for accessing the Smartling API.
 
 The Smartling API allows developers to seamlessly internationalize their website by automating the translation and integration of their site content.
 Developers can upload resource files and download the translated file(s) in a locale of their choosing. There are options to allow for professional translation, community translation and machine translation.
@@ -12,7 +12,7 @@ For a full description of the Smartling API, please read the docs at: https://do
 Quick start
 -----------
 
-Clone the repo, `git clone git@github.com:Smartling/smartling-api-sdk.git`.
+Clone the repo, `git clone git@github.com:Smartling/api-sdk-java.git`.
 
 
 Versioning
