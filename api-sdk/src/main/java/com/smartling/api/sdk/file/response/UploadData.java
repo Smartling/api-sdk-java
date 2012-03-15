@@ -8,7 +8,7 @@ public class UploadData
 {
     private int     stringCount;
     private int     wordCount;
-    private boolean overwritten;
+    private boolean overWritten;
 
     public int getStringCount()
     {
@@ -20,9 +20,9 @@ public class UploadData
         return wordCount;
     }
 
-    public boolean isOverwritten()
+    public boolean isOverWritten()
     {
-        return overwritten;
+        return overWritten;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class UploadData
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("stringCount", getStringCount())
                 .append("wordCount", getWordCount())
-                .append("overwritten", isOverwritten())
+                .append("overWritten", isOverWritten())
                 .toString();
     }
 }
