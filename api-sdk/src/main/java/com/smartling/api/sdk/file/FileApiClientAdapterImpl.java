@@ -7,6 +7,8 @@ import static com.smartling.api.sdk.file.FileApiParams.FILE_URI;
 import static com.smartling.api.sdk.file.FileApiParams.LOCALE;
 import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 
+import org.springframework.util.Assert;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -55,6 +57,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.baseApiUrl = baseApiUrl;
         this.apiKey = apiKey;
         this.projectId = projectId;
+
+        Assert.notNull(baseApiUrl, "Api url is required");
+        Assert.notNull(apiKey, "apiKey is required");
+        Assert.notNull(projectId, "projectId is required");
     }
 
     @Override
@@ -79,9 +85,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     {
         String params = buildParamsQuery(new BasicNameValuePair(LOCALE, locale));
         String response = doGetRequest(GET_FILE_LIST_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>()
-        {
-        }.getType());
+        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
 
     @Override
@@ -89,9 +93,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         String response = doGetRequest(GET_FILE_STATUS_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>()
-        {
-        }.getType());
+        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
     private String doPostRequest(String apiParameters, String filePath, String fileEncoding) throws FileApiException

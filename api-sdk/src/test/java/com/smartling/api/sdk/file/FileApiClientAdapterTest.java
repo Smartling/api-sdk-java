@@ -32,6 +32,12 @@ public class FileApiClientAdapterTest
         fileApiClientAdapter = new FileApiClientAdapterImpl(FileApiTestHelper.getApiHost(), apiKey, projectId);
     }
 
+    @Test(expected = Exception.class)
+    public void testInvalidConstructor()
+    {
+        fileApiClientAdapter = new FileApiClientAdapterImpl(null, null, null);
+    }
+
     @Test
     public void testUploadFile() throws FileApiException
     {
