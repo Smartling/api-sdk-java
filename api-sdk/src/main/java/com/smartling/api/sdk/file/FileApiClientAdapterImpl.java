@@ -1,12 +1,11 @@
 package com.smartling.api.sdk.file;
 
-import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import static com.smartling.api.sdk.file.FileApiParams.*;
+import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
+import static com.smartling.api.sdk.file.FileApiParams.APPROVED;
+import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPE;
+import static com.smartling.api.sdk.file.FileApiParams.FILE_URI;
+import static com.smartling.api.sdk.file.FileApiParams.LOCALE;
+import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,14 +21,19 @@ import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
@@ -53,31 +57,41 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.projectId = projectId;
     }
 
-    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, String fileEncoding) throws FileApiException
+    @Override
+    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, Boolean approveContent, String fileEncoding) throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType));
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri),
+                new BasicNameValuePair(FILE_TYPE, fileType),
+                new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent) ));
         String response = doPostRequest(params, filePath, fileEncoding);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
+    @Override
     public String getFile(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         return doGetRequest(GET_FILE_API_URL, params);
     }
 
+    @Override
     public ApiResponse<FileList> getFilesList(String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(LOCALE, locale));
         String response = doGetRequest(GET_FILE_LIST_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
+        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>()
+        {
+        }.getType());
     }
 
+    @Override
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         String response = doGetRequest(GET_FILE_STATUS_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
+        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>()
+        {
+        }.getType());
     }
 
     private String doPostRequest(String apiParameters, String filePath, String fileEncoding) throws FileApiException
@@ -168,11 +182,11 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     {
         List<NameValuePair> qparams = getRequiredParams();
 
-        for(NameValuePair nameValuePair : nameValuePairs)
+        for (NameValuePair nameValuePair : nameValuePairs)
             if (nameValuePair.getValue() != null)
                 qparams.add(nameValuePair);
 
-         return URLEncodedUtils.format(qparams, DEFAULT_ENCODING);
+        return URLEncodedUtils.format(qparams, DEFAULT_ENCODING);
     }
 
     private List<NameValuePair> getRequiredParams()

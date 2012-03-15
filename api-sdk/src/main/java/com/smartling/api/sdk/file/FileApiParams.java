@@ -7,5 +7,5 @@ public class FileApiParams
     public static final String LOCALE     = "locale";
     public static final String FILE_URI   = "fileUri";
     public static final String FILE_TYPE  = "fileType";
-
+    public static final String APPROVED   = "approved";
 }

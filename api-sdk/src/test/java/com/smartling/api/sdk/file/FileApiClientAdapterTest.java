@@ -90,6 +90,6 @@ public class FileApiClientAdapterTest
 
     private ApiResponse<UploadData> uploadFile(File fileForUpload) throws FileApiException
     {
-        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload.getAbsolutePath(), TEST_FILE_ENCODING);
+        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload.getAbsolutePath(), null, TEST_FILE_ENCODING);
     }
 }

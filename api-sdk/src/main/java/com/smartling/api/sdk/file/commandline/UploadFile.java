@@ -38,7 +38,7 @@ public class UploadFile
 
         File file = new File(uploadParams.getPathToFile());
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.getBaseApiUrl(), uploadParams.getApiKey(), uploadParams.getProjectId());
-        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
+        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), uploadParams.getPathToFile(), null, FileApiClientAdapterImpl.DEFAULT_ENCODING);
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));
         return uploadResponse;
