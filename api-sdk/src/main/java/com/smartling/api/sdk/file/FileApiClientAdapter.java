@@ -16,7 +16,7 @@ public interface FileApiClientAdapter
      * @param approveContent true if the file contents should be approved after uploading the file. Can be null. Null uses fileApi default of false.
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occured or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
     ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, Boolean approveContent, String fileEncoding) throws FileApiException;
 
@@ -26,7 +26,7 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param locale the locale to retrieve the translation for, or null to request the original file.
      * @return the contents of the requested file.
-     * @throws FileApiException if an exception has occured or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
     String getFile(String fileUri, String locale) throws FileApiException;
 
@@ -35,7 +35,7 @@ public interface FileApiClientAdapter
      *
      * @param locale the locale
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occured or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
     ApiResponse<FileList> getFilesList(String locale) throws FileApiException;
 
@@ -45,7 +45,7 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param locale the locale
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occured or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
     ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException;
 
