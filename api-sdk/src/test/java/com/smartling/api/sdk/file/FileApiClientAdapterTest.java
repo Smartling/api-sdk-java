@@ -16,8 +16,7 @@
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import java.util.ArrayList;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.FileList;
@@ -80,18 +79,21 @@ public class FileApiClientAdapterTest
         File fileForUpload = FileApiTestHelper.getTestFile();
         uploadFile(fileForUpload);
 
-        ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(null);
-        assertTrue(fileList.getData().getFileCount() >= 1);
-        verifyContainsFileUri(fileList.getData().getFileList(), getFileUri(fileForUpload));
+        FileListSearchParams fileListSearchParams = buildFileListSearchParams();
+        ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(fileListSearchParams);
+        assertEquals(1, fileList.getData().getFileCount());
+        verifyFileStatus(fileForUpload, fileList.getData().getFileList().get(0));
     }
 
-    private void verifyContainsFileUri(List<FileStatus> fileStatuses, String fileUri)
+    private FileListSearchParams buildFileListSearchParams()
     {
-        for (FileStatus fileStatus : fileStatuses)
-            if (fileUri.equals(fileStatus.getFileUri()))
-                return;
+        FileListSearchParams fileListSearchParams = new FileListSearchParams();
+        List<String> fileTypes = new ArrayList<String>();
+        fileTypes.add(FileApiTestHelper.getTestFileType());
+        fileListSearchParams.setFileTypes(fileTypes);
+        fileListSearchParams.setUriMask(getFileUri(FileApiTestHelper.getTestFile()));
 
-        fail("The file could not be found in the list");
+        return fileListSearchParams;
     }
 
     @Test
@@ -101,7 +103,14 @@ public class FileApiClientAdapterTest
         uploadFile(fileForUpload);
 
         ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(getFileUri(fileForUpload), locale);
-        assertEquals(fileStatus.getData().getFileUri(), getFileUri(fileForUpload));
+        verifyFileStatus(fileForUpload, fileStatus.getData());
+    }
+
+    private void verifyFileStatus(File fileForUpload, FileStatus fileStatus)
+    {
+        assertEquals(getFileUri(fileForUpload), fileStatus.getFileUri());
+        assertEquals(FileApiTestHelper.STRING_COUNT_FROM_FILE, fileStatus.getStringCount());
+        assertEquals(FileApiTestHelper.WORD_COUNT_FROM_FILE, fileStatus.getWordCount());
     }
 
     private String getFileUri(File fileForUpload)

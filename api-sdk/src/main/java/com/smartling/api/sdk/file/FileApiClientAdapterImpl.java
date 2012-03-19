@@ -17,12 +17,18 @@ package com.smartling.api.sdk.file;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
 import static com.smartling.api.sdk.file.FileApiParams.APPROVED;
+import static com.smartling.api.sdk.file.FileApiParams.CONDITIONS;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPE;
+import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPES;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_URI;
+import static com.smartling.api.sdk.file.FileApiParams.LIMIT;
 import static com.smartling.api.sdk.file.FileApiParams.LOCALE;
+import static com.smartling.api.sdk.file.FileApiParams.OFFSET;
+import static com.smartling.api.sdk.file.FileApiParams.ORDERBY;
 import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
-
-import org.springframework.util.Assert;
+import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
+import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
+import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,6 +45,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -51,6 +58,8 @@ import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
@@ -96,9 +105,9 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     }
 
     @Override
-    public ApiResponse<FileList> getFilesList(String locale) throws FileApiException
+    public ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(LOCALE, locale));
+        String params = buildFileListParams(fileListSearchParams);
         String response = doGetRequest(GET_FILE_LIST_API_URL, params);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
@@ -186,6 +195,34 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
 
         return writer.toString();
+    }
+
+    private String buildFileListParams(FileListSearchParams fileListSearchParams)
+    {
+        List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair(LOCALE, fileListSearchParams.getLocale()));
+        nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParams.getUriMask()));
+        nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_AFTER, DateFormatter.formatDate(fileListSearchParams.getTimestampAfter())));
+        nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_BEFORE, DateFormatter.formatDate(fileListSearchParams.getTimestampBefore())));
+        nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParams.getOffset() ? null : String.valueOf( fileListSearchParams.getOffset())));
+        nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParams.getLimit() ? null : String.valueOf(fileListSearchParams.getLimit())));
+        nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParams.getFileTypes()));
+        nameValuePairs.addAll(getNameValuePairs(CONDITIONS, fileListSearchParams.getConditions()));
+        nameValuePairs.addAll(getNameValuePairs(ORDERBY, fileListSearchParams.getOrderBy()));
+
+        return buildParamsQuery(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
+    }
+
+    private List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)
+    {
+        if (CollectionUtils.isEmpty(values))
+            return Collections.EMPTY_LIST;
+
+        List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+        for (String value : values)
+            nameValuePairs.add(new BasicNameValuePair(name, value));
+
+        return nameValuePairs;
     }
 
     @SuppressWarnings("rawtypes")

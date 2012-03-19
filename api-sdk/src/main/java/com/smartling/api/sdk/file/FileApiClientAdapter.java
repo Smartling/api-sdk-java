@@ -36,7 +36,7 @@ public interface FileApiClientAdapter
     ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, Boolean approveContent, String fileEncoding) throws FileApiException;
 
     /**
-     * Get the translated (or original file).
+     * Get the translated (or original) file contents.
      *
      * @param fileUri the identifier of the file
      * @param locale the locale to retrieve the translation for, or null to request the original file.
@@ -48,11 +48,11 @@ public interface FileApiClientAdapter
     /**
      * Get the listing of translated files for the specified locale.
      *
-     * @param locale the locale
+     * @param fileListSearchParams the search parameters to use when querying for a list of files.
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
-    ApiResponse<FileList> getFilesList(String locale) throws FileApiException;
+    ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException;
 
     /**
      * Get the status of a file for the specified locale
