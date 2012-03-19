@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -63,6 +62,7 @@ import org.springframework.util.CollectionUtils;
 
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
+    private static final String SMARTLING_API_URL       = "https://api.smartling.com/v1";
     private static final String UTF_16                  = "UTF-16";
 
     public static final String  DEFAULT_ENCODING        = "UTF-8";
@@ -76,6 +76,11 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private String              apiKey;
     private String              projectId;
 
+    public FileApiClientAdapterImpl(String apiKey, String projectId)
+    {
+        this(SMARTLING_API_URL, apiKey, projectId);
+    }
+
     public FileApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId)
     {
         this.baseApiUrl = baseApiUrl;
@@ -88,12 +93,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     }
 
     @Override
-    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, String filePath, Boolean approveContent, String fileEncoding) throws FileApiException
+    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri),
                 new BasicNameValuePair(FILE_TYPE, fileType),
-                new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent) ));
-        String response = doPostRequest(params, filePath, fileEncoding);
+                new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        String response = doPostRequest(params, fileToUpload, fileEncoding);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
@@ -120,14 +125,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
-    private String doPostRequest(String apiParameters, String filePath, String fileEncoding) throws FileApiException
+    private String doPostRequest(String apiParameters, File fileToUpload, String fileEncoding) throws FileApiException
     {
-        File file = new File(filePath);
-
         HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
 
         MultipartEntity mpEntity = new MultipartEntity();
-        ContentBody cbFile = new FileBody(file, "file", "text/plain", fileEncoding);
+        ContentBody cbFile = new FileBody(fileToUpload, "file", "text/plain", fileEncoding);
         mpEntity.addPart("file", cbFile);
 
         httpPost.setEntity(mpEntity);
@@ -204,7 +207,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParams.getUriMask()));
         nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_AFTER, DateFormatter.formatDate(fileListSearchParams.getTimestampAfter())));
         nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_BEFORE, DateFormatter.formatDate(fileListSearchParams.getTimestampBefore())));
-        nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParams.getOffset() ? null : String.valueOf( fileListSearchParams.getOffset())));
+        nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParams.getOffset() ? null : String.valueOf(fileListSearchParams.getOffset())));
         nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParams.getLimit() ? null : String.valueOf(fileListSearchParams.getLimit())));
         nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParams.getFileTypes()));
         nameValuePairs.addAll(getNameValuePairs(CONDITIONS, fileListSearchParams.getConditions()));

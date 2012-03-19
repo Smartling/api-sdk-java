@@ -43,7 +43,7 @@ public class FileApiClientAdapterTest
         String projectId = FileApiTestHelper.getProjectId();
         locale = FileApiTestHelper.getLocale();
 
-        fileApiClientAdapter = new FileApiClientAdapterImpl(FileApiTestHelper.getApiHost(), apiKey, projectId);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(apiKey, projectId);
     }
 
     @Test(expected = Exception.class)
@@ -120,6 +120,6 @@ public class FileApiClientAdapterTest
 
     private ApiResponse<UploadData> uploadFile(File fileForUpload) throws FileApiException
     {
-        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload.getAbsolutePath(), null, TEST_FILE_ENCODING);
+        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload, null, TEST_FILE_ENCODING);
     }
 }
