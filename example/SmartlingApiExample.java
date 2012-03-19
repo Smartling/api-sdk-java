@@ -20,7 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 public class SmartlingApiExample
 {
     private static final String API_KEY       = "YOUR-API-KEY";
-    private static final String PROJECT_ID    = "YOUR-PROJECT-D";
+    private static final String PROJECT_ID    = "YOUR-PROJECT-ID";
     private static final String LOCALE        = "YOUR-LOCALE";
 
     private static final String PATH_TO_FILE  = "resources/test.properties";
