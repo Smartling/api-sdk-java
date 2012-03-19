@@ -4,7 +4,7 @@
 
     <groupId>smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>0.1.4</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <build>
