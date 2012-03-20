@@ -4,7 +4,7 @@
 
     <groupId>smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <build>
@@ -28,7 +28,6 @@
                     <nohelp>true</nohelp>
                 </configuration>
             </plugin>
-<!-- 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -39,7 +38,6 @@
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
- -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -80,7 +78,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
