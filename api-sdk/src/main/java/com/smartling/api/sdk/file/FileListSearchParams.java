@@ -17,6 +17,9 @@ package com.smartling.api.sdk.file;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Contains the search parameters that can be set when executing a file/list query through the Smartling API.
+ */
 public class FileListSearchParams
 {
     private String       locale;

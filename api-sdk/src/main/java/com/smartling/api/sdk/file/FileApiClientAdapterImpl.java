@@ -60,6 +60,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * Base implementation of the {@link FileApiClientAdapter}.
+ */
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
     private static final String SMARTLING_API_URL       = "https://api.smartling.com/v1";
@@ -92,7 +95,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         Assert.notNull(projectId, "projectId is required");
     }
 
-    @Override
+
     public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri),
@@ -102,14 +105,14 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
-    @Override
+
     public String getFile(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         return doGetRequest(GET_FILE_API_URL, params);
     }
 
-    @Override
+
     public ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException
     {
         String params = buildFileListParams(fileListSearchParams);
@@ -117,7 +120,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
 
-    @Override
+
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));

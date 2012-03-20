@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -13,20 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk.file.response;
 
 /**
- * Thrown when an exception has occurred when using the {@link FileApiClientAdapter}.
+ * Simple marker interface for indicating that a class represents the Data object expected as the return from the Smartling API.
  */
-public class FileApiException extends Exception
+public interface Data
 {
-    public FileApiException(String message)
-    {
-        super(message);
-    }
-
-    public FileApiException(Exception e)
-    {
-        super(e);
-    }
 }

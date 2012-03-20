@@ -15,6 +15,9 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
+/**
+ * The parameters used when uploading a file to the Smartling Api.
+ */
 public class UploadFileParams extends BaseFileParams
 {
     private String pathToFile;

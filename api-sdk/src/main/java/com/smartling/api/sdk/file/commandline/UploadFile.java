@@ -25,6 +25,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
+/**
+ * Provides command line access for uploading a file from the Smartling API.
+ */
 public class UploadFile
 {
     private static final Log    logger = LogFactory.getLog("com.smartling.api.sdk.file.commandline.UploadFile");

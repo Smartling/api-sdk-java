@@ -27,6 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
+/**
+ * Provides command line access for retrieving a file from the Smartling API.
+ */
 public class RetrieveFile
 {
     private static final Log    logger                    = LogFactory.getLog("com.smartling.api.sdk.file.commandline.RetrieveFile");

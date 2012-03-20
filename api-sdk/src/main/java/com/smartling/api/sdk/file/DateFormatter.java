@@ -22,6 +22,7 @@ import java.util.Date;
  */
 public class DateFormatter
 {
+    /** Date format used by the Smartling API */
     private static final String API_DATE_FORMAT = "YYYY-MM-DDThh:mm:ss";
 
     /**

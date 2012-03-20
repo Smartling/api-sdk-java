@@ -15,6 +15,9 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
+/**
+ * Contains the common command line arguments when uploading and retrieving files
+ */
 public class BaseFileParams
 {
     private String baseApiUrl;

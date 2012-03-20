@@ -15,26 +15,43 @@
  */
 package com.smartling.api.sdk.file.response;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-public class UploadData
+/**
+ * The data returned from uploading a file to the Smartling Api.
+ */
+public class UploadData implements Data
 {
     private int     stringCount;
     private int     wordCount;
     private boolean overWritten;
 
+    /**
+     * The number of strings in the uploaded file.
+     *
+     * @return stringCount
+     */
     public int getStringCount()
     {
         return stringCount;
     }
 
+    /**
+     * The number of words in the uploaded file.
+     *
+     * @return wordCount
+     */
     public int getWordCount()
     {
         return wordCount;
     }
 
+    /**
+     * Returns whether or not the uploaded file was previously uploaded, i.e. was a file with the same fileUri previously uploaded.
+     *
+     * @return overWritten
+     */
     public boolean isOverWritten()
     {
         return overWritten;

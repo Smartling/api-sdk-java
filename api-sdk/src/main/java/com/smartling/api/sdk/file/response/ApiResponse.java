@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -15,28 +14,45 @@
  */
 package com.smartling.api.sdk.file.response;
 
+import java.util.List;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-import java.util.List;
-
-public class ApiResponse<T>
+/**
+ * Base response class returned from the Smartling Api.
+ *
+ * @param <T> The type of the data class expected in the return.
+ */
+public class ApiResponse<T extends Data>
 {
     private T            data;
     private String       code;
     private List<String> messages;
 
+    /**
+     * The data returned from the response from the Smartling Api.
+     * The data varies by api call.
+     *
+     * @return data from the json response.
+     */
     public T getData()
     {
         return data;
     }
 
+    /**
+     * The response code returned from the Smartling Api.
+     * @return response code
+     */
     public String getCode()
     {
         return code;
     }
 
+    /**
+     * The messages returned form the Smartling Api.
+     * @return list of messages.
+     */
     public List<String> getMessages()
     {
         return messages;
@@ -45,11 +61,6 @@ public class ApiResponse<T>
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("data", getData())
-                .append("code", getCode())
-                .append("messages", messages)
-                .toString();
-
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("data", getData()).append("code", getCode()).append("messages", messages).toString();
     }
 }

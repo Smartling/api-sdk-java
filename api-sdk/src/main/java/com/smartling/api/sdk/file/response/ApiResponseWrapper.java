@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -15,14 +14,23 @@
  */
 package com.smartling.api.sdk.file.response;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-public class ApiResponseWrapper<T>
+/**
+ * Simple class for wrapping the {@link ApiResponse}.
+ *
+ * @param <T> The type of data expected back in the response.
+ */
+public class ApiResponseWrapper<T extends Data>
 {
     private ApiResponse<T> response;
 
+    /**
+     * Retrieve the response.
+     *
+     * @return the response.
+     */
     public ApiResponse<T> getResponse()
     {
         return response;

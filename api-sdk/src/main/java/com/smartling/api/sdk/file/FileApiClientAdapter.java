@@ -22,6 +22,9 @@ import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.UploadData;
 
+/**
+ * Main communication point for interacting with the Smartling Api.
+ */
 public interface FileApiClientAdapter
 {
     /**
