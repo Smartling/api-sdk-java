@@ -36,13 +36,15 @@ public class UploadFile
 
     /**
      * @param args The arguments to pass in.
-     * 5 Arguments are expected:
-     * 1) apiBaseUrl
+     * <pre>
+     * 6 Arguments are expected:
+     * 1) boolean if production should be used (true), or sandbox (false)
      * 2) apiKey
      * 3) projectId
      * 4) pathToPropertyFile
      * 5) type of file.
-     *
+     * 6) Whether the contents of the file should be approved by default. Can be null, null values uses server default of false.
+     * </pre>
      * @throws Exception if an exception occurs in the course of uploading the specified file.
      */
     public static void main(String[] args) throws Exception
@@ -55,8 +57,8 @@ public class UploadFile
         UploadFileParams uploadParams = getParameters(args);
 
         File file = new File(uploadParams.getPathToFile());
-        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.getBaseApiUrl(), uploadParams.getApiKey(), uploadParams.getProjectId());
-        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), file, null, FileApiClientAdapterImpl.DEFAULT_ENCODING);
+        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
+        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(uploadParams.getFileType(), file.getName(), file, uploadParams.getApproveContent(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));
         return uploadResponse;
@@ -64,13 +66,14 @@ public class UploadFile
 
     private static UploadFileParams getParameters(String[] args)
     {
-        Assert.isTrue(args.length == 5, "Invalid number of arguments");
+        Assert.isTrue(args.length == 6, "Invalid number of arguments");
         UploadFileParams uploadParams = new UploadFileParams();
-        uploadParams.setBaseApiUrl(args[0]);
+        uploadParams.setProductionMode(Boolean.valueOf(args[0]));
         uploadParams.setApiKey(args[1]);
         uploadParams.setProjectId(args[2]);
         uploadParams.setPathToFile(args[3]);
         uploadParams.setFileType(args[4]);
+        uploadParams.setApproveContent(null == args[5] ? null : Boolean.valueOf(args[5]));
 
         return uploadParams;
     }

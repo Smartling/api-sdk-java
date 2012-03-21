@@ -10,8 +10,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.smartling.api.sdk.file;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
@@ -35,6 +34,7 @@ import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.ApiResponseWrapper;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.io.IOException;
@@ -65,67 +65,90 @@ import org.springframework.util.CollectionUtils;
  */
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
-    private static final String SMARTLING_API_URL       = "https://api.smartling.com/v1";
-    private static final String UTF_16                  = "UTF-16";
+    private static final String SMARTLING_API_URL         = "https://api.smartling.com/v1";
+    private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
+    private static final String UTF_16                    = "UTF-16";
 
-    public static final String  DEFAULT_ENCODING        = "UTF-8";
+    public static final String  DEFAULT_ENCODING          = "UTF-8";
 
-    private final static String UPLOAD_FILE_API_URL     = "%s/file/upload?";
-    private final static String GET_FILE_API_URL        = "%s/file/get?";
-    private final static String GET_FILE_LIST_API_URL   = "%s/file/list?";
-    private final static String GET_FILE_STATUS_API_URL = "%s/file/status?";
+    private final static String UPLOAD_FILE_API_URL       = "%s/file/upload?";
+    private final static String GET_FILE_API_URL          = "%s/file/get?";
+    private final static String GET_FILE_LIST_API_URL     = "%s/file/list?";
+    private final static String GET_FILE_STATUS_API_URL   = "%s/file/status?";
 
     private String              baseApiUrl;
     private String              apiKey;
     private String              projectId;
 
+    /**
+     * Instantiate a {@link FileApiClientAdapterImpl} using the production mode setting (non sandbox).
+     *
+     * @param apiKey your apiKey. Can be found at https://dashboard.smartling.com/settings/api
+     * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
+     */
     public FileApiClientAdapterImpl(String apiKey, String projectId)
     {
         this(SMARTLING_API_URL, apiKey, projectId);
     }
 
+    /**
+     * Instantiate a {@link FileApiClientAdapterImpl}.
+     *
+     * @param productionMode True if the production version of the api should be used, false if the Sandbox should be used.
+     * It is recommended when first integrating your application with the API, that you use the Sandbox and not the production version.
+     * For more information on the Sandbox, please see https://docs.smartling.com.
+     *
+     * @param apiKey your apiKey. Can be found at https://dashboard.smartling.com/settings/api
+     * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
+     */
+    public FileApiClientAdapterImpl(boolean productionMode, String apiKey, String projectId)
+    {
+        this(productionMode ? SMARTLING_API_URL : SMARTLING_SANDBOX_API_URL, apiKey, projectId);
+    }
+
+    /**
+     * Instantiate a {@link FileApiClientAdapterImpl}.
+     *
+     * @param baseApiUrl the apiUrl to use for interacting with the Smartling Api.
+     * @param apiKey your apiKey. Can be found at https://dashboard.smartling.com/settings/api
+     * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
+     */
     public FileApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId)
     {
-        this.baseApiUrl = baseApiUrl;
-        this.apiKey = apiKey;
-        this.projectId = projectId;
-
         Assert.notNull(baseApiUrl, "Api url is required");
         Assert.notNull(apiKey, "apiKey is required");
         Assert.notNull(projectId, "projectId is required");
-    }
 
+        this.baseApiUrl = baseApiUrl;
+        this.apiKey = apiKey;
+        this.projectId = projectId;
+    }
 
     public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri),
-                new BasicNameValuePair(FILE_TYPE, fileType),
-                new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType), new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
         String response = doPostRequest(params, fileToUpload, fileEncoding);
         return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
-
-    public String getFile(String fileUri, String locale) throws FileApiException
+    public StringResponse getFile(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         return doGetRequest(GET_FILE_API_URL, params);
     }
 
-
     public ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException
     {
         String params = buildFileListParams(fileListSearchParams);
-        String response = doGetRequest(GET_FILE_LIST_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
+        StringResponse response = doGetRequest(GET_FILE_LIST_API_URL, params);
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
-
 
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
-        String response = doGetRequest(GET_FILE_STATUS_API_URL, params);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
+        StringResponse response = doGetRequest(GET_FILE_STATUS_API_URL, params);
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
     private String doPostRequest(String apiParameters, File fileToUpload, String fileEncoding) throws FileApiException
@@ -144,9 +167,9 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             response = new DefaultHttpClient().execute(httpPost);
 
             if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode())
-                return inputStreamToString(response.getEntity().getContent(), null);
+                return inputStreamToString(response.getEntity().getContent(), null).getContents();
 
-            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null));
+            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
         }
         catch (IOException e)
         {
@@ -154,7 +177,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
     }
 
-    private String doGetRequest(String apiServerUrl, String apiParameters) throws FileApiException
+    private StringResponse doGetRequest(String apiServerUrl, String apiParameters) throws FileApiException
     {
         StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
         urlWithParameters.append(apiParameters);
@@ -171,12 +194,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             if (responseCode == HttpServletResponse.SC_OK)
                 return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType());
 
-            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType()));
+            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType()).getContents());
         }
         catch (IOException e)
         {
             if (null != urlConnection)
-                throw new FileApiException(inputStreamToString(urlConnection.getErrorStream(), null));
+                throw new FileApiException(inputStreamToString(urlConnection.getErrorStream(), null).getContents());
 
             throw new FileApiException(e);
         }
@@ -187,20 +210,20 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
     }
 
-    private String inputStreamToString(InputStream inputStream, String encoding) throws FileApiException
+    private StringResponse inputStreamToString(InputStream inputStream, String encoding) throws FileApiException
     {
         StringWriter writer = new StringWriter();
         try
         {
             // unless UTF-16 explicitly specified, use default UTF-8 encoding.
-            IOUtils.copy(inputStream, writer, null == encoding || !encoding.toUpperCase().contains(UTF_16) ? DEFAULT_ENCODING : UTF_16);
+            String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(UTF_16) ? DEFAULT_ENCODING : UTF_16);
+            IOUtils.copy(inputStream, writer, responseEncoding);
+            return new StringResponse(writer.toString(), responseEncoding);
         }
         catch (IOException e)
         {
             throw new FileApiException(e);
         }
-
-        return writer.toString();
     }
 
     private String buildFileListParams(FileListSearchParams fileListSearchParams)

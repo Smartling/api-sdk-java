@@ -15,9 +15,7 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-
 import com.smartling.api.sdk.file.FileApiTestHelper;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.UploadData;
@@ -34,8 +32,7 @@ public class UploadFileTest
         String[] args = new String[] {};
         ApiResponse<UploadData> uploadFileResponse = UploadFile.upload(argList.toArray(args));
         assertNotNull(uploadFileResponse);
-        assertEquals(FileApiTestHelper.STRING_COUNT_FROM_FILE, uploadFileResponse.getData().getStringCount());
-        assertEquals(FileApiTestHelper.WORD_COUNT_FROM_FILE, uploadFileResponse.getData().getWordCount());
+        FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
     }
 
     @Test(expected = Exception.class)
@@ -47,11 +44,12 @@ public class UploadFileTest
     private List<String> buildFileUploadArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(FileApiTestHelper.getApiHost());
+        args.add(String.valueOf(true));
         args.add(FileApiTestHelper.getApiKey());
         args.add(FileApiTestHelper.getProjectId());
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
         args.add(FileApiTestHelper.getTestFileType());
+        args.add(null);
 
         return args;
     }

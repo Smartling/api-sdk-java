@@ -29,7 +29,7 @@ public class SmartlingApiExample
 
     public static void main(String args[]) throws FileApiException
     {
-        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(API_KEY, PROJECT_ID);
+        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(true, API_KEY, PROJECT_ID);
 
         // upload the file
         File file = new File(FilenameUtils.separatorsToSystem(PATH_TO_FILE));
@@ -47,8 +47,8 @@ public class SmartlingApiExample
         System.out.println(fileStatusResponse);
 
         // get the file back, including any translations that have been published.
-        String translatedContent = smartlingFAPI.getFile(getFileUri(file), LOCALE);
-        System.out.println(translatedContent);
+        StringResponse translatedContent = smartlingFAPI.getFile(getFileUri(file), LOCALE);
+        System.out.println(translatedContent.getContents());
     }
 
     private static String getFileUri(File file)

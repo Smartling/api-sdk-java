@@ -15,12 +15,12 @@
  */
 package com.smartling.api.sdk.file;
 
-import java.io.File;
-
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
+import java.io.File;
 
 /**
  * Main communication point for interacting with the Smartling Api.
@@ -45,10 +45,10 @@ public interface FileApiClientAdapter
      *
      * @param fileUri the identifier of the file
      * @param locale the locale to retrieve the translation for, or null to request the original file.
-     * @return the contents of the requested file.
+     * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws FileApiException if an exception has occurred or non success is returned from the file api.
      */
-    String getFile(String fileUri, String locale) throws FileApiException;
+    StringResponse getFile(String fileUri, String locale) throws FileApiException;
 
     /**
      * Get the listing of translated files for the specified locale.

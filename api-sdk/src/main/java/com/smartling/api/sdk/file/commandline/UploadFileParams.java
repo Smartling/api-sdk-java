@@ -23,6 +23,7 @@ public class UploadFileParams extends BaseFileParams
     private String pathToFile;
     private String fileUri;
     private String fileType;
+    private Boolean approveContent;
 
     public String getPathToFile()
     {
@@ -52,5 +53,15 @@ public class UploadFileParams extends BaseFileParams
     public void setFileType(String fileType)
     {
         this.fileType = fileType;
+    }
+
+    public Boolean getApproveContent()
+    {
+        return approveContent;
+    }
+
+    public void setApproveContent(Boolean approveContent)
+    {
+        this.approveContent = approveContent;
     }
 }

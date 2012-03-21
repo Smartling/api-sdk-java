@@ -20,18 +20,22 @@ package com.smartling.api.sdk.file.commandline;
  */
 public class BaseFileParams
 {
-    private String baseApiUrl;
+    private boolean productionMode;
     private String apiKey;
     private String projectId;
 
-    public String getBaseApiUrl()
+    /**
+     * True if the API should use production mode, false if the sandbox should be used.
+     * @return
+     */
+    public boolean isProductionMode()
     {
-        return baseApiUrl;
+        return productionMode;
     }
 
-    public void setBaseApiUrl(String baseApiUrl)
+    public void setProductionMode(boolean productionMode)
     {
-        this.baseApiUrl = baseApiUrl;
+        this.productionMode = productionMode;
     }
 
     public String getApiKey()

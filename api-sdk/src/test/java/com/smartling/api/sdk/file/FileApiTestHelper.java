@@ -15,15 +15,18 @@
  */
 package com.smartling.api.sdk.file;
 
+import static junit.framework.Assert.assertTrue;
+
+import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.UploadData;
+
 import java.io.File;
 import junit.framework.Assert;
 import org.apache.commons.io.FilenameUtils;
 
 public class FileApiTestHelper
 {
-    public static final int     WORD_COUNT_FROM_FILE   = 10;
-    public static final int     STRING_COUNT_FROM_FILE = 2;
-
+    private static final String SUCCESS = "SUCCESS";
     private static final String TEST_FILE_TYPE         = "javaProperties";
     public static final String  TEST_FILE_LOCATION     = "resources/test.properties";
 
@@ -51,11 +54,6 @@ public class FileApiTestHelper
         return locale;
     }
 
-    public static String getApiHost()
-    {
-        return "https://api.smartling.com/v1";
-    }
-
     public static File getTestFile()
     {
         return new File(FilenameUtils.separatorsToSystem(FileApiTestHelper.TEST_FILE_LOCATION));
@@ -65,4 +63,10 @@ public class FileApiTestHelper
     {
         return TEST_FILE_TYPE;
     }
+
+    public static void validateSuccessUpload(ApiResponse<UploadData> uploadFileResponse)
+    {
+        assertTrue(uploadFileResponse.getCode(), uploadFileResponse.getCode().contains(SUCCESS));
+    }
+
 }

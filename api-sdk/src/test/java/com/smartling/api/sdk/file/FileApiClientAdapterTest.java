@@ -16,6 +16,9 @@
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
+
+import com.smartling.api.sdk.file.response.StringResponse;
+
 import java.util.ArrayList;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -43,7 +46,7 @@ public class FileApiClientAdapterTest
         String projectId = FileApiTestHelper.getProjectId();
         locale = FileApiTestHelper.getLocale();
 
-        fileApiClientAdapter = new FileApiClientAdapterImpl(apiKey, projectId);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(true, apiKey, projectId);
     }
 
     @Test(expected = Exception.class)
@@ -57,9 +60,7 @@ public class FileApiClientAdapterTest
     {
         File fileForUpload = FileApiTestHelper.getTestFile();
         ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload);
-
-        assertEquals(FileApiTestHelper.STRING_COUNT_FROM_FILE, uploadFileResponse.getData().getStringCount());
-        assertEquals(FileApiTestHelper.WORD_COUNT_FROM_FILE, uploadFileResponse.getData().getWordCount());
+        FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
     }
 
     @Test
@@ -69,8 +70,8 @@ public class FileApiClientAdapterTest
         uploadFile(fileForUpload);
 
         // Null locale returns the original content of the file
-        String fileContents = fileApiClientAdapter.getFile(getFileUri(fileForUpload), null);
-        assertEquals(FileUtils.readFileToString(fileForUpload), fileContents);
+        StringResponse fileContents = fileApiClientAdapter.getFile(getFileUri(fileForUpload), null);
+        assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
     }
 
     @Test
@@ -109,8 +110,6 @@ public class FileApiClientAdapterTest
     private void verifyFileStatus(File fileForUpload, FileStatus fileStatus)
     {
         assertEquals(getFileUri(fileForUpload), fileStatus.getFileUri());
-        assertEquals(FileApiTestHelper.STRING_COUNT_FROM_FILE, fileStatus.getStringCount());
-        assertEquals(FileApiTestHelper.WORD_COUNT_FROM_FILE, fileStatus.getWordCount());
     }
 
     private String getFileUri(File fileForUpload)

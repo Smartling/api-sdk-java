@@ -43,13 +43,12 @@ public class RetrieveFileTest
     private List<String> buildFileRetrieveArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(FileApiTestHelper.getApiHost());
+        args.add(String.valueOf(true));
         args.add(FileApiTestHelper.getApiKey());
         args.add(FileApiTestHelper.getProjectId());
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
         args.add(FileApiTestHelper.getLocale());
         args.add("bin/");
-        args.add("UTF-8");
 
         return args;
     }

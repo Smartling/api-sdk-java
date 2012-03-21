@@ -23,7 +23,6 @@ public class RetrieveFileParams extends BaseFileParams
     private String pathToFile;
     private String locale;
     private String pathToStoreFile;
-    private String encodingOfTranslatedFile;
 
     public String getPathToFile()
     {
@@ -53,15 +52,5 @@ public class RetrieveFileParams extends BaseFileParams
     public void setPathToStoreFile(String pathToStoreFile)
     {
         this.pathToStoreFile = pathToStoreFile;
-    }
-
-    public String getEncodingOfTranslatedFile()
-    {
-        return encodingOfTranslatedFile;
-    }
-
-    public void setEncodingOfTranslatedFile(String encodingOfTranslatedFile)
-    {
-        this.encodingOfTranslatedFile = encodingOfTranslatedFile;
     }
 }
