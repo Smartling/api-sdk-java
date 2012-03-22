@@ -43,7 +43,7 @@ public class RetrieveFileTest
     private List<String> buildFileRetrieveArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(String.valueOf(true));
+        args.add(String.valueOf(FileApiTestHelper.getTestMode()));
         args.add(FileApiTestHelper.getApiKey());
         args.add(FileApiTestHelper.getProjectId());
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());

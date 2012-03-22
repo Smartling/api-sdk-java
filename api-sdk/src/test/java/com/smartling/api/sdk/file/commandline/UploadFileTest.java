@@ -44,7 +44,7 @@ public class UploadFileTest
     private List<String> buildFileUploadArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(String.valueOf(true));
+        args.add(String.valueOf(FileApiTestHelper.getTestMode()));
         args.add(FileApiTestHelper.getApiKey());
         args.add(FileApiTestHelper.getProjectId());
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());

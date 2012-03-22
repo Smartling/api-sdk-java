@@ -4,7 +4,7 @@
 
     <groupId>smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <packaging>jar</packaging>
 
     <build>
@@ -94,6 +94,10 @@
                         <property>
                             <name>locale</name>
                             <value>${testLocale}</value>
+                        </property>
+                        <property>
+                            <name>testMode</name>
+                            <value>${testMode}</value>
                         </property>
                     </systemProperties>
                 </configuration>

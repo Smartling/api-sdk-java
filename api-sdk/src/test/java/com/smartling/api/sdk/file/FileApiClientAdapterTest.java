@@ -42,11 +42,12 @@ public class FileApiClientAdapterTest
     @Before
     public void setup()
     {
+        boolean testMode = FileApiTestHelper.getTestMode();
         String apiKey = FileApiTestHelper.getApiKey();
         String projectId = FileApiTestHelper.getProjectId();
         locale = FileApiTestHelper.getLocale();
 
-        fileApiClientAdapter = new FileApiClientAdapterImpl(true, apiKey, projectId);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
     @Test(expected = Exception.class)

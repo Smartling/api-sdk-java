@@ -69,4 +69,9 @@ public class FileApiTestHelper
         assertTrue(uploadFileResponse.getCode(), uploadFileResponse.getCode().contains(SUCCESS));
     }
 
+    public static boolean getTestMode()
+    {
+        return System.getProperty("testMode") == null ? false : Boolean.valueOf(System.getProperty("testMode"));
+    }
+
 }
