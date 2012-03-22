@@ -18,7 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * The status of a particular file managed by the Smartling Api.
+ * The status of a particular file managed by the Smartling Translation API.
  */
 public class FileStatus implements Data
 {
@@ -31,7 +31,7 @@ public class FileStatus implements Data
     private String fileType;
 
     /**
-     * The identifier of the file. It is recommended that th name of the file be used as the identifier.
+     * The identifier of the file. It is recommended that the name of the file be used as the identifier.
      *
      * @return fileUri.
      */
@@ -81,7 +81,7 @@ public class FileStatus implements Data
     }
 
     /**
-     * The last time the file was uploaded to the Smartling Api.
+     * The last time the file was uploaded to the Smartling Translation API.
      *
      * @return lastUploaded time
      */

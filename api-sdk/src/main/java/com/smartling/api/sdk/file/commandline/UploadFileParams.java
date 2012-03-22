@@ -16,7 +16,7 @@
 package com.smartling.api.sdk.file.commandline;
 
 /**
- * The parameters used when uploading a file to the Smartling Api.
+ * The parameters used when uploading a file to the Smartling Translation API.
  */
 public class UploadFileParams extends BaseFileParams
 {

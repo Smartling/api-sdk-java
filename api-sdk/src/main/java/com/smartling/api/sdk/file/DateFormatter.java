@@ -18,15 +18,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Utility class for handling dates with the Smartling API.
+ * Utility class for handling dates with the Smartling Translation API.
  */
 public class DateFormatter
 {
-    /** Date format used by the Smartling API */
+    /** Date format used by the Smartling Translation API */
     private static final String API_DATE_FORMAT = "YYYY-MM-DDThh:mm:ss";
 
     /**
-     * Simple method to format a date into the string format used by the Smartling API.
+     * Simple method to format a date into the string format used by the Smartling Translation API.
      *
      * @param date the date to format
      * @return formatted string version of the date or null if the date is null.

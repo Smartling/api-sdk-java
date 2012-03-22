@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
- * Provides command line access for retrieving a file from the Smartling API.
+ * Provides command line access for retrieving a file from the Smartling Translation API.
  */
 public class RetrieveFile
 {

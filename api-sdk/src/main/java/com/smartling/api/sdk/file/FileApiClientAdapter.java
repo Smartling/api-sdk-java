@@ -23,12 +23,12 @@ import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 
 /**
- * Main communication point for interacting with the Smartling Api.
+ * Main communication point for interacting with the Smartling Translation API.
  */
 public interface FileApiClientAdapter
 {
     /**
-     * Uploads a file for translation to the Smartling File API.
+     * Uploads a file for translation to the Smartling Translation API.
      *
      * @param fileType the type of file to upload
      * @param fileUri the identifier of the file
@@ -36,7 +36,7 @@ public interface FileApiClientAdapter
      * @param approveContent true if the file contents should be approved after uploading the file. Can be null. Null uses fileApi default of false.
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException;
 
@@ -46,7 +46,7 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param locale the locale to retrieve the translation for, or null to request the original file.
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
-     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     StringResponse getFile(String fileUri, String locale) throws FileApiException;
 
@@ -55,7 +55,7 @@ public interface FileApiClientAdapter
      *
      * @param fileListSearchParams the search parameters to use when querying for a list of files.
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException;
 
@@ -65,7 +65,7 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param locale the locale
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the file api.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException;
 

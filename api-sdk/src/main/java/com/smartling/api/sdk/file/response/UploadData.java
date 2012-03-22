@@ -19,7 +19,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * The data returned from uploading a file to the Smartling Api.
+ * The data returned from uploading a file to the Smartling Translation API.
  */
 public class UploadData implements Data
 {

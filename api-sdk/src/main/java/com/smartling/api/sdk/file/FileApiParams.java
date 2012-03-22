@@ -15,7 +15,7 @@
 package com.smartling.api.sdk.file;
 
 /**
- * Simple class used to hold the names of the params for interacting with the Smartling API.
+ * Simple class used to hold the names of the params for interacting with the Smartling Translation API.
  */
 public class FileApiParams
 {

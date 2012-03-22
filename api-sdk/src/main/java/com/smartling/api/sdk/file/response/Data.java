@@ -15,7 +15,7 @@
 package com.smartling.api.sdk.file.response;
 
 /**
- * Simple marker interface for indicating that a class represents the Data object expected as the return from the Smartling API.
+ * Simple marker interface for indicating that a class represents the Data object expected as the return from the Smartling Translation API.
  */
 public interface Data
 {

@@ -18,7 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * The data expected back in the response to a FileList query of the Smartling Api.
+ * The data expected back in the response to a FileList query of the Smartling Translation API.
  */
 public class FileList implements Data
 {

@@ -109,7 +109,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     /**
      * Instantiate a {@link FileApiClientAdapterImpl}.
      *
-     * @param baseApiUrl the apiUrl to use for interacting with the Smartling Api.
+     * @param baseApiUrl the apiUrl to use for interacting with the Smartling Translation API.
      * @param apiKey your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */

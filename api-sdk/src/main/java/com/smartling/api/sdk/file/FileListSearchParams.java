@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Contains the search parameters that can be set when executing a file/list query through the Smartling API.
+ * Contains the search parameters that can be set when executing a file/list query through the Smartling Translation API.
  */
 public class FileListSearchParams
 {

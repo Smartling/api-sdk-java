@@ -16,7 +16,7 @@
 package com.smartling.api.sdk.file.commandline;
 
 /**
- * The parameters used when retrieving a file from the Smartling Api.
+ * The parameters used when retrieving a file from the Smartling Translation API.
  */
 public class RetrieveFileParams extends BaseFileParams
 {
