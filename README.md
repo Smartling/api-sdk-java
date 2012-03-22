@@ -1,12 +1,12 @@
-[Smartling API](http://docs.smartling.com)
+[Smartling Translation API](http://docs.smartling.com)
 =================
 
-This repository contains the Java SDK for accessing the Smartling API.
+This repository contains the Java SDK for accessing the Smartling Translation API.
 
-The Smartling API allows developers to seamlessly internationalize their website by automating the translation and integration of their site content.
-Developers can upload resource files and download the translated file(s) in a locale of their choosing. There are options to allow for professional translation, community translation and machine translation.
+The Smartling Translation API allows developers to seamlessly internationalize their website by automating the translation and integration of their site content.
+Developers can upload resource files and download the translated files in a language of their choosing. There are options to allow for professional translation, community translation and machine translation.
 
-For a full description of the Smartling API, please read the docs at: http://docs.smartling.com
+For a full description of the Smartling Translation API, please read the docs at: http://docs.smartling.com
 
 
 Quick start
@@ -18,7 +18,7 @@ Clone the repo, `git clone git@github.com:Smartling/api-sdk-java.git`.
 Versioning
 ----------
 
-For transparency and insight into our release cycle, and for striving to maintain backward compatibility, the Smartling API SDK will be maintained under the Semantic Versioning guidelines as much as possible.
+For transparency and insight into our release cycle, and for striving to maintain backward compatibility, the Smartling Translation API SDK will be maintained under the Semantic Versioning guidelines as much as possible.
 
 Releases will be numbered with the follow format:
 
@@ -31,6 +31,12 @@ And constructed with the following guidelines:
 * Bug fixes and misc changes bump the patch
 
 For more information on SemVer, please visit http://semver.org/.
+
+
+Artifacts
+---------
+
+Want to download the latest SDK? Get it here: https://github.com/Smartling/api-sdk-java/tree/master/api-sdk/artifacts
 
 
 Bug tracker
