@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -11,30 +10,27 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
 
-import com.smartling.api.sdk.file.response.StringResponse;
-
-import java.util.ArrayList;
-
 import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 public class FileApiClientAdapterTest
 {
-    private static final String  TEST_FILE_ENCODING     = "UTF-8";
+    private static final String  SKD_FILE_URI       = "sdk-test-file-%s";
+    private static final String  TEST_FILE_ENCODING = "UTF-8";
     private FileApiClientAdapter fileApiClientAdapter;
 
     private String               locale;
@@ -57,69 +53,52 @@ public class FileApiClientAdapterTest
     }
 
     @Test
-    public void testUploadFile() throws FileApiException
+    public void testFileActions() throws FileApiException, IOException
     {
+        // /file/upload
         File fileForUpload = FileApiTestHelper.getTestFile();
-        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload);
+        String fileUri = createFileUri();
+        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload, fileUri);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
-    }
 
-    @Test
-    public void testUploadFileThenDownloadOriginal() throws FileApiException, IOException
-    {
-        File fileForUpload = FileApiTestHelper.getTestFile();
-        uploadFile(fileForUpload);
-
-        // Null locale returns the original content of the file
-        StringResponse fileContents = fileApiClientAdapter.getFile(getFileUri(fileForUpload), null);
+        // /file/get
+        StringResponse fileContents = fileApiClientAdapter.getFile(fileUri, null);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
-    }
 
-    @Test
-    public void testUploadFileThenCheckListingOfFile() throws FileApiException
-    {
-        File fileForUpload = FileApiTestHelper.getTestFile();
-        uploadFile(fileForUpload);
-
-        FileListSearchParams fileListSearchParams = buildFileListSearchParams();
+        // /file/list
+        FileListSearchParams fileListSearchParams = buildFileListSearchParams(fileUri);
         ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(fileListSearchParams);
         assertEquals(1, fileList.getData().getFileCount());
-        verifyFileStatus(fileForUpload, fileList.getData().getFileList().get(0));
+        verifyFileStatus(fileUri, fileList.getData().getFileList().get(0));
+
+        // /file/status
+        ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(fileUri, locale);
+        verifyFileStatus(fileUri, fileStatus.getData());
+
+        // file/delete
+        ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
     }
 
-    private FileListSearchParams buildFileListSearchParams()
+    private String createFileUri()
+    {
+        return String.format(SKD_FILE_URI, System.currentTimeMillis());
+    }
+
+    private FileListSearchParams buildFileListSearchParams(String fileUri)
     {
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        List<String> fileTypes = new ArrayList<String>();
-        fileTypes.add(FileApiTestHelper.getTestFileType());
-        fileListSearchParams.setFileTypes(fileTypes);
-        fileListSearchParams.setUriMask(getFileUri(FileApiTestHelper.getTestFile()));
+        fileListSearchParams.setUriMask(fileUri);
 
         return fileListSearchParams;
     }
 
-    @Test
-    public void testUploadFileThenCheckStatus() throws FileApiException
+    private void verifyFileStatus(String expectedFileUri, FileStatus fileStatus)
     {
-        File fileForUpload = FileApiTestHelper.getTestFile();
-        uploadFile(fileForUpload);
-
-        ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(getFileUri(fileForUpload), locale);
-        verifyFileStatus(fileForUpload, fileStatus.getData());
+        assertEquals(expectedFileUri, fileStatus.getFileUri());
     }
 
-    private void verifyFileStatus(File fileForUpload, FileStatus fileStatus)
+    private ApiResponse<UploadData> uploadFile(File fileForUpload, String fileUri) throws FileApiException
     {
-        assertEquals(getFileUri(fileForUpload), fileStatus.getFileUri());
-    }
-
-    private String getFileUri(File fileForUpload)
-    {
-        return fileForUpload.getName();
-    }
-
-    private ApiResponse<UploadData> uploadFile(File fileForUpload) throws FileApiException
-    {
-        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), getFileUri(fileForUpload), fileForUpload, null, TEST_FILE_ENCODING);
+        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), fileUri, fileForUpload, null, TEST_FILE_ENCODING);
     }
 }

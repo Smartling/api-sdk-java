@@ -15,6 +15,8 @@
  */
 package com.smartling.api.sdk.file;
 
+import com.smartling.api.sdk.file.response.EmptyResponse;
+
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
@@ -69,4 +71,11 @@ public interface FileApiClientAdapter
      */
     ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException;
 
+    /**
+     * Delete the specified file
+     * @param fileUri the identifier of the file
+     * @return ApiResponse from a successful delete of from the File API.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     */
+    ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException;
 }

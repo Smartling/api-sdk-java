@@ -28,10 +28,15 @@ import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
 
+import org.apache.http.client.methods.HttpDelete;
+
+import org.apache.http.client.HttpClient;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.ApiResponseWrapper;
+import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.StringResponse;
@@ -75,6 +80,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private final static String GET_FILE_API_URL          = "%s/file/get?";
     private final static String GET_FILE_LIST_API_URL     = "%s/file/list?";
     private final static String GET_FILE_STATUS_API_URL   = "%s/file/status?";
+    private final static String DELETE_FILE_URL           = "%s/file/delete?";
 
     private String              baseApiUrl;
     private String              apiKey;
@@ -151,6 +157,13 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
+    public ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException
+    {
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
+        StringResponse response = doDeleteRequest(DELETE_FILE_URL, params);
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {}.getType());
+    }
+
     private String doPostRequest(String apiParameters, File fileToUpload, String fileEncoding) throws FileApiException
     {
         HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
@@ -177,6 +190,34 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
     }
 
+    private StringResponse doDeleteRequest(String apiServerUrl, String apiParameters) throws FileApiException
+    {
+        StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
+        urlWithParameters.append(apiParameters);
+
+        HttpClient httpClient = null;
+        try
+        {
+            httpClient = new DefaultHttpClient();
+            HttpDelete httpDelete = new HttpDelete(urlWithParameters.toString());
+            HttpResponse response = httpClient.execute(httpDelete);
+
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
+                return inputStreamToString(response.getEntity().getContent(), null);
+
+            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
+        }
+        catch (IOException e)
+        {
+            throw new FileApiException(e);
+        }
+        finally
+        {
+            if (null != httpClient)
+                httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     private StringResponse doGetRequest(String apiServerUrl, String apiParameters) throws FileApiException
     {
         StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
@@ -186,7 +227,6 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         try
         {
             URL apiUrl = new URL(urlWithParameters.toString());
-
             urlConnection = (HttpURLConnection)apiUrl.openConnection();
 
             int responseCode = urlConnection.getResponseCode();
@@ -198,9 +238,6 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (IOException e)
         {
-            if (null != urlConnection)
-                throw new FileApiException(inputStreamToString(urlConnection.getErrorStream(), null).getContents());
-
             throw new FileApiException(e);
         }
         finally
