@@ -28,10 +28,6 @@ import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
 
-import org.apache.http.client.methods.HttpDelete;
-
-import org.apache.http.client.HttpClient;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -46,8 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +49,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -70,6 +68,7 @@ import org.springframework.util.CollectionUtils;
  */
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
+    private static final String MIME_TYPE = "text/plain";
     private static final String SMARTLING_API_URL         = "https://api.smartling.com/v1";
     private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
     private static final String UTF_16                    = "UTF-16";
@@ -130,77 +129,84 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.projectId = projectId;
     }
 
-    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
-    {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType), new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
-        String response = doPostRequest(params, fileToUpload, fileEncoding);
-        return getApiResponse(response, new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
-    }
-
     public StringResponse getFile(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
-        return doGetRequest(GET_FILE_API_URL, params);
+        HttpGet getRequest = createHttpGetRequest(GET_FILE_API_URL, params);
+        StringResponse response = executeHttpcall(getRequest);
+
+        return response;
     }
 
     public ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException
     {
         String params = buildFileListParams(fileListSearchParams);
-        StringResponse response = doGetRequest(GET_FILE_LIST_API_URL, params);
+        HttpGet getRequest = createHttpGetRequest(GET_FILE_LIST_API_URL, params);
+        StringResponse response = executeHttpcall(getRequest);
+
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {}.getType());
     }
 
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
-        StringResponse response = doGetRequest(GET_FILE_STATUS_API_URL, params);
+        HttpGet getRequest = createHttpGetRequest(GET_FILE_STATUS_API_URL, params);
+        StringResponse response = executeHttpcall(getRequest);
+
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
+    }
+
+    public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
+    {
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType), new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
+        StringResponse response = executeHttpcall(httpPostFile);
+
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {}.getType());
     }
 
     public ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        StringResponse response = doDeleteRequest(DELETE_FILE_URL, params);
+        HttpDelete httpDeleteFileRequest = createHttpDeleteRequest(DELETE_FILE_URL, params);
+        StringResponse response = executeHttpcall(httpDeleteFileRequest);
+
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {}.getType());
     }
 
-    private String doPostRequest(String apiParameters, File fileToUpload, String fileEncoding) throws FileApiException
+    private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
-        HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
-
         MultipartEntity mpEntity = new MultipartEntity();
-        ContentBody cbFile = new FileBody(fileToUpload, "file", "text/plain", fileEncoding);
-        mpEntity.addPart("file", cbFile);
+        ContentBody cbFile = new FileBody(fileToUpload, MIME_TYPE, fileEncoding);
+        mpEntity.addPart(FileApiParams.FILE, cbFile);
 
+        HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
         httpPost.setEntity(mpEntity);
 
-        HttpResponse response = null;
-        try
-        {
-            response = new DefaultHttpClient().execute(httpPost);
-
-            if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode())
-                return inputStreamToString(response.getEntity().getContent(), null).getContents();
-
-            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
-        }
-        catch (IOException e)
-        {
-            throw new FileApiException(e);
-        }
+        return httpPost;
     }
 
-    private StringResponse doDeleteRequest(String apiServerUrl, String apiParameters) throws FileApiException
+    private HttpDelete createHttpDeleteRequest(String apiServerUrl, String apiParameters)
     {
         StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
         urlWithParameters.append(apiParameters);
+        return new HttpDelete(urlWithParameters.toString());
+    }
 
+    private HttpGet createHttpGetRequest(String apiServerUrl, String apiParameters)
+    {
+        StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
+        urlWithParameters.append(apiParameters);
+        return new HttpGet(urlWithParameters.toString());
+    }
+
+    private StringResponse executeHttpcall(HttpRequestBase httpRequest) throws FileApiException
+    {
         HttpClient httpClient = null;
         try
         {
             httpClient = new DefaultHttpClient();
-            HttpDelete httpDelete = new HttpDelete(urlWithParameters.toString());
-            HttpResponse response = httpClient.execute(httpDelete);
+            HttpResponse response = httpClient.execute(httpRequest);
 
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
                 return inputStreamToString(response.getEntity().getContent(), null);
@@ -215,35 +221,6 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         {
             if (null != httpClient)
                 httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    private StringResponse doGetRequest(String apiServerUrl, String apiParameters) throws FileApiException
-    {
-        StringBuffer urlWithParameters = new StringBuffer(String.format(apiServerUrl, baseApiUrl));
-        urlWithParameters.append(apiParameters);
-
-        HttpURLConnection urlConnection = null;
-        try
-        {
-            URL apiUrl = new URL(urlWithParameters.toString());
-            urlConnection = (HttpURLConnection)apiUrl.openConnection();
-
-            int responseCode = urlConnection.getResponseCode();
-
-            if (responseCode == HttpServletResponse.SC_OK)
-                return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType());
-
-            throw new FileApiException(inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentType()).getContents());
-        }
-        catch (IOException e)
-        {
-            throw new FileApiException(e);
-        }
-        finally
-        {
-            if (null != urlConnection)
-                urlConnection.disconnect();
         }
     }
 

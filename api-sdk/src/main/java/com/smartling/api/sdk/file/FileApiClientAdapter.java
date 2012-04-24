@@ -73,6 +73,7 @@ public interface FileApiClientAdapter
 
     /**
      * Delete the specified file
+     *
      * @param fileUri the identifier of the file
      * @return ApiResponse from a successful delete of from the File API.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.

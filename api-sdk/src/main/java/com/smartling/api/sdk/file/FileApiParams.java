@@ -33,4 +33,5 @@ public class FileApiParams
     public static final String LIMIT            = "limit";
     public static final String CONDITIONS       = "conditions";
     public static final String ORDERBY          = "orderBy";
+    public static final String FILE             = "file";
 }
