@@ -14,6 +14,9 @@
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
+import java.util.List;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.EmptyResponse;
@@ -66,10 +69,9 @@ public class FileApiClientAdapterTest
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/list
-        FileListSearchParams fileListSearchParams = buildFileListSearchParams(fileUri);
+        FileListSearchParams fileListSearchParams = new FileListSearchParams();
         ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(fileListSearchParams);
-        assertEquals(1, fileList.getData().getFileCount());
-        verifyFileStatus(fileUri, fileList.getData().getFileList().get(0));
+        verifyFileListHasFileUri(fileUri, fileList.getData().getFileList());
 
         // /file/status
         ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(fileUri, locale);
@@ -79,17 +81,23 @@ public class FileApiClientAdapterTest
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
     }
 
+    private void verifyFileListHasFileUri(String fileUri, List<FileStatus> fileList)
+    {
+        boolean foundMatchingFileUri = false;
+        for(FileStatus fileStatus : fileList)
+        {
+            if (fileStatus.getFileUri().equals(fileUri))
+            {
+                foundMatchingFileUri = true;
+                break;
+            }
+        }
+        assertTrue("File Uri not found", foundMatchingFileUri);
+    }
+
     private String createFileUri()
     {
         return String.format(SKD_FILE_URI, System.currentTimeMillis());
-    }
-
-    private FileListSearchParams buildFileListSearchParams(String fileUri)
-    {
-        FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        fileListSearchParams.setUriMask(fileUri);
-
-        return fileListSearchParams;
     }
 
     private void verifyFileStatus(String expectedFileUri, FileStatus fileStatus)
