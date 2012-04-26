@@ -47,7 +47,7 @@ public class SmartlingApiExample
         System.out.println(fileStatusResponse);
 
         // get the file back, including any translations that have been published.
-        StringResponse translatedContent = smartlingFAPI.getFile(getFileUri(file), LOCALE);
+        StringResponse translatedContent = smartlingFAPI.getFile(getFileUri(file), LOCALE, false);
         System.out.println(translatedContent.getContents());
     }
 

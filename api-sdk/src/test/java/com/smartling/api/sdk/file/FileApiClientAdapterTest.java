@@ -65,7 +65,7 @@ public class FileApiClientAdapterTest
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
 
         // /file/get
-        StringResponse fileContents = fileApiClientAdapter.getFile(fileUri, null);
+        StringResponse fileContents = fileApiClientAdapter.getFile(fileUri, null, false);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/list

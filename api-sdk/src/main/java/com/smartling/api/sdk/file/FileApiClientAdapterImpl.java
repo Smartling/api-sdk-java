@@ -27,6 +27,7 @@ import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
+import static com.smartling.api.sdk.file.FileApiParams.INCLUDE_PENDING_TRANSLATIONS;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -129,9 +130,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.projectId = projectId;
     }
 
-    public StringResponse getFile(String fileUri, String locale) throws FileApiException
+    public StringResponse getFile(String fileUri, String locale, boolean includePendingTranslations) throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale),
+                                         new BasicNameValuePair(INCLUDE_PENDING_TRANSLATIONS, Boolean.valueOf(includePendingTranslations).toString()));
         HttpGet getRequest = createHttpGetRequest(GET_FILE_API_URL, params);
         StringResponse response = executeHttpcall(getRequest);
 
@@ -158,7 +160,8 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
     public ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType), new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType),
+                                         new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
         HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
         StringResponse response = executeHttpcall(httpPostFile);
 
@@ -259,7 +262,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)
     {
         if (CollectionUtils.isEmpty(values))
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
 
         List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
         for (String value : values)

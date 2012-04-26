@@ -47,10 +47,11 @@ public interface FileApiClientAdapter
      *
      * @param fileUri the identifier of the file
      * @param locale the locale to retrieve the translation for, or null to request the original file.
+     * @param includePendingTranslations include pending translations in the returned file contents.
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    StringResponse getFile(String fileUri, String locale) throws FileApiException;
+    StringResponse getFile(String fileUri, String locale, boolean includePendingTranslations) throws FileApiException;
 
     /**
      * Get the listing of translated files for the specified locale.
