@@ -33,5 +33,5 @@ public class FileApiParams
     public static final String CONDITIONS                   = "conditions";
     public static final String ORDERBY                      = "orderBy";
     public static final String FILE                         = "file";
-    public static final String INCLUDE_PENDING_TRANSLATIONS = "includePendingTranslations";
+    public static final String RETRIEVAL_TYPE               = "retrievalType";
 }

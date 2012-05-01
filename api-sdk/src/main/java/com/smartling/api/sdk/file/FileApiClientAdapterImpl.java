@@ -27,7 +27,7 @@ import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
-import static com.smartling.api.sdk.file.FileApiParams.INCLUDE_PENDING_TRANSLATIONS;
+import static com.smartling.api.sdk.file.FileApiParams.RETRIEVAL_TYPE;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -130,10 +130,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         this.projectId = projectId;
     }
 
-    public StringResponse getFile(String fileUri, String locale, boolean includePendingTranslations) throws FileApiException
+    public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale),
-                                         new BasicNameValuePair(INCLUDE_PENDING_TRANSLATIONS, Boolean.valueOf(includePendingTranslations).toString()));
+                                         new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()));
         HttpGet getRequest = createHttpGetRequest(GET_FILE_API_URL, params);
         StringResponse response = executeHttpcall(getRequest);
 
