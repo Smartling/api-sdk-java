@@ -25,8 +25,8 @@ public class FileListSearchParams
     private String       locale;
     private String       uriMask;
     private List<String> fileTypes;
-    private Date         timestampAfter;
-    private Date         timestampBefore;
+    private Date         lastUploadedAfter;
+    private Date         lastUploadedBefore;
     private Integer      offset;
     private Integer      limit;
     private List<String> conditions;
@@ -62,24 +62,24 @@ public class FileListSearchParams
         this.fileTypes = fileTypes;
     }
 
-    public Date getTimestampAfter()
+    public Date getLastUploadedAfter()
     {
-        return timestampAfter;
+        return lastUploadedAfter;
     }
 
-    public void setTimestampAfter(Date timestampAfter)
+    public void setLastUploadedAfter(Date lastUploadedAfter)
     {
-        this.timestampAfter = timestampAfter;
+        this.lastUploadedAfter = lastUploadedAfter;
     }
 
-    public Date getTimestampBefore()
+    public Date getLastUploadedBefore()
     {
-        return timestampBefore;
+        return lastUploadedBefore;
     }
 
-    public void setTimestampBefore(Date timestampBefore)
+    public void setLastUploadedBefore(Date lastUploadedBefore)
     {
-        this.timestampBefore = timestampBefore;
+        this.lastUploadedBefore = lastUploadedBefore;
     }
 
     public Integer getOffset()

@@ -25,8 +25,8 @@ public class FileApiParams
     public static final String FILE_TYPE                    = "fileType";
     public static final String APPROVED                     = "approved";
     public static final String URI_MASK                     = "uriMask";
-    public static final String TIMESTAMP_AFTER              = "timestampAfter";
-    public static final String TIMESTAMP_BEFORE             = "timestampBefore";
+    public static final String LAST_UPLOADED_AFTER          = "lastUploadedAfter";
+    public static final String LAST_UPLOADED_BEFORE         = "lastUploadedBefore";
     public static final String FILE_TYPES                   = "fileTypes";
     public static final String OFFSET                       = "offset";
     public static final String LIMIT                        = "limit";

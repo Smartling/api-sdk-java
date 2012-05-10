@@ -24,8 +24,8 @@ import static com.smartling.api.sdk.file.FileApiParams.LOCALE;
 import static com.smartling.api.sdk.file.FileApiParams.OFFSET;
 import static com.smartling.api.sdk.file.FileApiParams.ORDERBY;
 import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
-import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_AFTER;
-import static com.smartling.api.sdk.file.FileApiParams.TIMESTAMP_BEFORE;
+import static com.smartling.api.sdk.file.FileApiParams.LAST_UPLOADED_AFTER;
+import static com.smartling.api.sdk.file.FileApiParams.LAST_UPLOADED_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
 import static com.smartling.api.sdk.file.FileApiParams.RETRIEVAL_TYPE;
 
@@ -248,8 +248,8 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
         nameValuePairs.add(new BasicNameValuePair(LOCALE, fileListSearchParams.getLocale()));
         nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParams.getUriMask()));
-        nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_AFTER, DateFormatter.formatDate(fileListSearchParams.getTimestampAfter())));
-        nameValuePairs.add(new BasicNameValuePair(TIMESTAMP_BEFORE, DateFormatter.formatDate(fileListSearchParams.getTimestampBefore())));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.formatDate(fileListSearchParams.getLastUploadedAfter())));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.formatDate(fileListSearchParams.getLastUploadedBefore())));
         nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParams.getOffset() ? null : String.valueOf(fileListSearchParams.getOffset())));
         nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParams.getLimit() ? null : String.valueOf(fileListSearchParams.getLimit())));
         nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParams.getFileTypes()));
