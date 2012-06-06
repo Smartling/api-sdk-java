@@ -10,8 +10,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 import com.smartling.api.sdk.file.*;
 import com.smartling.api.sdk.file.response.*;
 import java.io.File;
@@ -19,13 +18,13 @@ import org.apache.commons.io.FilenameUtils;
 
 public class SmartlingApiExample
 {
-    private static final String API_KEY       = "YOUR-API-KEY";
-    private static final String PROJECT_ID    = "YOUR-PROJECT-ID";
-    private static final String LOCALE        = "YOUR-LOCALE";
+    private static final String   API_KEY       = "YOUR-API-KEY";
+    private static final String   PROJECT_ID    = "YOUR-PROJECT-ID";
+    private static final String   LOCALE        = "YOUR-LOCALE";
 
-    private static final String PATH_TO_FILE  = "resources/test.properties";
-    private static final String FILE_ENCODING = "UTF-8";
-    private static final String FILE_TYPE     = "javaProperties";
+    private static final String   PATH_TO_FILE  = "resources/test.properties";
+    private static final String   FILE_ENCODING = "UTF-8";
+    private static final FileType FILE_TYPE     = FileType.JAVA_PROPERTIES;
 
     public static void main(String args[]) throws FileApiException
     {
@@ -36,19 +35,26 @@ public class SmartlingApiExample
         ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(FILE_TYPE, getFileUri(file), file, false, FILE_ENCODING);
         System.out.println(uploadFileResponse);
 
+        // rename the file
+        String fileIdentifier = "myTestFileIdentifier";
+        smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);
+
         // run a search for files
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        fileListSearchParams.setUriMask(getFileUri(file));
+        fileListSearchParams.setUriMask(fileIdentifier);
         ApiResponse<FileList> filesListResponse = smartlingFAPI.getFilesList(fileListSearchParams);
         System.out.println(filesListResponse);
 
         // check the file status
-        ApiResponse<FileStatus> fileStatusResponse = smartlingFAPI.getFileStatus(getFileUri(file), LOCALE);
+        ApiResponse<FileStatus> fileStatusResponse = smartlingFAPI.getFileStatus(fileIdentifier, LOCALE);
         System.out.println(fileStatusResponse);
 
         // get the file back, including any translations that have been published.
-        StringResponse translatedContent = smartlingFAPI.getFile(getFileUri(file), LOCALE, RetrievalType.PUBLISHED);
+        StringResponse translatedContent = smartlingFAPI.getFile(fileIdentifier, LOCALE, RetrievalType.PUBLISHED);
         System.out.println(translatedContent.getContents());
+
+        // delete the file
+        smartlingFAPI.deleteFile(fileIdentifier);
     }
 
     private static String getFileUri(File file)

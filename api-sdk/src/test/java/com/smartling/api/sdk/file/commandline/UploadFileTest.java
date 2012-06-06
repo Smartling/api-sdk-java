@@ -48,7 +48,7 @@ public class UploadFileTest
         args.add(FileApiTestHelper.getApiKey());
         args.add(FileApiTestHelper.getProjectId());
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
-        args.add(FileApiTestHelper.getTestFileType());
+        args.add(FileApiTestHelper.getTestFileType().getIdentifier());
         args.add(null);
 
         return args;

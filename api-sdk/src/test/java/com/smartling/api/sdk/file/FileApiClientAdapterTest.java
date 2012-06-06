@@ -15,6 +15,7 @@ package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 import java.util.List;
 
@@ -59,14 +60,18 @@ public class FileApiClientAdapterTest
     public void testFileActions() throws FileApiException, IOException
     {
         // /file/upload
+        String originalFileUri = createFileUri();
         File fileForUpload = FileApiTestHelper.getTestFile();
-        String fileUri = createFileUri();
-        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload, fileUri);
+        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload, originalFileUri);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
 
         // /file/get
-        StringResponse fileContents = fileApiClientAdapter.getFile(fileUri, null, null);
+        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
+
+        // /file/rename
+        String fileUri = createFileUri();
+        fileApiClientAdapter.renameFile(originalFileUri, fileUri);
 
         // /file/list
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
@@ -79,6 +84,15 @@ public class FileApiClientAdapterTest
 
         // file/delete
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
+
+        try
+        {
+            fileApiClientAdapter.getFile(fileUri, null, null);
+            fail("File has been deleted. File should not be returned");
+        }
+        catch (FileApiException e)
+        {
+        }
     }
 
     private void verifyFileListHasFileUri(String fileUri, List<FileStatus> fileList)

@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Smartling, Inc.
+/* Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -11,13 +10,11 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * limitations under the License. */
 package com.smartling.api.sdk.file;
 
-import com.smartling.api.sdk.file.response.EmptyResponse;
-
 import com.smartling.api.sdk.file.response.ApiResponse;
+import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.StringResponse;
@@ -40,7 +37,7 @@ public interface FileApiClientAdapter
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<UploadData> uploadFile(String fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException;
+    ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException;
 
     /**
      * Get the translated (or original) file contents.
@@ -80,4 +77,14 @@ public interface FileApiClientAdapter
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException;
+
+    /**
+     * Rename the file with the specified fileUri to the newFileUri
+     *
+     * @param fileUri current fileUri
+     * @param newFileUri requested fileUri
+     * @return {@link ApiResponse} for a successful deletion.
+     * @throws FileApiException if a non success is returned from the service.
+     */
+    ApiResponse<EmptyResponse> renameFile(String fileUri, String newFileUri) throws FileApiException;
 }

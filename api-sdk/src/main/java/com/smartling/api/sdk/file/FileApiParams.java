@@ -34,4 +34,5 @@ public class FileApiParams
     public static final String ORDERBY                      = "orderBy";
     public static final String FILE                         = "file";
     public static final String RETRIEVAL_TYPE               = "retrievalType";
+    public static final String NEW_FILE_URI                 = "newFileUri";
 }
