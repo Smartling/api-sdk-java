@@ -35,6 +35,7 @@ public class FileApiClientAdapterTest
 {
     private static final String  SKD_FILE_URI       = "sdk-test-file-%s";
     private static final String  TEST_FILE_ENCODING = "UTF-8";
+    private static final String CALLBACK_URL = "http://site.com/callback";
     private FileApiClientAdapter fileApiClientAdapter;
 
     private String               locale;
@@ -62,7 +63,7 @@ public class FileApiClientAdapterTest
         // /file/upload
         String originalFileUri = createFileUri();
         File fileForUpload = FileApiTestHelper.getTestFile();
-        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload, originalFileUri);
+        ApiResponse<UploadData> uploadFileResponse = uploadFile(fileForUpload, originalFileUri, CALLBACK_URL);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
 
         // /file/get
@@ -76,11 +77,11 @@ public class FileApiClientAdapterTest
         // /file/list
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
         ApiResponse<FileList> fileList = fileApiClientAdapter.getFilesList(fileListSearchParams);
-        verifyFileListHasFileUri(fileUri, fileList.getData().getFileList());
+        verifyFileListHasFileUri(fileUri, CALLBACK_URL, fileList.getData().getFileList());
 
         // /file/status
         ApiResponse<FileStatus> fileStatus = fileApiClientAdapter.getFileStatus(fileUri, locale);
-        verifyFileStatus(fileUri, fileStatus.getData());
+        verifyFileStatus(fileUri, CALLBACK_URL, fileStatus.getData());
 
         // file/delete
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
@@ -95,12 +96,12 @@ public class FileApiClientAdapterTest
         }
     }
 
-    private void verifyFileListHasFileUri(String fileUri, List<FileStatus> fileList)
+    private void verifyFileListHasFileUri(String fileUri, String callbackUrl, List<FileStatus> fileList)
     {
         boolean foundMatchingFileUri = false;
         for(FileStatus fileStatus : fileList)
         {
-            if (fileStatus.getFileUri().equals(fileUri))
+            if (fileStatus.getFileUri().equals(fileUri) && fileStatus.getCallbackUrl().equals(callbackUrl))
             {
                 foundMatchingFileUri = true;
                 break;
@@ -114,13 +115,14 @@ public class FileApiClientAdapterTest
         return String.format(SKD_FILE_URI, System.currentTimeMillis());
     }
 
-    private void verifyFileStatus(String expectedFileUri, FileStatus fileStatus)
+    private void verifyFileStatus(String expectedFileUri, String expectedCallbackUrl, FileStatus fileStatus)
     {
         assertEquals(expectedFileUri, fileStatus.getFileUri());
+        assertEquals(expectedCallbackUrl, fileStatus.getCallbackUrl());
     }
 
-    private ApiResponse<UploadData> uploadFile(File fileForUpload, String fileUri) throws FileApiException
+    private ApiResponse<UploadData> uploadFile(File fileForUpload, String fileUri, String callbackUrl) throws FileApiException
     {
-        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), fileUri, fileForUpload, null, TEST_FILE_ENCODING);
+        return fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), fileUri, fileForUpload, null, TEST_FILE_ENCODING, callbackUrl);
     }
 }

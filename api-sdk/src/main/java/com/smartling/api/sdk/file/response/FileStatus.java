@@ -29,6 +29,7 @@ public class FileStatus implements Data
     private int    completedStringCount;
     private String lastUploaded;
     private String fileType;
+    private String callbackUrl;
 
     /**
      * The identifier of the file. It is recommended that the name of the file be used as the identifier.
@@ -98,6 +99,16 @@ public class FileStatus implements Data
     public String getFileType()
     {
         return fileType;
+    }
+
+    /**
+     * File's callback url
+     *
+     * @return callbackUrl
+     */
+    public String getCallbackUrl()
+    {
+        return callbackUrl;
     }
 
     @Override

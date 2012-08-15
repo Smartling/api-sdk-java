@@ -51,6 +51,11 @@ public class FileApiTestHelper
         return locale;
     }
 
+    public static String getCallbackUrl()
+    {
+        return System.getProperty("callbackUrl");
+    }
+
     public static File getTestFile()
     {
         return new File(FilenameUtils.separatorsToSystem(FileApiTestHelper.TEST_FILE_LOCATION));

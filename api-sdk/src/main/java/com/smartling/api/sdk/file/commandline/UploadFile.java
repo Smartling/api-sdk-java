@@ -45,6 +45,9 @@ public class UploadFile
      * 4) pathToPropertyFile
      * 5) type of file.
      * 6) Whether the contents of the file should be approved by default. Can be null, null values uses server default of false.
+     *
+     * Optional arguments:
+     * 1) callback url. Can be null.
      * </pre>
      * @throws Exception if an exception occurs in the course of uploading the specified file.
      */
@@ -59,7 +62,14 @@ public class UploadFile
 
         File file = new File(uploadParams.getPathToFile());
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
-        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(FileType.lookup(uploadParams.getFileType()), file.getName(), file, uploadParams.getApproveContent(), FileApiClientAdapterImpl.DEFAULT_ENCODING);
+        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(
+                FileType.lookup(uploadParams.getFileType()),
+                file.getName(),
+                file,
+                uploadParams.getApproveContent(),
+                FileApiClientAdapterImpl.DEFAULT_ENCODING,
+                uploadParams.getCallbackUrl()
+        );
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));
         return uploadResponse;
@@ -67,7 +77,7 @@ public class UploadFile
 
     private static UploadFileParams getParameters(String[] args)
     {
-        Assert.isTrue(args.length == 6, "Invalid number of arguments");
+        Assert.isTrue(args.length >= 6, "Invalid number of arguments");
         UploadFileParams uploadParams = new UploadFileParams();
         uploadParams.setProductionMode(Boolean.valueOf(args[0]));
         uploadParams.setApiKey(args[1]);
@@ -75,6 +85,9 @@ public class UploadFile
         uploadParams.setPathToFile(args[3]);
         uploadParams.setFileType(args[4]);
         uploadParams.setApproveContent(null == args[5] ? null : Boolean.valueOf(args[5]));
+
+        if(args.length == 7)
+            uploadParams.setCallbackUrl(args[6]);
 
         return uploadParams;
     }

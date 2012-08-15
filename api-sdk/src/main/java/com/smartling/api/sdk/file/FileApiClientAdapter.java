@@ -34,10 +34,11 @@ public interface FileApiClientAdapter
      * @param fileToUpload the file that is to be uploaded.
      * @param approveContent true if the file contents should be approved after uploading the file. Can be null. Null uses fileApi default of false.
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
+     * @param callbackUrl  Callback url. Can be null
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException;
+    ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding, String callbackUrl) throws FileApiException;
 
     /**
      * Get the translated (or original) file contents.

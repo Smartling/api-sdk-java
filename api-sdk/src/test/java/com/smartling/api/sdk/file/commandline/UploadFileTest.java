@@ -50,6 +50,7 @@ public class UploadFileTest
         args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
         args.add(FileApiTestHelper.getTestFileType().getIdentifier());
         args.add(null);
+        args.add(FileApiTestHelper.getCallbackUrl());
 
         return args;
     }

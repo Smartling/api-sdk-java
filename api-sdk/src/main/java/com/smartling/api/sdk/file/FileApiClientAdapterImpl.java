@@ -15,6 +15,7 @@ package com.smartling.api.sdk.file;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
 import static com.smartling.api.sdk.file.FileApiParams.APPROVED;
+import static com.smartling.api.sdk.file.FileApiParams.CALLBACK_URL;
 import static com.smartling.api.sdk.file.FileApiParams.CONDITIONS;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPES;
@@ -160,10 +161,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {}.getType());
     }
 
-    public ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding) throws FileApiException
+    public ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding, String callbackUrl)
+            throws FileApiException
     {
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType.getIdentifier()),
-                                         new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+                                         new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)),
+                                         new BasicNameValuePair(CALLBACK_URL, callbackUrl));
         HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
         StringResponse response = executeHttpcall(httpPostFile);
 
