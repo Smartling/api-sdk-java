@@ -4,7 +4,7 @@
 
     <groupId>smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <build>
@@ -98,6 +98,22 @@
                         <property>
                             <name>testMode</name>
                             <value>${testMode}</value>
+                        </property>
+                        <property>
+                            <name>http.proxyHost</name>
+                            <value>${http.proxyHost}</value>
+                        </property>
+                        <property>
+                            <name>http.proxyPort</name>
+                            <value>${http.proxyPort}</value>
+                        </property>
+                        <property>
+                            <name>http.proxyUsername</name>
+                            <value>${http.proxyUsername}</value>
+                        </property>
+                        <property>
+                            <name>http.proxyPassword</name>
+                            <value>${http.proxyPassword}</value>
                         </property>
                     </systemProperties>
                 </configuration>

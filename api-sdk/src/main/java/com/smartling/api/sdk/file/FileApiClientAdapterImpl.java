@@ -50,14 +50,19 @@ import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
@@ -77,6 +82,13 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private static final String UTF_16                    = "UTF-16";
 
     public static final String  DEFAULT_ENCODING          = "UTF-8";
+
+    private static final String SCHEME_HTTPS                   = "https";
+    private static final String SCHEME_HTTP                    = "http";
+    private static final String PROPERTY_SUFFIX_PROXY_HOST     = ".proxyHost";
+    private static final String PROPERTY_SUFFIX_PROXY_PORT     = ".proxyPort";
+    private static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
+    private static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
 
     private final static String UPLOAD_FILE_API_URL       = "%s/file/upload?";
     private final static String GET_FILE_API_URL          = "%s/file/get?";
@@ -216,6 +228,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         try
         {
             httpClient = new DefaultHttpClient();
+            setupProxy(httpClient);
             HttpResponse response = httpClient.execute(httpRequest);
 
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
@@ -231,6 +244,36 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         {
             if (null != httpClient)
                 httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    private void setupProxy(HttpClient httpClient)
+    {
+        HttpHost proxy;
+        String protocol = null;
+
+        if(StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_HOST)) && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_PORT)))
+            protocol = SCHEME_HTTPS;
+        else if(StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_HOST)) && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_PORT)))
+            protocol = SCHEME_HTTP;
+
+        if(null != protocol)
+        {
+            String proxyHost = System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_HOST);
+            Integer proxyPort = Integer.valueOf(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PORT));
+            String proxyUsername = System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_USERNAME);
+            String proxyPassword = System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PASSWORD);
+
+            if(StringUtils.isNotBlank(proxyUsername) && StringUtils.isNotBlank(proxyPassword) && httpClient instanceof DefaultHttpClient)
+            {
+                ((DefaultHttpClient)httpClient).getCredentialsProvider().setCredentials(
+                        new AuthScope(proxyHost, proxyPort, protocol),
+                        new UsernamePasswordCredentials(proxyUsername, proxyPassword)
+                );
+            }
+
+            proxy = new HttpHost(proxyHost, proxyPort, protocol);
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
     }
 
