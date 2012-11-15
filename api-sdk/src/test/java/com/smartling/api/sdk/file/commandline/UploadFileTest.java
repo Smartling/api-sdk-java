@@ -16,6 +16,8 @@
 package com.smartling.api.sdk.file.commandline;
 
 import static junit.framework.Assert.assertNotNull;
+
+import com.smartling.api.sdk.file.FileApiException;
 import com.smartling.api.sdk.file.FileApiTestHelper;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.UploadData;
@@ -26,19 +28,19 @@ import org.junit.Test;
 public class UploadFileTest
 {
     @Test
-    public void testUploadFile() throws Exception
+    public void testUploadFile() throws FileApiException
     {
         List<String> argList = buildFileUploadArgs();
-        String[] args = new String[] {};
+        String[] args = new String[]{};
         ApiResponse<UploadData> uploadFileResponse = UploadFile.upload(argList.toArray(args));
         assertNotNull(uploadFileResponse);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidNumberOfArguments() throws Exception
+    public void testInvalidNumberOfArguments() throws FileApiException
     {
-        UploadFile.upload(new String[] {});
+        UploadFile.upload(new String[]{});
     }
 
     private List<String> buildFileUploadArgs()
@@ -54,5 +56,4 @@ public class UploadFileTest
 
         return args;
     }
-
 }

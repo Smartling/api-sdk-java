@@ -57,5 +57,4 @@ public class BaseFileParams
     {
         this.projectId = projectId;
     }
-
 }

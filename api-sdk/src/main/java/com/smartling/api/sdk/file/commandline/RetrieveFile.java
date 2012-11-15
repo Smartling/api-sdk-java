@@ -50,9 +50,10 @@ public class RetrieveFile
      * 5) the locale to download the file for. Can be null if the original file is desired.
      * 6) path to store the file.
      * <pre>
-     * @throws Exception if an exception occurs in the course of downloading the specified file.
+     * @throws IOException if an exception occurs in the course of downloading the specified file.
+     * @throws FileApiException if an exception occurs while writing translated contents into file
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException, FileApiException
     {
         File translatedFile = retrieve(args);
 
@@ -95,5 +96,4 @@ public class RetrieveFile
 
         return stringBuilder.toString();
     }
-
 }

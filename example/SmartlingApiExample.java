@@ -1,4 +1,5 @@
-/* Copyright 2012 Smartling, Inc.
+/*
+ * Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -10,7 +11,8 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. */
+ * limitations under the License.
+ */
 import com.smartling.api.sdk.file.*;
 import com.smartling.api.sdk.file.response.*;
 import java.io.File;
@@ -25,6 +27,7 @@ public class SmartlingApiExample
     private static final String   PATH_TO_FILE  = "resources/test.properties";
     private static final String   FILE_ENCODING = "UTF-8";
     private static final FileType FILE_TYPE     = FileType.JAVA_PROPERTIES;
+    private static final String   CALLBACK_URL  = null;
 
     public static void main(String args[]) throws FileApiException
     {
@@ -32,12 +35,13 @@ public class SmartlingApiExample
 
         // upload the file
         File file = new File(FilenameUtils.separatorsToSystem(PATH_TO_FILE));
-        ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(FILE_TYPE, getFileUri(file), file, false, FILE_ENCODING);
+        ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(FILE_TYPE, getFileUri(file), file, false, FILE_ENCODING, CALLBACK_URL);
         System.out.println(uploadFileResponse);
 
         // rename the file
-        String fileIdentifier = "myTestFileIdentifier";
-        smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);
+        final String fileIdentifier = "myTestFileIdentifier";
+        ApiResponse<EmptyResponse> renameFileResponse = smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);
+        System.out.println(renameFileResponse);
 
         // run a search for files
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
@@ -54,7 +58,8 @@ public class SmartlingApiExample
         System.out.println(translatedContent.getContents());
 
         // delete the file
-        smartlingFAPI.deleteFile(fileIdentifier);
+        ApiResponse<EmptyResponse> deleteFileResponse = smartlingFAPI.deleteFile(fileIdentifier);
+        System.out.println(deleteFileResponse);
     }
 
     private static String getFileUri(File file)

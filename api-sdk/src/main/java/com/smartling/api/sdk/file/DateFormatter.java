@@ -20,10 +20,14 @@ import java.util.Date;
 /**
  * Utility class for handling dates with the Smartling Translation API.
  */
-public class DateFormatter
+public abstract class DateFormatter
 {
     /** Date format used by the Smartling Translation API */
     private static final String API_DATE_FORMAT = "YYYY-MM-DDThh:mm:ss";
+
+    private DateFormatter()
+    {
+    }
 
     /**
      * Simple method to format a date into the string format used by the Smartling Translation API.
@@ -31,7 +35,7 @@ public class DateFormatter
      * @param date the date to format
      * @return formatted string version of the date or null if the date is null.
      */
-    public static final String formatDate(Date date)
+    public static String formatDate(Date date)
     {
         if (null == date)
             return null;

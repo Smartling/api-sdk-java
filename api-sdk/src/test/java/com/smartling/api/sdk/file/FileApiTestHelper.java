@@ -1,4 +1,5 @@
-/* Copyright 2012 Smartling, Inc.
+/*
+ * Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this work except in compliance with the License.
@@ -10,7 +11,8 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. */
+ * limitations under the License.
+ */
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertTrue;
@@ -25,7 +27,7 @@ public class FileApiTestHelper
 {
     private static final String   SUCCESS            = "SUCCESS";
     private static final FileType TEST_FILE_TYPE     = FileType.JAVA_PROPERTIES;
-    public static final String    TEST_FILE_LOCATION = "resources/test.properties";
+    private static final String   TEST_FILE_LOCATION = "resources/test.properties";
 
     public static String getApiKey()
     {
@@ -75,5 +77,4 @@ public class FileApiTestHelper
     {
         return System.getProperty("testMode") == null ? false : Boolean.valueOf(System.getProperty("testMode"));
     }
-
 }

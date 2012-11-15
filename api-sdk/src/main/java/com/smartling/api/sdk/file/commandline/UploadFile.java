@@ -49,9 +49,9 @@ public class UploadFile
      * Optional arguments:
      * 1) callback url. Can be null.
      * </pre>
-     * @throws Exception if an exception occurs in the course of uploading the specified file.
+     * @throws FileApiException if an exception occurs in the course of uploading the specified file.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws FileApiException
     {
         upload(args);
     }
