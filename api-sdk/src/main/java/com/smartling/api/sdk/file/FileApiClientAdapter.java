@@ -17,11 +17,13 @@ package com.smartling.api.sdk.file;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.EmptyResponse;
+import com.smartling.api.sdk.file.response.FileLastModified;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
+import java.util.Date;
 
 /**
  * Main communication point for interacting with the Smartling Translation API.
@@ -90,4 +92,17 @@ public interface FileApiClientAdapter
      * @throws FileApiException if a non success is returned from the service.
      */
     ApiResponse<EmptyResponse> renameFile(String fileUri, String newFileUri) throws FileApiException;
+
+    /**
+     * Returns information about when a file was last modified for a particular locale, and allows you to filter by lastModified date and/or locale so that you can download only those files changed
+     * since their last download.
+     *
+     * @param fileUri current fileUri
+     * @param lastModifiedAfter an optional filter that limits the return to only those file and locale combinations that have a lastModified date after the parameter lastModifiedAfter. The items
+     * array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified
+     * @param locale an optional filter that will limit the locales checked to only the specified locale
+     * @return {@link ApiResponse} from a success response from the File API.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     */
+    ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException;
 }

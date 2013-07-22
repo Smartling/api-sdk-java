@@ -12,10 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk.file.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Utility class for handling dates with the Smartling Translation API.
@@ -23,7 +26,7 @@ import java.util.Date;
 public abstract class DateFormatter
 {
     /** Date format used by the Smartling Translation API */
-    private static final String API_DATE_FORMAT = "YYYY-MM-DDThh:mm:ss";
+    private static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     private DateFormatter()
     {
@@ -35,12 +38,33 @@ public abstract class DateFormatter
      * @param date the date to format
      * @return formatted string version of the date or null if the date is null.
      */
-    public static String formatDate(Date date)
+    public static String format(Date date)
     {
         if (null == date)
             return null;
 
-        SimpleDateFormat sdf = new SimpleDateFormat(API_DATE_FORMAT);
-        return sdf.format(date);
+        return getDateFormat().format(date);
+    }
+
+    /**
+     * Simple method to parse a date from the string format used by the Smartling Translation API.
+     *
+     * @param date the string to parse
+     * @return parsed date version of the string or null if the string is null.
+     * @throws ParseException parse error
+     */
+    public static Date parse(String date) throws ParseException
+    {
+        if (null == date)
+            return null;
+
+        return getDateFormat().parse(date);
+    }
+
+    public static DateFormat getDateFormat()
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(API_DATE_FORMAT);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat;
     }
 }

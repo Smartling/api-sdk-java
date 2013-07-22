@@ -16,10 +16,12 @@
 package com.smartling.api.sdk.file;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 import com.smartling.api.sdk.file.response.Data;
+import com.smartling.api.sdk.file.response.FileLastModified;
 import java.util.List;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -73,6 +75,11 @@ public class FileApiClientAdapterTest
                 APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL);
         verifyApiResponse(uploadFileResponse);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
+
+        // /file/last_modified
+        ApiResponse<FileLastModified> lastModifiedResponse = fileApiClientAdapter.getLastModified(originalFileUri, null, locale);
+        verifyApiResponse(lastModifiedResponse);
+        verifyFileLastModified(lastModifiedResponse.getData());
 
         // /file/get
         StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
@@ -138,5 +145,13 @@ public class FileApiClientAdapterTest
     {
         assertEquals(expectedFileUri, fileStatus.getFileUri());
         assertEquals(expectedCallbackUrl, fileStatus.getCallbackUrl());
+    }
+
+    private void verifyFileLastModified(FileLastModified lastModified)
+    {
+        assertNotNull(lastModified.getItems());
+        assertEquals(1, lastModified.getItems().size());
+        assertEquals(locale, lastModified.getItems().get(0).getLocale());
+        assertNotNull(lastModified.getItems().get(0).getLastModified());
     }
 }

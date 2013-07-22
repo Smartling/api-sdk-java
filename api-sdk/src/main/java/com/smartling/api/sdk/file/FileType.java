@@ -23,7 +23,15 @@ public enum FileType
     GETTEXT("gettext"),                 // GetText .PO/.POT file
     XLIFF("xliff"),                     // XLIFF file
     YAML("yaml"),                       // Ruby/YAML file
-    JSON("json");                       // generic JSON file
+    JSON("json"),                       // generic JSON file
+    XML("xml"),                         // generic XML file
+    HTML("html"),                       // HTML file
+    FREEMARKER("freemarker"),           // FreeMarker template
+    DOCX("docx"),                       // DOCX
+    PPTX("pptx"),                       // PPTX
+    XLSX("xlsx"),                       // XLSX
+    IDML("idml"),                       // IDML
+    XLS("xls");                         // XLS
 
     private String identifier;
 

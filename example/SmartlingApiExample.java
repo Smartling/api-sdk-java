@@ -38,6 +38,10 @@ public class SmartlingApiExample
         ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(FILE_TYPE, getFileUri(file), file, false, FILE_ENCODING, CALLBACK_URL);
         System.out.println(uploadFileResponse);
 
+        // get last modified date
+        ApiResponse<FileLastModified> lastModifiedResponse = smartlingFAPI.getLastModified(getFileUri(file), null, LOCALE);
+        System.out.println(lastModifiedResponse);
+
         // rename the file
         final String fileIdentifier = "myTestFileIdentifier";
         ApiResponse<EmptyResponse> renameFileResponse = smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);

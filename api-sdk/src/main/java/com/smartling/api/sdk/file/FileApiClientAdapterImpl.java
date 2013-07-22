@@ -22,6 +22,7 @@ import static com.smartling.api.sdk.file.FileApiParams.CONDITIONS;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPES;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_URI;
+import static com.smartling.api.sdk.file.FileApiParams.LAST_MODIFIED_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.LIMIT;
 import static com.smartling.api.sdk.file.FileApiParams.LOCALE;
 import static com.smartling.api.sdk.file.FileApiParams.OFFSET;
@@ -34,21 +35,26 @@ import static com.smartling.api.sdk.file.FileApiParams.RETRIEVAL_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.NEW_FILE_URI;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.ApiResponseWrapper;
 import com.smartling.api.sdk.file.response.Data;
 import com.smartling.api.sdk.file.response.EmptyResponse;
+import com.smartling.api.sdk.file.response.FileLastModified;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.file.util.DateFormatter;
+import com.smartling.api.sdk.file.util.DateTypeAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -96,6 +102,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private final static String GET_FILE_API_URL          = "%s/file/get?";
     private final static String GET_FILE_LIST_API_URL     = "%s/file/list?";
     private final static String GET_FILE_STATUS_API_URL   = "%s/file/status?";
+    private final static String GET_FILE_LAST_MODIFIED    = "%s/file/last_modified?";
     private final static String RENAME_FILE_URL           = "%s/file/rename?";
     private final static String DELETE_FILE_URL           = "%s/file/delete?";
 
@@ -253,6 +260,19 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>(){});
     }
 
+    @Override
+    public ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException
+    {
+        String params = buildParamsQuery(
+                new BasicNameValuePair(FILE_URI, fileUri),
+                new BasicNameValuePair(LAST_MODIFIED_AFTER, DateFormatter.format(lastModifiedAfter)),
+                new BasicNameValuePair(LOCALE, locale));
+        HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LAST_MODIFIED, params));
+        StringResponse response = executeHttpCall(getRequest);
+
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>(){});
+    }
+
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
         MultipartEntity mpEntity = new MultipartEntity();
@@ -364,8 +384,8 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
         nameValuePairs.add(new BasicNameValuePair(LOCALE, fileListSearchParams.getLocale()));
         nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParams.getUriMask()));
-        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.formatDate(fileListSearchParams.getLastUploadedAfter())));
-        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.formatDate(fileListSearchParams.getLastUploadedBefore())));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.format(fileListSearchParams.getLastUploadedAfter())));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.format(fileListSearchParams.getLastUploadedBefore())));
         nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParams.getOffset() ? null : String.valueOf(fileListSearchParams.getOffset())));
         nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParams.getLimit() ? null : String.valueOf(fileListSearchParams.getLimit())));
         nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParams.getFileTypes()));
@@ -389,7 +409,12 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
     private <T extends Data> ApiResponse<T> getApiResponse(String response, TypeToken<ApiResponseWrapper<T>> responseType)
     {
-        ApiResponseWrapper<T> responseWrapper = new Gson().fromJson(response, responseType.getType());
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
+
+        Gson gson = builder.create();
+        ApiResponseWrapper<T> responseWrapper = gson.fromJson(response, responseType.getType());
+
         return responseWrapper.getResponse();
     }
 
