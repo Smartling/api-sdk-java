@@ -22,6 +22,7 @@ import static junit.framework.Assert.fail;
 
 import com.smartling.api.sdk.file.response.Data;
 import com.smartling.api.sdk.file.response.FileLastModified;
+import java.util.HashMap;
 import java.util.List;
 
 import com.smartling.api.sdk.file.response.ApiResponse;
@@ -32,6 +33,7 @@ import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +48,7 @@ public class FileApiClientAdapterTest
 
     private FileApiClientAdapter fileApiClientAdapter;
 
-    private String               locale;
+    private String locale;
 
     @Before
     public void setup()
@@ -72,9 +74,27 @@ public class FileApiClientAdapterTest
         String originalFileUri = createFileUri();
         File fileForUpload = FileApiTestHelper.getTestFile();
         ApiResponse<UploadData> uploadFileResponse = fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), originalFileUri, fileForUpload,
-                APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL);
+                APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL
+        );
         verifyApiResponse(uploadFileResponse);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
+
+        // /file/upload (with directives)
+        String originalFileUri2 = createFileUri();
+        File fileForUpload2 = FileApiTestHelper.getTestFile();
+
+        Map<String, String> smartlingDirectives = new HashMap<String, String>();
+
+        smartlingDirectives.put("smartling.placeholder_format", "JAVA");
+        smartlingDirectives.put("smartling.instruction_attributes", "comment, note");
+
+        ApiResponse<UploadData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), originalFileUri2, fileForUpload2,
+                APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL,
+                smartlingDirectives
+        );
+
+        verifyApiResponse(uploadFileResponse2);
+        FileApiTestHelper.validateSuccessUpload(uploadFileResponse2);
 
         // /file/last_modified
         ApiResponse<FileLastModified> lastModifiedResponse = fileApiClientAdapter.getLastModified(originalFileUri, null, locale);
@@ -104,16 +124,6 @@ public class FileApiClientAdapterTest
         // file/delete
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
         verifyApiResponse(deleteFileResponse);
-
-        try
-        {
-            fileApiClientAdapter.getFile(fileUri, null, null);
-            fail("File has been deleted. File should not be returned");
-        }
-        catch (FileApiException e)
-        {
-            assertTrue(e.getMessage().contains(fileUri) && e.getMessage().contains("could not be found"));
-        }
     }
 
     private void verifyFileListHasFileUri(String fileUri, String callbackUrl, List<FileStatus> fileList)
