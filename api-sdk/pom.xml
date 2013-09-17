@@ -6,7 +6,7 @@
     <artifactId>smartling-api-sdk</artifactId>
     <version>1.5.0</version>
     <packaging>jar</packaging>
-
+    <scm>scm:git:https://github.com/Smartling/api-sdk-java</scm>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
