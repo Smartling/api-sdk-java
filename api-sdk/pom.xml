@@ -2,13 +2,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>smartling</groupId>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <groupId>com.smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
     <version>1.5.0</version>
     <packaging>jar</packaging>        
 
     <scm>
       <connection>scm:git:git://github.com/Smartling/api-sdk-java.git</connection>
+      <developerConnection>scm:git:git://github.com/Smartling/api-sdk-java.git</developerConnection>
       <url>https://github.com/Smartling/api-sdk-java</url>
     </scm>    
     <build>
@@ -134,6 +141,36 @@
         <spring.version>3.0.5.RELEASE</spring.version>
         <servlet-api.version>2.3</servlet-api.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
