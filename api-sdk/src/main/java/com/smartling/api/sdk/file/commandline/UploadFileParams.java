@@ -15,6 +15,8 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
+import java.util.List;
+
 /**
  * The parameters used when uploading a file to the Smartling Translation API.
  */
@@ -25,6 +27,8 @@ public class UploadFileParams extends BaseFileParams
     private String fileType;
     private Boolean approveContent;
     private String callbackUrl;
+    private List<String> localesToApprove;
+    private Boolean overwriteApprovedLocales;
 
     public String getPathToFile()
     {
@@ -74,5 +78,21 @@ public class UploadFileParams extends BaseFileParams
     public void setCallbackUrl(String callbackUrl)
     {
         this.callbackUrl = callbackUrl;
+    }
+
+    public List<String> getLocalesToApprove() {
+        return localesToApprove;
+    }
+
+    public void setLocalesToApprove(List<String> localesToApprove) {
+        this.localesToApprove = localesToApprove;
+    }
+
+    public Boolean getOverwriteApprovedLocales() {
+        return overwriteApprovedLocales;
+    }
+
+    public void setOverwriteApprovedLocales(Boolean overwriteApprovedLocales) {
+        this.overwriteApprovedLocales = overwriteApprovedLocales;
     }
 }

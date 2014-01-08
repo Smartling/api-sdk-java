@@ -37,6 +37,7 @@ import static com.smartling.api.sdk.file.FileApiParams.NEW_FILE_URI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.ApiResponseWrapper;
 import com.smartling.api.sdk.file.response.Data;
@@ -52,13 +53,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -229,39 +226,18 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     }
 
     @Override
-    public ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding, String callbackUrl)
+    public ApiResponse<UploadData> uploadFile(final File fileToUpload, final String fileEncoding,
+                                              final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws FileApiException
     {
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(FILE_TYPE, fileType.getIdentifier()),
-                new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)),
-                new BasicNameValuePair(CALLBACK_URL, callbackUrl)
-        );
-        HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
-        StringResponse response = executeHttpCall(httpPostFile);
-
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {});
-    }
-
-    @Override
-    public ApiResponse<UploadData> uploadFile(final FileType fileType, final String fileUri, final File fileToUpload, final Boolean approveContent, final String fileEncoding,
-            final String callbackUrl,
-            final Map<String, String> directives) throws FileApiException
-    {
-        final List<NameValuePair> paramsList = new LinkedList<NameValuePair>();
-
-        paramsList.add(new BasicNameValuePair(FILE_URI, fileUri));
-        paramsList.add(new BasicNameValuePair(FILE_TYPE, fileType.getIdentifier()));
-        paramsList.add(new BasicNameValuePair(APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
-        paramsList.add(new BasicNameValuePair(CALLBACK_URL, callbackUrl));
-        paramsList.addAll(convertMapParams(directives));
-
+        final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
         String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
-
         HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
         StringResponse response = executeHttpCall(httpPostFile);
 
         return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {});
     }
+
 
     @Override
     public ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException
@@ -464,17 +440,4 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return qparams;
     }
 
-    private List<NameValuePair> convertMapParams(Map<String, String> paramMap)
-    {
-        if (paramMap != null && !paramMap.isEmpty())
-        {
-            final List<NameValuePair> nameValuePairs = new LinkedList<NameValuePair>();
-            for (String key : paramMap.keySet())
-            {
-                nameValuePairs.add(new BasicNameValuePair(key, paramMap.get(key)));
-            }
-            return nameValuePairs;
-        }
-        return Collections.emptyList();
-    }
 }

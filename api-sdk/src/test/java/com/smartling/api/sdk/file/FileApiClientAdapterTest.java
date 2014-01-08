@@ -18,8 +18,8 @@ package com.smartling.api.sdk.file;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
+import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.response.Data;
 import com.smartling.api.sdk.file.response.FileLastModified;
 import java.util.HashMap;
@@ -73,9 +73,14 @@ public class FileApiClientAdapterTest
         // /file/upload
         String originalFileUri = createFileUri();
         File fileForUpload = FileApiTestHelper.getTestFile();
-        ApiResponse<UploadData> uploadFileResponse = fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), originalFileUri, fileForUpload,
-                APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL
-        );
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        fileUploadParameterBuilder.fileType(FileApiTestHelper.getTestFileType());
+        fileUploadParameterBuilder.fileUri(originalFileUri);
+        fileUploadParameterBuilder.approveContent(APPROVE_CONTENT);
+        fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
+
+        ApiResponse<UploadData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
+                fileUploadParameterBuilder);
         verifyApiResponse(uploadFileResponse);
         FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
 
@@ -88,9 +93,17 @@ public class FileApiClientAdapterTest
         smartlingDirectives.put("smartling.placeholder_format", "JAVA");
         smartlingDirectives.put("smartling.instruction_attributes", "comment, note");
 
-        ApiResponse<UploadData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(FileApiTestHelper.getTestFileType(), originalFileUri2, fileForUpload2,
-                APPROVE_CONTENT, TEST_FILE_ENCODING, CALLBACK_URL,
-                smartlingDirectives
+        FileUploadParameterBuilder fileUploadParameterBuilderExtended = new FileUploadParameterBuilder();
+        fileUploadParameterBuilderExtended.fileType(FileApiTestHelper.getTestFileType());
+        fileUploadParameterBuilderExtended.fileUri(originalFileUri2);
+        fileUploadParameterBuilderExtended.approveContent(APPROVE_CONTENT);
+        fileUploadParameterBuilderExtended.callbackUrl(CALLBACK_URL);
+        fileUploadParameterBuilderExtended.localesToApprove(null);
+        fileUploadParameterBuilderExtended.overwriteApprovedLocales(null);
+        fileUploadParameterBuilderExtended.directives(smartlingDirectives);
+
+        ApiResponse<UploadData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
+                TEST_FILE_ENCODING, fileUploadParameterBuilderExtended
         );
 
         verifyApiResponse(uploadFileResponse2);

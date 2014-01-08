@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.file;
 
+import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileLastModified;
@@ -24,6 +25,7 @@ import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,30 +36,15 @@ public interface FileApiClientAdapter
     /**
      * Uploads a file for translation to the Smartling Translation API.
      *
-     * @param fileType the type of file to upload
-     * @param fileUri the identifier of the file
      * @param fileToUpload the file that is to be uploaded.
-     * @param approveContent true if the file contents should be approved after uploading the file. Can be null. Null uses fileApi default of false.
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
-     * @param callbackUrl  Callback url. Can be null
+     * @param fileUploadParameterBuilder  parameters
      * @return ApiResponse from a success response from the File API.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding, String callbackUrl) throws FileApiException;
-
-    /**
-     * Uploads a file for translation to the Smartling Translation API
-     * @param fileType the type of file to upload
-     * @param fileUri the identifier of the file
-     * @param fileToUpload the file that is to be uploaded.
-     * @param approveContent true if the file contents should be approved after uploading the file. Can be null. Null uses fileApi default of false.
-     * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
-     * @param callbackUrl  Callback url. Can be null
-     * @param directives a Map of smartling directives. Can be null
-     * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
-     */
-    ApiResponse<UploadData> uploadFile(FileType fileType, String fileUri, File fileToUpload, Boolean approveContent, String fileEncoding, String callbackUrl, Map<String, String> directives) throws FileApiException;
+    ApiResponse<UploadData> uploadFile(final File fileToUpload, final String fileEncoding,
+                                       final FileUploadParameterBuilder fileUploadParameterBuilder)
+            throws FileApiException;
 
     /**
      * Get the translated (or original) file contents.

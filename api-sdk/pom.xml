@@ -10,18 +10,16 @@
 
     <groupId>com.smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <packaging>jar</packaging>        
 
     <scm>
       <connection>scm:git:git://github.com/Smartling/api-sdk-java.git</connection>
       <developerConnection>scm:git:git://github.com/Smartling/api-sdk-java.git</developerConnection>
       <url>https://github.com/Smartling/api-sdk-java</url>
-    </scm>    
-    <build>
+    </scm>
 
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -134,7 +132,7 @@
     </build>
 
     <name>smartling-api-sdk</name>
-    <url>http://maven.apache.org</url>
+    <url>http://smartling.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

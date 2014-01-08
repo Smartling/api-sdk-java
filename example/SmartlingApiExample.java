@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import com.smartling.api.sdk.file.*;
+import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.response.*;
 import java.io.File;
 import org.apache.commons.io.FilenameUtils;
@@ -35,7 +36,12 @@ public class SmartlingApiExample
 
         // upload the file
         File file = new File(FilenameUtils.separatorsToSystem(PATH_TO_FILE));
-        ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(FILE_TYPE, getFileUri(file), file, false, FILE_ENCODING, CALLBACK_URL);
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        fileUploadParameterBuilder.fileType(FILE_TYPE);
+        fileUploadParameterBuilder.fileUri(getFileUri(file));
+        fileUploadParameterBuilder.approveContent(false);
+        fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
+        ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(file, FILE_ENCODING, fileUploadParameterBuilder);
         System.out.println(uploadFileResponse);
 
         // get last modified date

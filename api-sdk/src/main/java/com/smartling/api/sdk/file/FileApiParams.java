@@ -39,4 +39,6 @@ public class FileApiParams
     public static final String RETRIEVAL_TYPE               = "retrievalType";
     public static final String NEW_FILE_URI                 = "newFileUri";
     public static final String CALLBACK_URL                 = "callbackUrl";
+    public static final String LOCALES_TO_APPROVE           = "localesToApprove";
+    public static final String OVERWRITE_APPROVED_LOCALES   = "overwriteApprovedLocales";
 }
