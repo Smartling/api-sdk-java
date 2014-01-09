@@ -65,10 +65,11 @@ public class UploadFile
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
 
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
-        fileUploadParameterBuilder.fileType(FileType.lookup(uploadParams.getFileType()));
-        fileUploadParameterBuilder.fileUri(file.getName());
-        fileUploadParameterBuilder.approveContent(uploadParams.getApproveContent());
-        fileUploadParameterBuilder.callbackUrl(uploadParams.getCallbackUrl());
+        fileUploadParameterBuilder
+                .fileType(FileType.lookup(uploadParams.getFileType()))
+                .fileUri(file.getName())
+                .approveContent(uploadParams.getApproveContent())
+                .callbackUrl(uploadParams.getCallbackUrl());
 
         ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(file,
                 FileApiClientAdapterImpl.DEFAULT_ENCODING, fileUploadParameterBuilder

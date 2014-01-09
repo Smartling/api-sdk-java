@@ -37,10 +37,11 @@ public class SmartlingApiExample
         // upload the file
         File file = new File(FilenameUtils.separatorsToSystem(PATH_TO_FILE));
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
-        fileUploadParameterBuilder.fileType(FILE_TYPE);
-        fileUploadParameterBuilder.fileUri(getFileUri(file));
-        fileUploadParameterBuilder.approveContent(false);
-        fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
+        fileUploadParameterBuilder
+                .fileType(FILE_TYPE)
+                .fileUri(getFileUri(file))
+                .approveContent(false)
+                .callbackUrl(CALLBACK_URL);
         ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(file, FILE_ENCODING, fileUploadParameterBuilder);
         System.out.println(uploadFileResponse);
 

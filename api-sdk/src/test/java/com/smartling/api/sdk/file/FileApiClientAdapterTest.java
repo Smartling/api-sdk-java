@@ -74,10 +74,11 @@ public class FileApiClientAdapterTest
         String originalFileUri = createFileUri();
         File fileForUpload = FileApiTestHelper.getTestFile();
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
-        fileUploadParameterBuilder.fileType(FileApiTestHelper.getTestFileType());
-        fileUploadParameterBuilder.fileUri(originalFileUri);
-        fileUploadParameterBuilder.approveContent(APPROVE_CONTENT);
-        fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
+        fileUploadParameterBuilder
+                .fileType(FileApiTestHelper.getTestFileType())
+                .fileUri(originalFileUri)
+                .approveContent(APPROVE_CONTENT)
+                .callbackUrl(CALLBACK_URL);
 
         ApiResponse<UploadData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
                 fileUploadParameterBuilder);
@@ -94,13 +95,13 @@ public class FileApiClientAdapterTest
         smartlingDirectives.put("smartling.instruction_attributes", "comment, note");
 
         FileUploadParameterBuilder fileUploadParameterBuilderExtended = new FileUploadParameterBuilder();
-        fileUploadParameterBuilderExtended.fileType(FileApiTestHelper.getTestFileType());
-        fileUploadParameterBuilderExtended.fileUri(originalFileUri2);
-        fileUploadParameterBuilderExtended.approveContent(APPROVE_CONTENT);
-        fileUploadParameterBuilderExtended.callbackUrl(CALLBACK_URL);
-        fileUploadParameterBuilderExtended.localesToApprove(null);
-        fileUploadParameterBuilderExtended.overwriteApprovedLocales(null);
-        fileUploadParameterBuilderExtended.directives(smartlingDirectives);
+        fileUploadParameterBuilderExtended.fileType(FileApiTestHelper.getTestFileType())
+                .fileUri(originalFileUri2)
+                .approveContent(APPROVE_CONTENT)
+                .callbackUrl(CALLBACK_URL)
+                .localesToApprove(null)
+                .overwriteApprovedLocales(null)
+                .directives(smartlingDirectives);
 
         ApiResponse<UploadData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
                 TEST_FILE_ENCODING, fileUploadParameterBuilderExtended
