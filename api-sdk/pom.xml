@@ -37,6 +37,14 @@
                     <show>public</show>
                     <nohelp>true</nohelp>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -55,36 +63,6 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals><goal>jar</goal></goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>build-dependencies</id>
-                        <goals><goal>jar</goal></goals>
-                        <configuration>
-                            <classesDirectory>lib</classesDirectory>
-                            <finalName>${project.artifactId}-${version}-dependencies</finalName>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
