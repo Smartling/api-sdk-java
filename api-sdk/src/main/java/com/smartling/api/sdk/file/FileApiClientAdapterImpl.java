@@ -16,10 +16,7 @@
 package com.smartling.api.sdk.file;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
-import static com.smartling.api.sdk.file.FileApiParams.APPROVED;
-import static com.smartling.api.sdk.file.FileApiParams.CALLBACK_URL;
 import static com.smartling.api.sdk.file.FileApiParams.CONDITIONS;
-import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_TYPES;
 import static com.smartling.api.sdk.file.FileApiParams.FILE_URI;
 import static com.smartling.api.sdk.file.FileApiParams.LAST_MODIFIED_AFTER;

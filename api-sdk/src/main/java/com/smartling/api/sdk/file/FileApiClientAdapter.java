@@ -25,8 +25,6 @@ import com.smartling.api.sdk.file.response.StringResponse;
 import com.smartling.api.sdk.file.response.UploadData;
 import java.io.File;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Main communication point for interacting with the Smartling Translation API.
