@@ -100,7 +100,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
         paramsList.add(new BasicNameValuePair(FileApiParams.FILE_TYPE, fileType.getIdentifier()));
         paramsList.add(new BasicNameValuePair(FileApiParams.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
         paramsList.add(new BasicNameValuePair(FileApiParams.CALLBACK_URL, callbackUrl));
-        if (localesToApprove != null && localesToApprove.isEmpty())
+        if (localesToApprove != null && !localesToApprove.isEmpty())
             paramsList.addAll(convertLocalesBasedApproveParams(FileApiParams.LOCALES_TO_APPROVE, localesToApprove));
         if (overwriteApprovedLocales != null)
             paramsList.add(new BasicNameValuePair(FileApiParams.OVERWRITE_APPROVED_LOCALES, overwriteApprovedLocales.toString()));
