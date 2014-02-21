@@ -10,7 +10,8 @@ import java.util.*;
 /**
  * Uploads a file for translation to the Smartling Translation API params
  */
-public class FileUploadParameterBuilder implements ParameterBuilder {
+public class FileUploadParameterBuilder implements ParameterBuilder
+{
     private FileType fileType;
     private String fileUri;
     private Boolean approveContent;
@@ -24,7 +25,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param directives
      * @return
      */
-    public FileUploadParameterBuilder directives(Map<String, String> directives) {
+    public FileUploadParameterBuilder directives(Map<String, String> directives)
+    {
         this.directives = directives;
         return this;
     }
@@ -36,7 +38,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param overwriteApprovedLocales
      * @return
      */
-    public FileUploadParameterBuilder overwriteApprovedLocales(Boolean overwriteApprovedLocales) {
+    public FileUploadParameterBuilder overwriteApprovedLocales(Boolean overwriteApprovedLocales)
+    {
         this.overwriteApprovedLocales = overwriteApprovedLocales;
         return this;
     }
@@ -46,7 +49,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param localesToApprove
      * @return
      */
-    public FileUploadParameterBuilder localesToApprove(List<String> localesToApprove) {
+    public FileUploadParameterBuilder localesToApprove(List<String> localesToApprove)
+    {
         this.localesToApprove = localesToApprove;
         return this;
     }
@@ -56,7 +60,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param callbackUrl
      * @return
      */
-    public FileUploadParameterBuilder callbackUrl(String callbackUrl) {
+    public FileUploadParameterBuilder callbackUrl(String callbackUrl)
+    {
         this.callbackUrl = callbackUrl;
         return this;
     }
@@ -67,7 +72,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param approveContent
      * @return
      */
-    public FileUploadParameterBuilder approveContent(Boolean approveContent) {
+    public FileUploadParameterBuilder approveContent(Boolean approveContent)
+    {
         this.approveContent = approveContent;
         return this;
     }
@@ -77,7 +83,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param fileUri
      * @return
      */
-    public FileUploadParameterBuilder fileUri(String fileUri) {
+    public FileUploadParameterBuilder fileUri(String fileUri)
+    {
         this.fileUri = fileUri;
         return this;
     }
@@ -87,13 +94,15 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
      * @param fileType
      * @return
      */
-    public FileUploadParameterBuilder fileType(FileType fileType) {
+    public FileUploadParameterBuilder fileType(FileType fileType)
+    {
         this.fileType = fileType;
         return this;
     }
 
     @Override
-    public List<NameValuePair> getNameValueList() {
+    public List<NameValuePair> getNameValueList()
+    {
         final List<NameValuePair> paramsList = new LinkedList<NameValuePair>();
 
         paramsList.add(new BasicNameValuePair(FileApiParams.FILE_URI, fileUri));
@@ -110,7 +119,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
         return paramsList;
     }
 
-    private List<NameValuePair> convertLocalesBasedApproveParams(String prefix, List<String> values) {
+    private List<NameValuePair> convertLocalesBasedApproveParams(String prefix, List<String> values)
+    {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
         for (int index = 0; index < values.size(); index++) {
@@ -120,12 +130,14 @@ public class FileUploadParameterBuilder implements ParameterBuilder {
         return nameValuePairs;
     }
 
-    private List<NameValuePair> convertMapParams(Map<String, String> paramMap) {
-        if (paramMap != null && !paramMap.isEmpty()) {
+    private List<NameValuePair> convertMapParams(Map<String, String> paramMap)
+    {
+        if (paramMap != null && !paramMap.isEmpty())
+        {
             final List<NameValuePair> nameValuePairs = new LinkedList<NameValuePair>();
-            for (String key : paramMap.keySet()) {
+            for (String key : paramMap.keySet())
                 nameValuePairs.add(new BasicNameValuePair(key, paramMap.get(key)));
-            }
+
             return nameValuePairs;
         }
         return Collections.emptyList();
