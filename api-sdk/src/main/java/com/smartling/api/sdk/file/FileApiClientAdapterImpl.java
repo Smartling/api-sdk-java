@@ -219,7 +219,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Get file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Get file: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -243,7 +243,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Get files list: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Get files list: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -266,7 +266,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Get file status: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Get file status: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -293,7 +293,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Upload file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Upload file: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -318,7 +318,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Delete file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Delete file: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -342,7 +342,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Rename file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Rename file: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
@@ -370,7 +370,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         }
         catch (FileApiException fapiException)
         {
-            logger.debug(String.format("Get last modified: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            logger.error(String.format("Get last modified: %s.", GENERAL_ERROR_CODE), fapiException);
             throw fapiException;
         }
     }
