@@ -55,6 +55,11 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return this;
     }
 
+    public List<String> getLocalesToApprove()
+    {
+        return null != localesToApprove ? localesToApprove : new ArrayList<String>();
+    }
+
     /**
      * Callback url. Can be null
      * @param callbackUrl
@@ -87,6 +92,11 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     {
         this.fileUri = fileUri;
         return this;
+    }
+
+    public String getFileUri()
+    {
+        return fileUri;
     }
 
     /**

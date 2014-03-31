@@ -55,6 +55,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -80,6 +82,13 @@ import org.springframework.util.CollectionUtils;
  */
 public class FileApiClientAdapterImpl implements FileApiClientAdapter
 {
+    private static final Log logger = LogFactory.getLog(FileApiClientAdapterImpl.class);
+
+    private static final String API_KEY_MASK       = "%s-XXXXXXXXXXXX";
+    private static final String RESPONSE_MESSAGES  = "Messages: %s";
+    private static final String SUCCESS_CODE       = "SUCCESS";
+    private static final String GENERAL_ERROR_CODE = "GENERAL_ERROR";
+
     private static final String MIME_TYPE                 = "text/plain";
     private static final String SMARTLING_API_URL         = "https://api.smartling.com/v1";
     private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
@@ -195,31 +204,71 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     @Override
     public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException
     {
+        logger.debug(String.format("Get file: fileUri = %s, projectId = %s, apiKey = %s, locale = %s",
+                fileUri, this.projectId, maskApiKey(this.apiKey), locale));
+
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale),
-                new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name())
-        );
+                new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()));
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
-        return executeHttpCall(getRequest);
+        try
+        {
+            StringResponse stringResponse = executeHttpCall(getRequest);
+            logger.debug(String.format("Get file: %s", SUCCESS_CODE));
+
+            return stringResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Get file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     @Override
     public ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException
     {
+        logger.debug(String.format("Get files list: fileUriMask = %s, projectId = %s, apiKey = %s, locale = %s",
+                fileListSearchParams.getUriMask(), this.projectId, maskApiKey(this.apiKey), fileListSearchParams.getLocale()));
+
         String params = buildFileListParams(fileListSearchParams);
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LIST_API_URL, params));
-        StringResponse response = executeHttpCall(getRequest);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(getRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {});
+            logger.debug(String.format("Get files list: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Get files list: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     @Override
     public ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException
     {
+        logger.debug(String.format("Get file satatus: fileUri = %s, projectId = %s, apiKey = %s, locale = %s", fileUri, this.projectId, maskApiKey(this.apiKey), locale));
+
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_STATUS_API_URL, params));
-        StringResponse response = executeHttpCall(getRequest);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(getRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
+            logger.debug(String.format("Get file status: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Get file status: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     @Override
@@ -227,47 +276,103 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
                                               final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws FileApiException
     {
+        logger.debug(String.format("Upload file: fileUri = %s, projectId = %s, apiKey = %s, localesToApprove = %s",
+                fileUploadParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), StringUtils.join(fileUploadParameterBuilder.getLocalesToApprove(), ", ")));
+
         final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
         String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
         HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload, fileEncoding);
-        StringResponse response = executeHttpCall(httpPostFile);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(httpPostFile);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {});
+            logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Upload file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
 
     @Override
     public ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException
     {
+        logger.debug(String.format("Delete file: fileUri = %s, projectId = %s, apiKey = %s",
+                fileUri, this.projectId, maskApiKey(this.apiKey)));
+
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         HttpDelete httpDeleteFileRequest = new HttpDelete(buildUrl(DELETE_FILE_URL, params));
-        StringResponse response = executeHttpCall(httpDeleteFileRequest);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(httpDeleteFileRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+            logger.debug(String.format("Delete file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Delete file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     @Override
     public ApiResponse<EmptyResponse> renameFile(String fileUri, String newFileUri) throws FileApiException
     {
+        logger.debug(String.format("Rename file: fileUri = %s, projectId = %s, apiKey = %s",
+                fileUri, this.projectId, maskApiKey(this.apiKey)));
+
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(NEW_FILE_URI, newFileUri));
         HttpPost httpPostRequest = new HttpPost(buildUrl(RENAME_FILE_URL, params));
-        StringResponse response = executeHttpCall(httpPostRequest);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(httpPostRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+            logger.debug(String.format("Rename file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Rename file: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     @Override
     public ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException
     {
+        logger.debug(String.format("Get last modified: fileUri = %s, projectId = %s, apiKey = %s, locale = %s",
+                fileUri, this.projectId, maskApiKey(this.apiKey), locale));
+
         String params = buildParamsQuery(
                 new BasicNameValuePair(FILE_URI, fileUri),
                 new BasicNameValuePair(LAST_MODIFIED_AFTER, DateFormatter.format(lastModifiedAfter)),
                 new BasicNameValuePair(LOCALE, locale)
         );
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LAST_MODIFIED, params));
-        StringResponse response = executeHttpCall(getRequest);
 
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
+        try
+        {
+            StringResponse response = executeHttpCall(getRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
+            logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (FileApiException fapiException)
+        {
+            logger.debug(String.format("Get last modified: %s. Exception message: %s", GENERAL_ERROR_CODE, fapiException.getMessage()));
+            throw fapiException;
+        }
     }
 
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
@@ -437,4 +542,18 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return qparams;
     }
 
+    private String maskApiKey(String apiKey)
+    {
+        return String.format(API_KEY_MASK, apiKey.substring(0, apiKey.lastIndexOf("-")));
+    }
+
+    private String getApiResponseMessages(ApiResponse apiResponse)
+    {
+        String responseMessages = StringUtils.EMPTY;
+
+        if (!SUCCESS_CODE.equals(apiResponse.getCode()))
+            responseMessages = String.format(RESPONSE_MESSAGES, StringUtils.join(apiResponse.getMessages(), ", "));
+
+        return responseMessages;
+    }
 }
