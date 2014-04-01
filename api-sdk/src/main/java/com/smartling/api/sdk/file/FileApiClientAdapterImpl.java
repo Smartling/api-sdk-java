@@ -544,7 +544,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
     private String maskApiKey(String apiKey)
     {
-        return String.format(API_KEY_MASK, apiKey.substring(0, apiKey.lastIndexOf("-")));
+        return apiKey.contains("-") ? String.format(API_KEY_MASK, apiKey.substring(0, apiKey.lastIndexOf("-"))) : apiKey;
     }
 
     private String getApiResponseMessages(ApiResponse apiResponse)
