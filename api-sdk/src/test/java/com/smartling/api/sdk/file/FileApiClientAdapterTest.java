@@ -116,7 +116,7 @@ public class FileApiClientAdapterTest
         verifyFileLastModified(lastModifiedResponse.getData());
 
         // /file/get
-        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
+        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null, null);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/rename
