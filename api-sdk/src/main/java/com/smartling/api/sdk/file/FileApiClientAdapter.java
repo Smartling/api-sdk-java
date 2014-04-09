@@ -53,7 +53,7 @@ public interface FileApiClientAdapter
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException;
+    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType, Boolean includeOriginalStrings) throws FileApiException;
 
     /**
      * Get the listing of translated files for the specified locale.
