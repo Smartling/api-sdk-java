@@ -66,7 +66,7 @@ public class RetrieveFile
 
         File file = new File(retrieveFileParams.getPathToFile());
         FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(retrieveFileParams.isProductionMode(), retrieveFileParams.getApiKey(), retrieveFileParams.getProjectId());
-        StringResponse response = smartlingFAPI.getFile(file.getName(), retrieveFileParams.getLocale(), null);
+        StringResponse response = smartlingFAPI.getFile(file.getName(), retrieveFileParams.getLocale(), null, null);
 
         File translatedFile = new File(getTranslatedFilePath(file, retrieveFileParams.getLocale(), retrieveFileParams.getPathToStoreFile()));
         FileUtils.writeStringToFile(translatedFile, response.getContents(), response.getEncoding());
