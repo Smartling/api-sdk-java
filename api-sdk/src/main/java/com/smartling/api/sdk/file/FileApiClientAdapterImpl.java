@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.ApiResponseWrapper;
 import com.smartling.api.sdk.file.response.Data;
@@ -203,14 +204,25 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     }
 
     @Override
-    public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType, Boolean includeOriginalStrings) throws FileApiException
+    public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException
+    {
+        GetFileParameterBuilder getFileParameterBuilder = new GetFileParameterBuilder()
+                .fileUri(fileUri)
+                .locale(locale)
+                .retrievalType(retrievalType);
+
+        return getFile(getFileParameterBuilder);
+    }
+
+    @Override
+    public StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws FileApiException
     {
         logger.debug(String.format("Get file: fileUri = %s, projectId = %s, apiKey = %s, locale = %s",
-                fileUri, this.projectId, maskApiKey(this.apiKey), locale));
+                                   getFileParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), getFileParameterBuilder.getLocale()));
 
-        String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale),
-                new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()),
-                new BasicNameValuePair(INCLUDE_ORIGINAL_STRINGS, null == includeOriginalStrings ? null : includeOriginalStrings.toString()));
+        final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
+        String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
+
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
         try
         {

@@ -16,6 +16,7 @@
 package com.smartling.api.sdk.file;
 
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiResponse;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileLastModified;
@@ -53,7 +54,15 @@ public interface FileApiClientAdapter
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType, Boolean includeOriginalStrings) throws FileApiException;
+    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException;
+
+    /**
+     * Get the translated (or original) file contents.
+     * @param getFileParameterBuilder - params builder
+     * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     */
+    StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws FileApiException;
 
     /**
      * Get the listing of translated files for the specified locale.

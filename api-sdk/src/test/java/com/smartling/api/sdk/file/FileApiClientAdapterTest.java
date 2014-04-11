@@ -20,6 +20,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.response.Data;
 import com.smartling.api.sdk.file.response.FileLastModified;
 import java.util.HashMap;
@@ -116,7 +117,16 @@ public class FileApiClientAdapterTest
         verifyFileLastModified(lastModifiedResponse.getData());
 
         // /file/get
-        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null, null);
+        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
+        assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
+
+        // /file/get
+        GetFileParameterBuilder getFileParameterBuilder = new GetFileParameterBuilder()
+                .fileUri(originalFileUri)
+                .locale(null)
+                .retrievalType(null)
+                .includeOriginalStrings(null);
+        fileContents = fileApiClientAdapter.getFile(getFileParameterBuilder);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/rename
