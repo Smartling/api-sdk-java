@@ -28,9 +28,7 @@ import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 import static com.smartling.api.sdk.file.FileApiParams.LAST_UPLOADED_AFTER;
 import static com.smartling.api.sdk.file.FileApiParams.LAST_UPLOADED_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
-import static com.smartling.api.sdk.file.FileApiParams.RETRIEVAL_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.NEW_FILE_URI;
-import static com.smartling.api.sdk.file.FileApiParams.INCLUDE_ORIGINAL_STRINGS;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
