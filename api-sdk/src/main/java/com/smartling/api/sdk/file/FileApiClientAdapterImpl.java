@@ -30,7 +30,6 @@ import static com.smartling.api.sdk.file.FileApiParams.LAST_UPLOADED_BEFORE;
 import static com.smartling.api.sdk.file.FileApiParams.URI_MASK;
 import static com.smartling.api.sdk.file.FileApiParams.RETRIEVAL_TYPE;
 import static com.smartling.api.sdk.file.FileApiParams.NEW_FILE_URI;
-import static com.smartling.api.sdk.file.FileApiParams.INCLUDE_ORIGINAL_STRINGS;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -203,14 +202,13 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     }
 
     @Override
-    public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType, Boolean includeOriginalStrings) throws FileApiException
+    public StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException
     {
         logger.debug(String.format("Get file: fileUri = %s, projectId = %s, apiKey = %s, locale = %s",
                 fileUri, this.projectId, maskApiKey(this.apiKey), locale));
 
         String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale),
-                new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()),
-                new BasicNameValuePair(INCLUDE_ORIGINAL_STRINGS, null == includeOriginalStrings ? null : includeOriginalStrings.toString()));
+                new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()));
         HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
         try
         {

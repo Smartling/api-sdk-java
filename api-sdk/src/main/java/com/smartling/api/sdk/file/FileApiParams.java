@@ -41,5 +41,4 @@ public class FileApiParams
     public static final String CALLBACK_URL                 = "callbackUrl";
     public static final String LOCALES_TO_APPROVE           = "localesToApprove";
     public static final String OVERWRITE_APPROVED_LOCALES   = "overwriteApprovedLocales";
-    public static final String INCLUDE_ORIGINAL_STRINGS     = "includeOriginalStrings";
 }
