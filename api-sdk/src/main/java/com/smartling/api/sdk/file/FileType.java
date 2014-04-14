@@ -28,10 +28,17 @@ public enum FileType
     HTML("html"),                       // HTML file
     FREEMARKER("freemarker"),           // FreeMarker template
     DOCX("docx"),                       // DOCX
+    DOC("doc"),                         // DOC file (Microsoft Word)
     PPTX("pptx"),                       // PPTX
     XLSX("xlsx"),                       // XLSX
+    XLS("xls"),                         // XLS
     IDML("idml"),                       // IDML
-    XLS("xls");                         // XLS
+    RESX("resx"),                       // .NET resource (.resx, .resw)
+    QT("qt"),                           // Qt Linguist (.TS file)
+    CSV("csv"),                         // CSV (Comma-separated values)
+    PLAIN_TEXT("plainText"),            // plain text (.txt files)
+    PPT("ppt"),                         // PPT binary file format
+    PRES("pres");                       // Pres resources
 
     private String identifier;
 

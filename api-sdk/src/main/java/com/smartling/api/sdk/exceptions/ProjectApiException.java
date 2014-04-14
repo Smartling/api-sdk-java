@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.response;
+package com.smartling.api.sdk.exceptions;
 
-public class EmptyResponse implements Data
+/**
+ * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.ApiClientAdapter}.
+ */
+public class ProjectApiException extends ApiException
 {
+    public ProjectApiException(final String message)
+    {
+        super(message);
+    }
+
+    public ProjectApiException(final Exception e)
+    {
+        super(e);
+    }
 }

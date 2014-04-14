@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk.exceptions;
 
 /**
- * Thrown when an exception has occurred when using the {@link FileApiClientAdapter}.
+ * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.ApiClientAdapter}.
  */
-public class FileApiException extends Exception
+public class FileApiException extends ApiException
 {
     public FileApiException(String message)
     {

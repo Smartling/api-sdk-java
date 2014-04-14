@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
 import static com.smartling.api.sdk.file.FileApiParams.CONDITIONS;
@@ -33,19 +33,26 @@ import static com.smartling.api.sdk.file.FileApiParams.NEW_FILE_URI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.ApiResponseWrapper;
+import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.dto.EmptyResponse;
+import com.smartling.api.sdk.dto.file.FileLastModified;
+import com.smartling.api.sdk.dto.file.FileList;
+import com.smartling.api.sdk.dto.file.FileStatus;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
+import com.smartling.api.sdk.dto.project.ProjectLocaleList;
+import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.FileApiException;
+import com.smartling.api.sdk.exceptions.ProjectApiException;
+import com.smartling.api.sdk.util.DateFormatter;
+import com.smartling.api.sdk.util.DateTypeAdapter;
+import com.smartling.api.sdk.file.FileApiParams;
+import com.smartling.api.sdk.file.FileListSearchParams;
+import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.ApiResponseWrapper;
-import com.smartling.api.sdk.file.response.Data;
-import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileLastModified;
-import com.smartling.api.sdk.file.response.FileList;
-import com.smartling.api.sdk.file.response.FileStatus;
-import com.smartling.api.sdk.file.response.StringResponse;
-import com.smartling.api.sdk.file.response.UploadData;
-import com.smartling.api.sdk.file.util.DateFormatter;
-import com.smartling.api.sdk.file.util.DateTypeAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,11 +85,11 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Base implementation of the {@link FileApiClientAdapter}.
+ * Base implementation of the {@link ApiClientAdapter}.
  */
-public class FileApiClientAdapterImpl implements FileApiClientAdapter
+public class ApiClientAdapterImpl implements ApiClientAdapter
 {
-    private static final Log logger = LogFactory.getLog(FileApiClientAdapterImpl.class);
+    private static final Log logger = LogFactory.getLog(ApiClientAdapterImpl.class);
 
     private static final String API_KEY_MASK       = "%s-XXXXXXXXXXXX";
     private static final String RESPONSE_MESSAGES  = "Messages: %s";
@@ -111,6 +118,8 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private final static String RENAME_FILE_URL         = "%s/file/rename?";
     private final static String DELETE_FILE_URL         = "%s/file/delete?";
 
+    private final static String GET_PROJECT_LOCALES_API_URL = "%s/project/locale/list?";
+
     private String baseApiUrl;
     private String apiKey;
     private String projectId;
@@ -118,30 +127,30 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
     private ProxyConfiguration proxyConfiguration;
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl} using the production mode setting (non sandbox).
+     * Instantiate a {@link ApiClientAdapterImpl} using the production mode setting (non sandbox).
      *
      * @param apiKey    your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    public FileApiClientAdapterImpl(String apiKey, String projectId)
+    public ApiClientAdapterImpl(String apiKey, String projectId)
     {
         this(SMARTLING_API_URL, apiKey, projectId);
     }
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl} using the production mode setting (non sandbox).
+     * Instantiate a {@link ApiClientAdapterImpl} using the production mode setting (non sandbox).
      *
      * @param apiKey             your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    public FileApiClientAdapterImpl(String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    public ApiClientAdapterImpl(String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
     {
         this(SMARTLING_API_URL, apiKey, projectId, proxyConfiguration);
     }
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl}.
+     * Instantiate a {@link ApiClientAdapterImpl}.
      *
      * @param productionMode True if the production version of the api should be used, false if the Sandbox should be used.
      *                       It is recommended when first integrating your application with the API, that you use the Sandbox and not the production version.
@@ -149,13 +158,13 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
      * @param apiKey         your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId      your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    public FileApiClientAdapterImpl(boolean productionMode, String apiKey, String projectId)
+    public ApiClientAdapterImpl(boolean productionMode, String apiKey, String projectId)
     {
         this(productionMode ? SMARTLING_API_URL : SMARTLING_SANDBOX_API_URL, apiKey, projectId);
     }
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl}.
+     * Instantiate a {@link ApiClientAdapterImpl}.
      *
      * @param productionMode     True if the production version of the api should be used, false if the Sandbox should be used.
      *                           It is recommended when first integrating your application with the API, that you use the Sandbox and not the production version.
@@ -164,32 +173,32 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    public FileApiClientAdapterImpl(boolean productionMode, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    public ApiClientAdapterImpl(boolean productionMode, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
     {
         this(productionMode ? SMARTLING_API_URL : SMARTLING_SANDBOX_API_URL, apiKey, projectId, proxyConfiguration);
     }
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl}.
+     * Instantiate a {@link ApiClientAdapterImpl}.
      *
      * @param baseApiUrl the apiUrl to use for interacting with the Smartling Translation API.
      * @param apiKey     your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId  your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    public FileApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId)
+    public ApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId)
     {
         this(baseApiUrl, apiKey, projectId, null);
     }
 
     /**
-     * Instantiate a {@link FileApiClientAdapterImpl}.
+     * Instantiate a {@link ApiClientAdapterImpl}.
      *
      * @param baseApiUrl         the apiUrl to use for interacting with the Smartling Translation API.
      * @param apiKey             your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    public FileApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    public ApiClientAdapterImpl(String baseApiUrl, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
     {
         Assert.notNull(baseApiUrl, "Api url is required");
         Assert.notNull(apiKey, "apiKey is required");
@@ -229,10 +238,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return stringResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Get file: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Get file: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
@@ -253,10 +262,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Get files list: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Get files list: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
@@ -276,15 +285,15 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Get file status: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Get file status: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
     @Override
-    public ApiResponse<UploadData> uploadFile(final File fileToUpload, final String fileEncoding,
+    public ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
                                               final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws FileApiException
     {
@@ -298,15 +307,15 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         try
         {
             StringResponse response = executeHttpCall(httpPostFile);
-            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadData>>() {});
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
             logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Upload file: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Upload file: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
@@ -328,10 +337,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Delete file: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Delete file: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
@@ -352,10 +361,10 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Rename file: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Rename file: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
 
@@ -380,12 +389,39 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
 
             return apiResponse;
         }
-        catch (FileApiException fapiException)
+        catch (ApiException apiException)
         {
-            logger.error(String.format("Get last modified: %s.", GENERAL_ERROR_CODE), fapiException);
-            throw fapiException;
+            logger.error(String.format("Get last modified: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new FileApiException(apiException);
         }
     }
+
+    @Override
+    public ApiResponse<ProjectLocaleList> getProjectLocales() throws ProjectApiException
+    {
+        logger.debug(String.format("Get project locales: projectId = %s, apiKey = %s",
+                this.projectId, maskApiKey(this.apiKey)
+        )
+        );
+
+        String params = buildParamsQuery();
+        HttpGet getRequest = new HttpGet(buildUrl(GET_PROJECT_LOCALES_API_URL, params));
+
+        try
+        {
+            StringResponse response = executeHttpCall(getRequest);
+            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
+            logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+            return apiResponse;
+        }
+        catch (ApiException apiException)
+        {
+            logger.error(String.format("Get project locales: %s.", GENERAL_ERROR_CODE), apiException);
+            throw new ProjectApiException(apiException);
+        }
+    }
+
 
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
@@ -406,7 +442,7 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
         return urlWithParameters.toString();
     }
 
-    private StringResponse executeHttpCall(HttpRequestBase httpRequest) throws FileApiException
+    private StringResponse executeHttpCall(HttpRequestBase httpRequest) throws ApiException
     {
         HttpClient httpClient = null;
         try
@@ -418,11 +454,11 @@ public class FileApiClientAdapterImpl implements FileApiClientAdapter
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
                 return inputStreamToString(response.getEntity().getContent(), null);
 
-            throw new FileApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
+            throw new ApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
         }
         catch (IOException e)
         {
-            throw new FileApiException(e);
+            throw new ApiException(e);
         }
         finally
         {

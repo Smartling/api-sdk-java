@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk;
 
+import com.smartling.api.sdk.dto.project.ProjectLocaleList;
+import com.smartling.api.sdk.exceptions.FileApiException;
+import com.smartling.api.sdk.exceptions.ProjectApiException;
+import com.smartling.api.sdk.file.FileListSearchParams;
+import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileLastModified;
-import com.smartling.api.sdk.file.response.FileList;
-import com.smartling.api.sdk.file.response.FileStatus;
-import com.smartling.api.sdk.file.response.StringResponse;
-import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.EmptyResponse;
+import com.smartling.api.sdk.dto.file.FileLastModified;
+import com.smartling.api.sdk.dto.file.FileList;
+import com.smartling.api.sdk.dto.file.FileStatus;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
+
 import java.io.File;
 import java.util.Date;
 
 /**
  * Main communication point for interacting with the Smartling Translation API.
  */
-public interface FileApiClientAdapter
+public interface ApiClientAdapter
 {
     /**
      * Uploads a file for translation to the Smartling Translation API.
@@ -39,9 +45,9 @@ public interface FileApiClientAdapter
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @param fileUploadParameterBuilder  parameters
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws com.smartling.api.sdk.exceptions.FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<UploadData> uploadFile(final File fileToUpload, final String fileEncoding,
+    ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
                                        final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws FileApiException;
 
@@ -114,4 +120,12 @@ public interface FileApiClientAdapter
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException;
+
+    /**
+     * Returns list with all project locales
+     *
+     * @return {@link ApiResponse} from a success response from the Project API.
+     * @throws com.smartling.api.sdk.exceptions.ProjectApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     */
+    ApiResponse<ProjectLocaleList> getProjectLocales() throws ProjectApiException;
 }

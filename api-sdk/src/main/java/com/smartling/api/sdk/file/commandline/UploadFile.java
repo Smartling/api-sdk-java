@@ -15,14 +15,15 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
-import com.smartling.api.sdk.file.FileApiClientAdapter;
-import com.smartling.api.sdk.file.FileApiClientAdapterImpl;
-import com.smartling.api.sdk.file.FileApiException;
+import com.smartling.api.sdk.ApiClientAdapterImpl;
+import com.smartling.api.sdk.ApiClientAdapter;
+import com.smartling.api.sdk.exceptions.FileApiException;
 import com.smartling.api.sdk.file.FileType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
 import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
@@ -57,12 +58,12 @@ public class UploadFile
         upload(args);
     }
 
-    protected static ApiResponse<UploadData> upload(String[] args) throws FileApiException
+    protected static ApiResponse<UploadFileData> upload(String[] args) throws FileApiException
     {
         UploadFileParams uploadParams = getParameters(args);
 
         File file = new File(uploadParams.getPathToFile());
-        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
+        ApiClientAdapter smartlingFAPI = new ApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
 
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
         fileUploadParameterBuilder
@@ -71,8 +72,8 @@ public class UploadFile
                 .approveContent(uploadParams.getApproveContent())
                 .callbackUrl(uploadParams.getCallbackUrl());
 
-        ApiResponse<UploadData> uploadResponse = smartlingFAPI.uploadFile(file,
-                FileApiClientAdapterImpl.DEFAULT_ENCODING, fileUploadParameterBuilder
+        ApiResponse<UploadFileData> uploadResponse = smartlingFAPI.uploadFile(file,
+                ApiClientAdapterImpl.DEFAULT_ENCODING, fileUploadParameterBuilder
         );
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));

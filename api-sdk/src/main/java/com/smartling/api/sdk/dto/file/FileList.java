@@ -13,34 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.response;
+package com.smartling.api.sdk.dto.file;
 
 import java.util.List;
+
+import com.smartling.api.sdk.dto.Data;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Contains information about when a file was last modified
+ * The data expected back in the response to a FileList query of the Smartling Translation API.
  */
-public class FileLastModified implements Data
+public class FileList implements Data
 {
-    private List<FileLocaleLastModified> items;
+    private int              fileCount;
+    private List<FileStatus> fileList;
 
     /**
-     * Get information about when a file was last modified for a particular locale
+     * Gets the number of files that match the query.
      *
-     * @return list of {@link FileLocaleLastModified} entries
+     * @return fileCount that matches the query.
      */
-    public List<FileLocaleLastModified> getItems()
+    public int getFileCount()
     {
-        return items;
+        return fileCount;
+    }
+
+    /**
+     * Get the listing of files that match the query.
+     *
+     * @return {@link List} of {@link FileStatus}'s.
+     */
+    public List<FileStatus> getFileList()
+    {
+        return fileList;
     }
 
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("items", getItems())
-                .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("fileCount", getFileCount()).append("fileList", getFileList()).toString();
     }
 }

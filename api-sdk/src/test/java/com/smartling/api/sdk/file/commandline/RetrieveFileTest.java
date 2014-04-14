@@ -17,10 +17,11 @@ package com.smartling.api.sdk.file.commandline;
 
 import static junit.framework.Assert.assertNotNull;
 
-import com.smartling.api.sdk.file.FileApiException;
+import com.smartling.api.sdk.exceptions.FileApiException;
 import java.io.File;
 
-import com.smartling.api.sdk.file.FileApiTestHelper;
+import com.smartling.api.sdk.ApiTestHelper;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +47,11 @@ public class RetrieveFileTest
     private List<String> buildFileRetrieveArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(String.valueOf(FileApiTestHelper.getTestMode()));
-        args.add(FileApiTestHelper.getApiKey());
-        args.add(FileApiTestHelper.getProjectId());
-        args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
-        args.add(FileApiTestHelper.getLocale());
+        args.add(String.valueOf(ApiTestHelper.getTestMode()));
+        args.add(ApiTestHelper.getApiKey());
+        args.add(ApiTestHelper.getProjectId());
+        args.add(ApiTestHelper.getTestFile().getAbsolutePath());
+        args.add(ApiTestHelper.getLocale());
         args.add("bin/");
 
         return args;

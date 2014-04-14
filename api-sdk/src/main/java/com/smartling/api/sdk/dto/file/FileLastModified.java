@@ -13,33 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.response;
+package com.smartling.api.sdk.dto.file;
 
+import java.util.List;
+
+import com.smartling.api.sdk.dto.Data;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Simple class for wrapping the {@link ApiResponse}.
- *
- * @param <T> The type of data expected back in the response.
+ * Contains information about when a file was last modified
  */
-public class ApiResponseWrapper<T extends Data>
+public class FileLastModified implements Data
 {
-    private ApiResponse<T> response;
+    private List<FileLocaleLastModified> items;
 
     /**
-     * Retrieve the response.
+     * Get information about when a file was last modified for a particular locale
      *
-     * @return the response.
+     * @return list of {@link FileLocaleLastModified} entries
      */
-    public ApiResponse<T> getResponse()
+    public List<FileLocaleLastModified> getItems()
     {
-        return response;
+        return items;
     }
 
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("response", getResponse()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("items", getItems())
+                .toString();
     }
 }
