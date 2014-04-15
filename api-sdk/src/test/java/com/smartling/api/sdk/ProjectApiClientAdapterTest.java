@@ -33,7 +33,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class ProjectApiClientAdapterTest
 {
-    private ApiClientAdapter apiClientAdapter;
+    private ProjectApiClientAdapter projectApiClientAdapter;
 
     @Before
     public void setup()
@@ -42,13 +42,13 @@ public class ProjectApiClientAdapterTest
         String apiKey = ApiTestHelper.getApiKey();
         String projectId = ApiTestHelper.getProjectId();
 
-        apiClientAdapter = new ApiClientAdapterImpl(testMode, apiKey, projectId);
+        projectApiClientAdapter = new ProjectApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
     @Test
     public void testProjectActions() throws ProjectApiException, IOException
     {
-        ApiResponse<ProjectLocaleList> projectLocaleListResponse = apiClientAdapter.getProjectLocales();
+        ApiResponse<ProjectLocaleList> projectLocaleListResponse = projectApiClientAdapter.getProjectLocales();
         ApiTestHelper.verifyApiResponse(projectLocaleListResponse);
 
         Assert.assertNotNull(projectLocaleListResponse.getData());
@@ -57,7 +57,7 @@ public class ProjectApiClientAdapterTest
         Assert.assertNotNull(projectLocales);
         Assert.assertTrue(projectLocales.size() >= 1);
 
-        for (ProjectLocale locale: projectLocales)
+        for (ProjectLocale locale : projectLocales)
         {
             Assert.assertTrue("Locale is blank", StringUtils.isNotBlank(locale.getLocale()));
             Assert.assertTrue("Locale name is blank", StringUtils.isNotBlank(locale.getName()));

@@ -15,8 +15,8 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
-import com.smartling.api.sdk.ApiClientAdapterImpl;
-import com.smartling.api.sdk.ApiClientAdapter;
+import com.smartling.api.sdk.FileApiClientAdapterImpl;
+import com.smartling.api.sdk.FileApiClientAdapter;
 import com.smartling.api.sdk.exceptions.FileApiException;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import java.io.File;
@@ -65,7 +65,7 @@ public class RetrieveFile
         RetrieveFileParams retrieveFileParams = getParameters(args);
 
         File file = new File(retrieveFileParams.getPathToFile());
-        ApiClientAdapter smartlingFAPI = new ApiClientAdapterImpl(retrieveFileParams.isProductionMode(), retrieveFileParams.getApiKey(), retrieveFileParams.getProjectId());
+        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(retrieveFileParams.isProductionMode(), retrieveFileParams.getApiKey(), retrieveFileParams.getProjectId());
         StringResponse response = smartlingFAPI.getFile(file.getName(), retrieveFileParams.getLocale(), null);
 
         File translatedFile = new File(getTranslatedFilePath(file, retrieveFileParams.getLocale(), retrieveFileParams.getPathToStoreFile()));

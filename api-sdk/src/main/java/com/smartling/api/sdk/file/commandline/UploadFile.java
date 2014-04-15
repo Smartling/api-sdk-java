@@ -15,8 +15,9 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
-import com.smartling.api.sdk.ApiClientAdapterImpl;
-import com.smartling.api.sdk.ApiClientAdapter;
+import com.smartling.api.sdk.FileApiClientAdapterImpl;
+import com.smartling.api.sdk.FileApiClientAdapter;
+import com.smartling.api.sdk.commons.Encoding;
 import com.smartling.api.sdk.exceptions.FileApiException;
 import com.smartling.api.sdk.file.FileType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
@@ -63,7 +64,7 @@ public class UploadFile
         UploadFileParams uploadParams = getParameters(args);
 
         File file = new File(uploadParams.getPathToFile());
-        ApiClientAdapter smartlingFAPI = new ApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
+        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(uploadParams.isProductionMode(), uploadParams.getApiKey(), uploadParams.getProjectId());
 
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
         fileUploadParameterBuilder
@@ -73,7 +74,7 @@ public class UploadFile
                 .callbackUrl(uploadParams.getCallbackUrl());
 
         ApiResponse<UploadFileData> uploadResponse = smartlingFAPI.uploadFile(file,
-                ApiClientAdapterImpl.DEFAULT_ENCODING, fileUploadParameterBuilder
+                Encoding.DEFAULT_ENCODING, fileUploadParameterBuilder
         );
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));

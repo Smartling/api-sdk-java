@@ -16,7 +16,7 @@
 package com.smartling.api.sdk.exceptions;
 
 /**
- * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.ApiClientAdapter}.
+ * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.FileApiClientAdapter}.
  */
 public class ApiException extends Exception
 {

@@ -15,9 +15,7 @@
  */
 package com.smartling.api.sdk;
 
-import com.smartling.api.sdk.dto.project.ProjectLocaleList;
 import com.smartling.api.sdk.exceptions.FileApiException;
-import com.smartling.api.sdk.exceptions.ProjectApiException;
 import com.smartling.api.sdk.file.FileListSearchParams;
 import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
@@ -34,9 +32,9 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * Main communication point for interacting with the Smartling Translation API.
+ * Communication point for interacting files with the Smartling Translation API.
  */
-public interface ApiClientAdapter
+public interface FileApiClientAdapter
 {
     /**
      * Uploads a file for translation to the Smartling Translation API.
@@ -45,7 +43,7 @@ public interface ApiClientAdapter
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @param fileUploadParameterBuilder  parameters
      * @return ApiResponse from a success response from the File API.
-     * @throws com.smartling.api.sdk.exceptions.FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
                                        final FileUploadParameterBuilder fileUploadParameterBuilder)
@@ -120,12 +118,4 @@ public interface ApiClientAdapter
      * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
     ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException;
-
-    /**
-     * Returns list with all project locales
-     *
-     * @return {@link ApiResponse} from a success response from the Project API.
-     * @throws com.smartling.api.sdk.exceptions.ProjectApiException if an exception has occurred or non success is returned from the Smartling Translation API.
-     */
-    ApiResponse<ProjectLocaleList> getProjectLocales() throws ProjectApiException;
 }

@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.exceptions;
+package com.smartling.api.sdk.commons;
 
-/**
- * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.FileApiClientAdapter}.
- */
-public class FileApiException extends ApiException
+public class Encoding
 {
-    public FileApiException(String message)
-    {
-        super(message);
-    }
-
-    public FileApiException(Exception e)
-    {
-        super(e);
-    }
+    public static final String UTF_16 = "UTF-16";
+    public static final String DEFAULT_ENCODING = "UTF-8";
 }

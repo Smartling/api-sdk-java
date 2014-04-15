@@ -48,7 +48,7 @@ public class FileApiClientAdapterTest
     private static final String  TEST_FILE_ENCODING = "UTF-8";
     private static final String  CALLBACK_URL       = "http://site.com/callback";
 
-    private ApiClientAdapter apiClientAdapter;
+    private FileApiClientAdapter fileApiClientAdapter;
 
     private String locale;
 
@@ -60,13 +60,13 @@ public class FileApiClientAdapterTest
         String projectId = ApiTestHelper.getProjectId();
         locale = ApiTestHelper.getLocale();
 
-        apiClientAdapter = new ApiClientAdapterImpl(testMode, apiKey, projectId);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidConstructor()
     {
-        apiClientAdapter = new ApiClientAdapterImpl(null, null);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(null, null);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class FileApiClientAdapterTest
                 .approveContent(APPROVE_CONTENT)
                 .callbackUrl(CALLBACK_URL);
 
-        ApiResponse<UploadFileData> uploadFileResponse = apiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
+        ApiResponse<UploadFileData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
                 fileUploadParameterBuilder
         );
         ApiTestHelper.verifyApiResponse(uploadFileResponse);
@@ -105,19 +105,19 @@ public class FileApiClientAdapterTest
                 .overwriteApprovedLocales(null)
                 .directives(smartlingDirectives);
 
-        ApiResponse<UploadFileData> uploadFileResponse2 = apiClientAdapter.uploadFile(fileForUpload2,
+        ApiResponse<UploadFileData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
                 TEST_FILE_ENCODING, fileUploadParameterBuilderExtended
         );
 
         ApiTestHelper.verifyApiResponse(uploadFileResponse2);
 
         // /file/last_modified
-        ApiResponse<FileLastModified> lastModifiedResponse = apiClientAdapter.getLastModified(originalFileUri, null, locale);
+        ApiResponse<FileLastModified> lastModifiedResponse = fileApiClientAdapter.getLastModified(originalFileUri, null, locale);
         ApiTestHelper.verifyApiResponse(lastModifiedResponse);
         verifyFileLastModified(lastModifiedResponse.getData());
 
         // /file/get
-        StringResponse fileContents = apiClientAdapter.getFile(originalFileUri, null, null);
+        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/get
@@ -126,27 +126,27 @@ public class FileApiClientAdapterTest
                 .locale(null)
                 .retrievalType(null)
                 .includeOriginalStrings(null);
-        fileContents = apiClientAdapter.getFile(getFileParameterBuilder);
+        fileContents = fileApiClientAdapter.getFile(getFileParameterBuilder);
         assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
 
         // /file/rename
         String fileUri = createFileUri();
-        ApiResponse<EmptyResponse> renameFileResponse = apiClientAdapter.renameFile(originalFileUri, fileUri);
+        ApiResponse<EmptyResponse> renameFileResponse = fileApiClientAdapter.renameFile(originalFileUri, fileUri);
         ApiTestHelper.verifyApiResponse(renameFileResponse);
 
         // /file/list
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        ApiResponse<FileList> fileListResponse = apiClientAdapter.getFilesList(fileListSearchParams);
+        ApiResponse<FileList> fileListResponse = fileApiClientAdapter.getFilesList(fileListSearchParams);
         ApiTestHelper.verifyApiResponse(fileListResponse);
         verifyFileListHasFileUri(fileUri, CALLBACK_URL, fileListResponse.getData().getFileList());
 
         // /file/status
-        ApiResponse<FileStatus> fileStatusResponse = apiClientAdapter.getFileStatus(fileUri, locale);
+        ApiResponse<FileStatus> fileStatusResponse = fileApiClientAdapter.getFileStatus(fileUri, locale);
         ApiTestHelper.verifyApiResponse(fileStatusResponse);
         verifyFileStatus(fileUri, CALLBACK_URL, fileStatusResponse.getData());
 
         // file/delete
-        ApiResponse<EmptyResponse> deleteFileResponse = apiClientAdapter.deleteFile(fileUri);
+        ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
         ApiTestHelper.verifyApiResponse(deleteFileResponse);
     }
 
