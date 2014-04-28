@@ -18,18 +18,14 @@ package com.smartling.api.sdk;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.project.ProjectLocale;
 import com.smartling.api.sdk.dto.project.ProjectLocaleList;
-import com.smartling.api.sdk.exceptions.ProjectApiException;
-import org.apache.commons.lang.StringUtils;
+import com.smartling.api.sdk.exceptions.ApiException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
 public class ProjectApiClientAdapterTest
 {
@@ -46,7 +42,7 @@ public class ProjectApiClientAdapterTest
     }
 
     @Test
-    public void testProjectActions() throws ProjectApiException, IOException
+    public void testProjectActions() throws ApiException, IOException
     {
         ApiResponse<ProjectLocaleList> projectLocaleListResponse = projectApiClientAdapter.getProjectLocales();
         ApiTestHelper.verifyApiResponse(projectLocaleListResponse);

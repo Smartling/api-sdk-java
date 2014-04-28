@@ -19,7 +19,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-import com.smartling.api.sdk.exceptions.FileApiException;
+import com.smartling.api.sdk.exceptions.ApiException;
 import com.smartling.api.sdk.file.FileListSearchParams;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
@@ -63,14 +63,14 @@ public class FileApiClientAdapterTest
         fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testInvalidConstructor()
     {
         fileApiClientAdapter = new FileApiClientAdapterImpl(null, null);
     }
 
     @Test
-    public void testFileActions() throws FileApiException, IOException
+    public void testFileActions() throws ApiException, IOException
     {
         // /file/upload
         String originalFileUri = createFileUri();
@@ -148,6 +148,21 @@ public class FileApiClientAdapterTest
         // file/delete
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
         ApiTestHelper.verifyApiResponse(deleteFileResponse);
+    }
+
+    @Test(expected = ApiException.class)
+    public void testUploadWithoutFileUri() throws ApiException
+    {
+        File fileForUpload = ApiTestHelper.getTestFile();
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        fileUploadParameterBuilder
+                .fileType(ApiTestHelper.getTestFileType())
+                .approveContent(APPROVE_CONTENT)
+                .callbackUrl(CALLBACK_URL);
+        fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
+                fileUploadParameterBuilder
+        );
+
     }
 
     private void verifyFileListHasFileUri(String fileUri, String callbackUrl, List<FileStatus> fileList)

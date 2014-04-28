@@ -17,7 +17,7 @@ package com.smartling.api.sdk;
 
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.project.ProjectLocaleList;
-import com.smartling.api.sdk.exceptions.ProjectApiException;
+import com.smartling.api.sdk.exceptions.ApiException;
 
 /**
  * Communication point for interacting projects with the Smartling Translation API.
@@ -28,7 +28,7 @@ public interface ProjectApiClientAdapter
      * Returns list with all project locales
      *
      * @return {@link com.smartling.api.sdk.dto.ApiResponse} from a success response from the Project API.
-     * @throws ProjectApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<ProjectLocaleList> getProjectLocales() throws ProjectApiException;
+    ApiResponse<ProjectLocaleList> getProjectLocales() throws ApiException;
 }

@@ -17,17 +17,17 @@ package com.smartling.api.sdk.file.commandline;
 
 import com.smartling.api.sdk.FileApiClientAdapterImpl;
 import com.smartling.api.sdk.FileApiClientAdapter;
-import com.smartling.api.sdk.commons.Encoding;
-import com.smartling.api.sdk.exceptions.FileApiException;
+import com.smartling.api.sdk.exceptions.ApiException;
 import com.smartling.api.sdk.file.FileType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import java.io.File;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.Assert;
 
 /**
  * Provides command line access for uploading a file from the Smartling Translation API.
@@ -52,14 +52,14 @@ public class UploadFile
      * Optional arguments:
      * 1) callback url. Can be null.
      * </pre>
-     * @throws FileApiException if an exception occurs in the course of uploading the specified file.
+     * @throws ApiException if an exception occurs in the course of uploading the specified file.
      */
-    public static void main(String[] args) throws FileApiException
+    public static void main(String[] args) throws ApiException
     {
         upload(args);
     }
 
-    protected static ApiResponse<UploadFileData> upload(String[] args) throws FileApiException
+    protected static ApiResponse<UploadFileData> upload(String[] args) throws ApiException
     {
         UploadFileParams uploadParams = getParameters(args);
 
@@ -74,7 +74,7 @@ public class UploadFile
                 .callbackUrl(uploadParams.getCallbackUrl());
 
         ApiResponse<UploadFileData> uploadResponse = smartlingFAPI.uploadFile(file,
-                Encoding.DEFAULT_ENCODING, fileUploadParameterBuilder
+                CharEncoding.UTF_8, fileUploadParameterBuilder
         );
 
         logger.info(String.format(RESULT, file.getName(), uploadResponse));
@@ -83,7 +83,7 @@ public class UploadFile
 
     private static UploadFileParams getParameters(String[] args)
     {
-        Assert.isTrue(args.length >= 6, "Invalid number of arguments");
+        Validate.isTrue(args.length >= 6, "Invalid number of arguments");
         UploadFileParams uploadParams = new UploadFileParams();
         uploadParams.setProductionMode(Boolean.valueOf(args[0]));
         uploadParams.setApiKey(args[1]);

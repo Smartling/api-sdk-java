@@ -16,8 +16,8 @@
 package com.smartling.api.sdk.dto;
 
 import java.util.List;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Base response class returned from the Smartling Translation API.

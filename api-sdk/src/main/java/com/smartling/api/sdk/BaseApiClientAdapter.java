@@ -18,17 +18,16 @@ package com.smartling.api.sdk;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.smartling.api.sdk.commons.Encoding;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
 import com.smartling.api.sdk.util.DateTypeAdapter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +49,6 @@ public abstract class BaseApiClientAdapter
     private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
 
     protected static final String SUCCESS_CODE       = "SUCCESS";
-    protected static final String GENERAL_ERROR_CODE = "GENERAL_ERROR";
 
     protected String baseApiUrl;
     protected String apiKey;
@@ -124,9 +122,9 @@ public abstract class BaseApiClientAdapter
      */
     protected BaseApiClientAdapter(String baseApiUrl, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
     {
-        Assert.notNull(baseApiUrl, "Api url is required");
-        Assert.notNull(apiKey, "apiKey is required");
-        Assert.notNull(projectId, "projectId is required");
+        Validate.notNull(baseApiUrl, "Api url is required");
+        Validate.notNull(apiKey, "apiKey is required");
+        Validate.notNull(projectId, "projectId is required");
 
         this.baseApiUrl = baseApiUrl;
         this.apiKey = apiKey;
@@ -150,7 +148,7 @@ public abstract class BaseApiClientAdapter
             if (nameValuePair.getValue() != null)
                 qparams.add(nameValuePair);
 
-        return URLEncodedUtils.format(qparams, Encoding.DEFAULT_ENCODING);
+        return URLEncodedUtils.format(qparams, CharEncoding.UTF_8);
     }
 
     protected List<NameValuePair> getRequiredParams()
@@ -169,7 +167,7 @@ public abstract class BaseApiClientAdapter
 
     protected List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)
     {
-        if (CollectionUtils.isEmpty(values))
+        if (null == values || values.isEmpty())
             return Collections.emptyList();
 
         List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();

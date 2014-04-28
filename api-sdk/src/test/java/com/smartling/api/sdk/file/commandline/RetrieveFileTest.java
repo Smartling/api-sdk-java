@@ -17,7 +17,7 @@ package com.smartling.api.sdk.file.commandline;
 
 import static junit.framework.Assert.assertNotNull;
 
-import com.smartling.api.sdk.exceptions.FileApiException;
+import com.smartling.api.sdk.exceptions.ApiException;
 import java.io.File;
 
 import com.smartling.api.sdk.ApiTestHelper;
@@ -30,7 +30,7 @@ import org.junit.Test;
 public class RetrieveFileTest
 {
     @Test
-    public void testRetrieveFile() throws FileApiException, IOException
+    public void testRetrieveFile() throws ApiException, IOException
     {
         List<String> argList = buildFileRetrieveArgs();
         String[] args = new String[] {};
@@ -39,7 +39,7 @@ public class RetrieveFileTest
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidNumberOfArguments() throws FileApiException, IOException
+    public void testInvalidNumberOfArguments() throws ApiException, IOException
     {
         RetrieveFile.retrieve(new String[]{});
     }

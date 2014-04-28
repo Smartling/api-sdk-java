@@ -16,11 +16,13 @@
 package com.smartling.api.sdk.util;
 
 import com.smartling.api.sdk.ProxyConfiguration;
-import com.smartling.api.sdk.commons.Encoding;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.ApiException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -40,6 +42,10 @@ import java.io.StringWriter;
  */
 public class HttpUtils
 {
+    private static final Log logger = LogFactory.getLog(HttpUtils.class);
+
+    private static final String LOG_MESSAGE_ERROR_TEMPLATE = "GENERAL ERROR: %s";
+
     private HttpUtils()
     {
     }
@@ -67,9 +73,10 @@ public class HttpUtils
 
             throw new ApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
         }
-        catch (IOException e)
+        catch (IOException ioe)
         {
-            throw new ApiException(e);
+            logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
+            throw new ApiException(ioe);
         }
         finally
         {
@@ -78,20 +85,13 @@ public class HttpUtils
         }
     }
 
-    private static StringResponse inputStreamToString(InputStream inputStream, String encoding) throws ApiException
+    private static StringResponse inputStreamToString(InputStream inputStream, String encoding) throws IOException
     {
         StringWriter writer = new StringWriter();
-        try
-        {
-            // unless UTF-16 explicitly specified, use default UTF-8 encoding.
-            String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(Encoding.UTF_16) ? Encoding.DEFAULT_ENCODING : Encoding.UTF_16);
-            IOUtils.copy(inputStream, writer, responseEncoding);
-            return new StringResponse(writer.toString(), responseEncoding);
-        }
-        catch (IOException e)
-        {
-            throw new ApiException(e);
-        }
+        // unless UTF-16 explicitly specified, use default UTF-8 encoding.
+        String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(CharEncoding.UTF_16) ? CharEncoding.UTF_8 : CharEncoding.UTF_16);
+        IOUtils.copy(inputStream, writer, responseEncoding);
+        return new StringResponse(writer.toString(), responseEncoding);
     }
 
     private static class ProxyUtils

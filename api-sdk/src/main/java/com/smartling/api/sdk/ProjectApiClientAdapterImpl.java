@@ -21,7 +21,6 @@ import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.project.ProjectLocaleList;
 import com.smartling.api.sdk.exceptions.ApiException;
-import com.smartling.api.sdk.exceptions.ProjectApiException;
 import com.smartling.api.sdk.util.HttpUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +66,7 @@ public class ProjectApiClientAdapterImpl extends BaseApiClientAdapter implements
     }
 
     @Override
-    public ApiResponse<ProjectLocaleList> getProjectLocales() throws ProjectApiException
+    public ApiResponse<ProjectLocaleList> getProjectLocales() throws ApiException
     {
         logger.debug(String.format("Get project locales: projectId = %s, apiKey = %s",
                 this.projectId, maskApiKey(this.apiKey)
@@ -77,18 +76,10 @@ public class ProjectApiClientAdapterImpl extends BaseApiClientAdapter implements
         String params = buildParamsQuery();
         HttpGet getRequest = new HttpGet(buildUrl(GET_PROJECT_LOCALES_API_URL, params));
 
-        try
-        {
-            StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
-            ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
-            logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+        StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
+        logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
-            return apiResponse;
-        }
-        catch (ApiException apiException)
-        {
-            logger.error(String.format("Get project locales: %s.", GENERAL_ERROR_CODE), apiException);
-            throw new ProjectApiException(apiException);
-        }
+        return apiResponse;
     }
 }

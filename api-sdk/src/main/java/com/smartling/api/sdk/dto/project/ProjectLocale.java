@@ -15,10 +15,12 @@
  */
 package com.smartling.api.sdk.dto.project;
 
+import com.smartling.api.sdk.dto.Data;
+
 /**
  * Contains information about project locale
  */
-public class ProjectLocale
+public class ProjectLocale implements Data
 {
     private String locale;
     private String name;
