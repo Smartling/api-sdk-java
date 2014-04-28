@@ -63,7 +63,7 @@ public class FileApiClientAdapterTest
         fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidConstructor()
     {
         fileApiClientAdapter = new FileApiClientAdapterImpl(null, null);

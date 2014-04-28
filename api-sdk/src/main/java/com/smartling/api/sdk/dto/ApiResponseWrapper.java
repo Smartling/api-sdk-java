@@ -15,8 +15,8 @@
  */
 package com.smartling.api.sdk.dto;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Simple class for wrapping the {@link ApiResponse}.

@@ -19,7 +19,7 @@ import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.project.ProjectLocale;
 import com.smartling.api.sdk.dto.project.ProjectLocaleList;
 import com.smartling.api.sdk.exceptions.ApiException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
