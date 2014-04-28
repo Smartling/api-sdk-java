@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk;
 
+import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.file.FileListSearchParams;
+import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileLastModified;
-import com.smartling.api.sdk.file.response.FileList;
-import com.smartling.api.sdk.file.response.FileStatus;
-import com.smartling.api.sdk.file.response.StringResponse;
-import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.EmptyResponse;
+import com.smartling.api.sdk.dto.file.FileLastModified;
+import com.smartling.api.sdk.dto.file.FileList;
+import com.smartling.api.sdk.dto.file.FileStatus;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
+
 import java.io.File;
 import java.util.Date;
 
 /**
- * Main communication point for interacting with the Smartling Translation API.
+ * Communication point for interacting files with the Smartling Translation API.
  */
 public interface FileApiClientAdapter
 {
@@ -39,11 +43,11 @@ public interface FileApiClientAdapter
      * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
      * @param fileUploadParameterBuilder  parameters
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<UploadData> uploadFile(final File fileToUpload, final String fileEncoding,
+    ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
                                        final FileUploadParameterBuilder fileUploadParameterBuilder)
-            throws FileApiException;
+            throws ApiException;
 
     /**
      * Get the translated (or original) file contents.
@@ -52,26 +56,26 @@ public interface FileApiClientAdapter
      * @param locale the locale to retrieve the translation for, or null to request the original file.
      * @param retrievalType flag indicating the type of file retrieval being requested. Can be null.
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws FileApiException;
+    StringResponse getFile(String fileUri, String locale, RetrievalType retrievalType) throws ApiException;
 
     /**
      * Get the translated (or original) file contents.
      * @param getFileParameterBuilder - params builder
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws FileApiException;
+    StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws ApiException;
 
     /**
      * Get the listing of translated files for the specified locale.
      *
      * @param fileListSearchParams the search parameters to use when querying for a list of files.
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws FileApiException;
+    ApiResponse<FileList> getFilesList(FileListSearchParams fileListSearchParams) throws ApiException;
 
     /**
      * Get the status of a file for the specified locale
@@ -79,18 +83,18 @@ public interface FileApiClientAdapter
      * @param fileUri the identifier of the file
      * @param locale the locale
      * @return ApiResponse from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws FileApiException;
+    ApiResponse<FileStatus> getFileStatus(String fileUri, String locale) throws ApiException;
 
     /**
      * Delete the specified file
      *
      * @param fileUri the identifier of the file
      * @return ApiResponse from a successful delete of from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<EmptyResponse> deleteFile(String fileUri) throws FileApiException;
+    ApiResponse<EmptyResponse> deleteFile(String fileUri) throws ApiException;
 
     /**
      * Rename the file with the specified fileUri to the newFileUri
@@ -98,9 +102,9 @@ public interface FileApiClientAdapter
      * @param fileUri current fileUri
      * @param newFileUri requested fileUri
      * @return {@link ApiResponse} for a successful deletion.
-     * @throws FileApiException if a non success is returned from the service.
+     * @throws ApiException if a non success is returned from the service.
      */
-    ApiResponse<EmptyResponse> renameFile(String fileUri, String newFileUri) throws FileApiException;
+    ApiResponse<EmptyResponse> renameFile(String fileUri, String newFileUri) throws ApiException;
 
     /**
      * Returns information about when a file was last modified for a particular locale, and allows you to filter by lastModified date and/or locale so that you can download only those files changed
@@ -111,7 +115,7 @@ public interface FileApiClientAdapter
      * array will be empty if the file has not been modified in any of the locales since the lastModifiedAfter date specified
      * @param locale an optional filter that will limit the locales checked to only the specified locale
      * @return {@link ApiResponse} from a success response from the File API.
-     * @throws FileApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws FileApiException;
+    ApiResponse<FileLastModified> getLastModified(String fileUri, Date lastModifiedAfter, String locale) throws ApiException;
 }

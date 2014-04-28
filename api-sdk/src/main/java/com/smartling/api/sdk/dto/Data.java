@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.response;
+package com.smartling.api.sdk.dto;
 
 /**
- * Internal class used in storing the string content of the response along with the encoding.
+ * Simple marker interface for indicating that a class represents the Data object expected as the return from the Smartling Translation API.
  */
-public class StringResponse
+public interface Data
 {
-    private final String contents;
-    private final String encoding;
-
-    public StringResponse(String contents, String encoding)
-    {
-        this.contents = contents;
-        this.encoding = encoding;
-    }
-
-    public String getContents()
-    {
-        return contents;
-    }
-
-    public String getEncoding()
-    {
-        return encoding;
-    }
 }

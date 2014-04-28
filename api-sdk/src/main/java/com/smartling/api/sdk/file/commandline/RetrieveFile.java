@@ -15,17 +15,17 @@
  */
 package com.smartling.api.sdk.file.commandline;
 
-import com.smartling.api.sdk.file.FileApiClientAdapter;
-import com.smartling.api.sdk.file.FileApiClientAdapterImpl;
-import com.smartling.api.sdk.file.FileApiException;
-import com.smartling.api.sdk.file.response.StringResponse;
+import com.smartling.api.sdk.FileApiClientAdapterImpl;
+import com.smartling.api.sdk.FileApiClientAdapter;
+import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.dto.file.StringResponse;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.Assert;
 
 /**
  * Provides command line access for retrieving a file from the Smartling Translation API.
@@ -51,16 +51,16 @@ public class RetrieveFile
      * 6) path to store the file.
      * <pre>
      * @throws IOException if an exception occurs in the course of downloading the specified file.
-     * @throws FileApiException if an exception occurs while writing translated contents into file
+     * @throws ApiException if an exception occurs while writing translated contents into file
      */
-    public static void main(String[] args) throws IOException, FileApiException
+    public static void main(String[] args) throws IOException, ApiException
     {
         File translatedFile = retrieve(args);
 
         logger.info(String.format(RESULT, translatedFile.getName()));
     }
 
-    protected static File retrieve(String[] args) throws FileApiException, IOException
+    protected static File retrieve(String[] args) throws ApiException, IOException
     {
         RetrieveFileParams retrieveFileParams = getParameters(args);
 
@@ -75,7 +75,7 @@ public class RetrieveFile
 
     private static RetrieveFileParams getParameters(String[] args)
     {
-        Assert.isTrue(args.length == 6, "Invalid number of arguments");
+        Validate.isTrue(args.length == 6, "Invalid number of arguments");
 
         RetrieveFileParams retrieveFileParams = new RetrieveFileParams();
         retrieveFileParams.setProductionMode(Boolean.valueOf(args[0]));

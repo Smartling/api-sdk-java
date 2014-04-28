@@ -13,43 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.response;
+package com.smartling.api.sdk.dto;
 
-import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * The data expected back in the response to a FileList query of the Smartling Translation API.
+ * Simple class for wrapping the {@link ApiResponse}.
+ *
+ * @param <T> The type of data expected back in the response.
  */
-public class FileList implements Data
+public class ApiResponseWrapper<T extends Data>
 {
-    private int              fileCount;
-    private List<FileStatus> fileList;
+    private ApiResponse<T> response;
 
     /**
-     * Gets the number of files that match the query.
+     * Retrieve the response.
      *
-     * @return fileCount that matches the query.
+     * @return the response.
      */
-    public int getFileCount()
+    public ApiResponse<T> getResponse()
     {
-        return fileCount;
-    }
-
-    /**
-     * Get the listing of files that match the query.
-     *
-     * @return {@link List} of {@link FileStatus}'s.
-     */
-    public List<FileStatus> getFileList()
-    {
-        return fileList;
+        return response;
     }
 
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("fileCount", getFileCount()).append("fileList", getFileList()).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("response", getResponse()).toString();
     }
 }

@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk;
 
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
 
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.Data;
+
 import java.io.File;
+
+import com.smartling.api.sdk.file.FileType;
 import junit.framework.Assert;
 import org.apache.commons.io.FilenameUtils;
 
-public class FileApiTestHelper
+public class ApiTestHelper
 {
     private static final String   SUCCESS            = "SUCCESS";
     private static final FileType TEST_FILE_TYPE     = FileType.JAVA_PROPERTIES;
@@ -60,7 +63,7 @@ public class FileApiTestHelper
 
     public static File getTestFile()
     {
-        return new File(FilenameUtils.separatorsToSystem(FileApiTestHelper.TEST_FILE_LOCATION));
+        return new File(FilenameUtils.separatorsToSystem(ApiTestHelper.TEST_FILE_LOCATION));
     }
 
     public static FileType getTestFileType()
@@ -68,13 +71,14 @@ public class FileApiTestHelper
         return TEST_FILE_TYPE;
     }
 
-    public static void validateSuccessUpload(ApiResponse<UploadData> uploadFileResponse)
-    {
-        assertTrue(uploadFileResponse.getCode(), uploadFileResponse.getCode().contains(SUCCESS));
-    }
-
     public static boolean getTestMode()
     {
         return System.getProperty("testMode") == null ? false : Boolean.valueOf(System.getProperty("testMode"));
+    }
+
+    public static void verifyApiResponse(ApiResponse<? extends Data> apiResponse)
+    {
+        assertEquals(SUCCESS, apiResponse.getCode());
+        assertEquals(0, apiResponse.getMessages().size());
     }
 }

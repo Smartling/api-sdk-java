@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
+import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.file.FileListSearchParams;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.file.response.Data;
-import com.smartling.api.sdk.file.response.FileLastModified;
+import com.smartling.api.sdk.dto.file.FileLastModified;
 import java.util.HashMap;
 import java.util.List;
 
-import com.smartling.api.sdk.file.response.ApiResponse;
-import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileList;
-import com.smartling.api.sdk.file.response.FileStatus;
-import com.smartling.api.sdk.file.response.StringResponse;
-import com.smartling.api.sdk.file.response.UploadData;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.EmptyResponse;
+import com.smartling.api.sdk.dto.file.FileList;
+import com.smartling.api.sdk.dto.file.FileStatus;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +47,6 @@ public class FileApiClientAdapterTest
     private static final String  SKD_FILE_URI       = "sdk-test-file-%s";
     private static final String  TEST_FILE_ENCODING = "UTF-8";
     private static final String  CALLBACK_URL       = "http://site.com/callback";
-    private static final String  SUCCESS            = "SUCCESS";
 
     private FileApiClientAdapter fileApiClientAdapter;
 
@@ -54,10 +55,10 @@ public class FileApiClientAdapterTest
     @Before
     public void setup()
     {
-        boolean testMode = FileApiTestHelper.getTestMode();
-        String apiKey = FileApiTestHelper.getApiKey();
-        String projectId = FileApiTestHelper.getProjectId();
-        locale = FileApiTestHelper.getLocale();
+        boolean testMode = ApiTestHelper.getTestMode();
+        String apiKey = ApiTestHelper.getApiKey();
+        String projectId = ApiTestHelper.getProjectId();
+        locale = ApiTestHelper.getLocale();
 
         fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
@@ -69,26 +70,26 @@ public class FileApiClientAdapterTest
     }
 
     @Test
-    public void testFileActions() throws FileApiException, IOException
+    public void testFileActions() throws ApiException, IOException
     {
         // /file/upload
         String originalFileUri = createFileUri();
-        File fileForUpload = FileApiTestHelper.getTestFile();
+        File fileForUpload = ApiTestHelper.getTestFile();
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
         fileUploadParameterBuilder
-                .fileType(FileApiTestHelper.getTestFileType())
+                .fileType(ApiTestHelper.getTestFileType())
                 .fileUri(originalFileUri)
                 .approveContent(APPROVE_CONTENT)
                 .callbackUrl(CALLBACK_URL);
 
-        ApiResponse<UploadData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
-                fileUploadParameterBuilder);
-        verifyApiResponse(uploadFileResponse);
-        FileApiTestHelper.validateSuccessUpload(uploadFileResponse);
+        ApiResponse<UploadFileData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
+                fileUploadParameterBuilder
+        );
+        ApiTestHelper.verifyApiResponse(uploadFileResponse);
 
         // /file/upload (with directives)
         String originalFileUri2 = createFileUri();
-        File fileForUpload2 = FileApiTestHelper.getTestFile();
+        File fileForUpload2 = ApiTestHelper.getTestFile();
 
         Map<String, String> smartlingDirectives = new HashMap<String, String>();
 
@@ -96,7 +97,7 @@ public class FileApiClientAdapterTest
         smartlingDirectives.put("smartling.instruction_attributes", "comment, note");
 
         FileUploadParameterBuilder fileUploadParameterBuilderExtended = new FileUploadParameterBuilder();
-        fileUploadParameterBuilderExtended.fileType(FileApiTestHelper.getTestFileType())
+        fileUploadParameterBuilderExtended.fileType(ApiTestHelper.getTestFileType())
                 .fileUri(originalFileUri2)
                 .approveContent(APPROVE_CONTENT)
                 .callbackUrl(CALLBACK_URL)
@@ -104,16 +105,15 @@ public class FileApiClientAdapterTest
                 .overwriteApprovedLocales(null)
                 .directives(smartlingDirectives);
 
-        ApiResponse<UploadData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
+        ApiResponse<UploadFileData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
                 TEST_FILE_ENCODING, fileUploadParameterBuilderExtended
         );
 
-        verifyApiResponse(uploadFileResponse2);
-        FileApiTestHelper.validateSuccessUpload(uploadFileResponse2);
+        ApiTestHelper.verifyApiResponse(uploadFileResponse2);
 
         // /file/last_modified
         ApiResponse<FileLastModified> lastModifiedResponse = fileApiClientAdapter.getLastModified(originalFileUri, null, locale);
-        verifyApiResponse(lastModifiedResponse);
+        ApiTestHelper.verifyApiResponse(lastModifiedResponse);
         verifyFileLastModified(lastModifiedResponse.getData());
 
         // /file/get
@@ -132,22 +132,37 @@ public class FileApiClientAdapterTest
         // /file/rename
         String fileUri = createFileUri();
         ApiResponse<EmptyResponse> renameFileResponse = fileApiClientAdapter.renameFile(originalFileUri, fileUri);
-        verifyApiResponse(renameFileResponse);
+        ApiTestHelper.verifyApiResponse(renameFileResponse);
 
         // /file/list
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
         ApiResponse<FileList> fileListResponse = fileApiClientAdapter.getFilesList(fileListSearchParams);
-        verifyApiResponse(fileListResponse);
+        ApiTestHelper.verifyApiResponse(fileListResponse);
         verifyFileListHasFileUri(fileUri, CALLBACK_URL, fileListResponse.getData().getFileList());
 
         // /file/status
         ApiResponse<FileStatus> fileStatusResponse = fileApiClientAdapter.getFileStatus(fileUri, locale);
-        verifyApiResponse(fileStatusResponse);
+        ApiTestHelper.verifyApiResponse(fileStatusResponse);
         verifyFileStatus(fileUri, CALLBACK_URL, fileStatusResponse.getData());
 
         // file/delete
         ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
-        verifyApiResponse(deleteFileResponse);
+        ApiTestHelper.verifyApiResponse(deleteFileResponse);
+    }
+
+    @Test(expected = ApiException.class)
+    public void testUploadWithoutFileUri() throws ApiException
+    {
+        File fileForUpload = ApiTestHelper.getTestFile();
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        fileUploadParameterBuilder
+                .fileType(ApiTestHelper.getTestFileType())
+                .approveContent(APPROVE_CONTENT)
+                .callbackUrl(CALLBACK_URL);
+        fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
+                fileUploadParameterBuilder
+        );
+
     }
 
     private void verifyFileListHasFileUri(String fileUri, String callbackUrl, List<FileStatus> fileList)
@@ -167,12 +182,6 @@ public class FileApiClientAdapterTest
     private String createFileUri()
     {
         return String.format(SKD_FILE_URI, System.currentTimeMillis());
-    }
-
-    private void verifyApiResponse(ApiResponse<? extends Data> apiResponse)
-    {
-        assertEquals(SUCCESS, apiResponse.getCode());
-        assertEquals(0, apiResponse.getMessages().size());
     }
 
     private void verifyFileStatus(String expectedFileUri, String expectedCallbackUrl, FileStatus fileStatus)

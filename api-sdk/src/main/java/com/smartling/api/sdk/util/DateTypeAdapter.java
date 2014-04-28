@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.smartling.api.sdk.file.util;
+package com.smartling.api.sdk.util;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

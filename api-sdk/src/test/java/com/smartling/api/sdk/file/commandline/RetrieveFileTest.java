@@ -17,10 +17,11 @@ package com.smartling.api.sdk.file.commandline;
 
 import static junit.framework.Assert.assertNotNull;
 
-import com.smartling.api.sdk.file.FileApiException;
+import com.smartling.api.sdk.exceptions.ApiException;
 import java.io.File;
 
-import com.smartling.api.sdk.file.FileApiTestHelper;
+import com.smartling.api.sdk.ApiTestHelper;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.junit.Test;
 public class RetrieveFileTest
 {
     @Test
-    public void testRetrieveFile() throws FileApiException, IOException
+    public void testRetrieveFile() throws ApiException, IOException
     {
         List<String> argList = buildFileRetrieveArgs();
         String[] args = new String[] {};
@@ -38,7 +39,7 @@ public class RetrieveFileTest
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidNumberOfArguments() throws FileApiException, IOException
+    public void testInvalidNumberOfArguments() throws ApiException, IOException
     {
         RetrieveFile.retrieve(new String[]{});
     }
@@ -46,11 +47,11 @@ public class RetrieveFileTest
     private List<String> buildFileRetrieveArgs()
     {
         List<String> args = new ArrayList<String>();
-        args.add(String.valueOf(FileApiTestHelper.getTestMode()));
-        args.add(FileApiTestHelper.getApiKey());
-        args.add(FileApiTestHelper.getProjectId());
-        args.add(FileApiTestHelper.getTestFile().getAbsolutePath());
-        args.add(FileApiTestHelper.getLocale());
+        args.add(String.valueOf(ApiTestHelper.getTestMode()));
+        args.add(ApiTestHelper.getApiKey());
+        args.add(ApiTestHelper.getProjectId());
+        args.add(ApiTestHelper.getTestFile().getAbsolutePath());
+        args.add(ApiTestHelper.getLocale());
         args.add("bin/");
 
         return args;
