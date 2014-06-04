@@ -36,8 +36,10 @@ For more information on SemVer, please visit http://semver.org/.
 Artifacts
 ---------
 
-The latest artifacts for the SDK are available via maven. You can find them here: http://mvnrepository.com/artifact/com.smartling/smartling-api-sdk
-http://search.maven.org/#search|ga|1|g%3A%22com.smartling%22
+The latest artifacts for the SDK are available via maven. You can find them here: 
+
+* http://mvnrepository.com/artifact/com.smartling/smartling-api-sdk
+* http://search.maven.org/#search|ga|1|g%3A%22com.smartling%22
 
 
 Bug tracker
