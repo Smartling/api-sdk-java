@@ -55,7 +55,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.message.BasicNameValuePair;
@@ -240,12 +241,13 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
-        MultipartEntity mpEntity = new MultipartEntity();
-        ContentBody cbFile = new FileBody(fileToUpload, MIME_TYPE, fileEncoding);
-        mpEntity.addPart(FileApiParams.FILE, cbFile);
+        ContentType contentType = ContentType.create(MIME_TYPE, fileEncoding);
+        ContentBody cbFile = new FileBody(fileToUpload, contentType);
+        MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+        multipartEntityBuilder.addPart(FileApiParams.FILE, cbFile);
 
         HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
-        httpPost.setEntity(mpEntity);
+        httpPost.setEntity(multipartEntityBuilder.build());
 
         return httpPost;
     }
