@@ -45,6 +45,7 @@ import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import com.smartling.api.sdk.util.HttpUtils;
@@ -241,10 +242,9 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
-        ContentType contentType = ContentType.create(MIME_TYPE, fileEncoding);
-        ContentBody cbFile = new FileBody(fileToUpload, contentType);
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-        multipartEntityBuilder.addPart(FileApiParams.FILE, cbFile);
+        multipartEntityBuilder.addPart(FileApiParams.FILE, new FileBody(fileToUpload));
+        multipartEntityBuilder.setCharset(Charset.forName(fileEncoding));
 
         HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
         httpPost.setEntity(multipartEntityBuilder.build());
