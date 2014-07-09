@@ -45,6 +45,7 @@ import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import com.smartling.api.sdk.util.HttpUtils;
@@ -55,7 +56,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.message.BasicNameValuePair;
@@ -240,12 +242,12 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
     private HttpPost createFileUploadHttpPostRequest(String apiParameters, File fileToUpload, String fileEncoding)
     {
-        MultipartEntity mpEntity = new MultipartEntity();
-        ContentBody cbFile = new FileBody(fileToUpload, MIME_TYPE, fileEncoding);
-        mpEntity.addPart(FileApiParams.FILE, cbFile);
+        MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+        multipartEntityBuilder.addPart(FileApiParams.FILE, new FileBody(fileToUpload));
+        multipartEntityBuilder.setCharset(Charset.forName(fileEncoding));
 
         HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
-        httpPost.setEntity(mpEntity);
+        httpPost.setEntity(multipartEntityBuilder.build());
 
         return httpPost;
     }
