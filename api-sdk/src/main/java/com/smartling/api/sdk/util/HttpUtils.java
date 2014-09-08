@@ -36,7 +36,6 @@ import org.apache.http.util.EntityUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 
 /**
  * Util class for executing http calls
@@ -58,7 +57,7 @@ public class HttpUtils
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    public static StringResponse executeHttpCall(HttpRequestBase httpRequest, ProxyConfiguration proxyConfiguration) throws ApiException
+    public static StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws ApiException
     {
         HttpClient httpClient = null;
         try
@@ -67,7 +66,7 @@ public class HttpUtils
 
             ProxyUtils.setupProxy(httpClient, proxyConfiguration);
 
-            HttpResponse response = httpClient.execute(httpRequest);
+            final HttpResponse response = httpClient.execute(httpRequest);
 
             String charset = EntityUtils.getContentCharSet(response.getEntity());
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
@@ -75,7 +74,7 @@ public class HttpUtils
 
             throw new ApiException(inputStreamToString(response.getEntity().getContent(), charset).getContents());
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
             logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
             throw new ApiException(ioe);
@@ -87,13 +86,13 @@ public class HttpUtils
         }
     }
 
-    private static StringResponse inputStreamToString(InputStream inputStream, String encoding) throws IOException
+    private static StringResponse inputStreamToString(final InputStream inputStream, final String encoding) throws IOException
     {
-        StringWriter writer = new StringWriter();
+        final byte[] contentsRaw = IOUtils.toByteArray(inputStream);
         // unless UTF-16 explicitly specified, use default UTF-8 encoding.
-        String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(CharEncoding.UTF_16) ? CharEncoding.UTF_8 : CharEncoding.UTF_16);
-        IOUtils.copy(inputStream, writer, responseEncoding);
-        return new StringResponse(writer.toString(), responseEncoding);
+        final String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(CharEncoding.UTF_16) ? CharEncoding.UTF_8 : CharEncoding.UTF_16);
+        final String contents = new String(contentsRaw, responseEncoding);
+        return new StringResponse(contents, contentsRaw, responseEncoding);
     }
 
     private static class ProxyUtils
@@ -105,7 +104,7 @@ public class HttpUtils
         private static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
         private static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
 
-        public static void setupProxy(HttpClient httpClient, ProxyConfiguration configuration)
+        public static void setupProxy(final HttpClient httpClient, final ProxyConfiguration configuration)
         {
             if (null != configuration)
                 setProxyToHttpClient(httpClient, configuration.getHost(), configuration.getPort(), configuration.getUsername(), configuration.getPassword());
@@ -113,9 +112,9 @@ public class HttpUtils
                 setupProxyFromSystemProperties(httpClient);
         }
 
-        public static void setupProxyFromSystemProperties(HttpClient httpClient)
+        public static void setupProxyFromSystemProperties(final HttpClient httpClient)
         {
-            String protocol = defineSchemeFromSystemProperties();
+            final String protocol = defineSchemeFromSystemProperties();
 
             if (null != protocol)
                 setProxyToHttpClient(httpClient,
@@ -126,7 +125,7 @@ public class HttpUtils
                 );
         }
 
-        private static void setProxyToHttpClient(HttpClient httpClient, String proxyHost, Integer proxyPort, String username, String password)
+        private static void setProxyToHttpClient(final HttpClient httpClient, final String proxyHost, final Integer proxyPort, final String username, final String password)
         {
             if (null == proxyHost || null == proxyPort)
                 return;
@@ -139,7 +138,7 @@ public class HttpUtils
                 );
             }
 
-            HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+            final HttpHost proxy = new HttpHost(proxyHost, proxyPort);
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
 

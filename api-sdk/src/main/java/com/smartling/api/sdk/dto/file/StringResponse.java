@@ -21,17 +21,24 @@ package com.smartling.api.sdk.dto.file;
 public class StringResponse
 {
     private final String contents;
+    private final byte[] contentsRaw;
     private final String encoding;
 
-    public StringResponse(String contents, String encoding)
+    public StringResponse(final String contents, final byte[] contentsRaw, final String encoding)
     {
         this.contents = contents;
+        this.contentsRaw = contentsRaw;
         this.encoding = encoding;
     }
 
     public String getContents()
     {
         return contents;
+    }
+
+    public byte[] getContentsRaw()
+    {
+        return contentsRaw;
     }
 
     public String getEncoding()
