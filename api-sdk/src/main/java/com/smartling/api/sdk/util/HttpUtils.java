@@ -31,6 +31,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -68,10 +69,11 @@ public class HttpUtils
 
             HttpResponse response = httpClient.execute(httpRequest);
 
+            String charset = EntityUtils.getContentCharSet(response.getEntity());
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
-                return inputStreamToString(response.getEntity().getContent(), null);
+                return inputStreamToString(response.getEntity().getContent(), charset);
 
-            throw new ApiException(inputStreamToString(response.getEntity().getContent(), null).getContents());
+            throw new ApiException(inputStreamToString(response.getEntity().getContent(), charset).getContents());
         }
         catch (IOException ioe)
         {
