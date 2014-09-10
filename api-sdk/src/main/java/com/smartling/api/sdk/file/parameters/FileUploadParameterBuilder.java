@@ -25,7 +25,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param directives
      * @return
      */
-    public FileUploadParameterBuilder directives(Map<String, String> directives)
+    public FileUploadParameterBuilder directives(final Map<String, String> directives)
     {
         this.directives = directives;
         return this;
@@ -38,7 +38,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param overwriteApprovedLocales
      * @return
      */
-    public FileUploadParameterBuilder overwriteApprovedLocales(Boolean overwriteApprovedLocales)
+    public FileUploadParameterBuilder overwriteApprovedLocales(final Boolean overwriteApprovedLocales)
     {
         this.overwriteApprovedLocales = overwriteApprovedLocales;
         return this;
@@ -49,7 +49,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param localesToApprove
      * @return
      */
-    public FileUploadParameterBuilder localesToApprove(List<String> localesToApprove)
+    public FileUploadParameterBuilder localesToApprove(final List<String> localesToApprove)
     {
         this.localesToApprove = localesToApprove;
         return this;
@@ -65,7 +65,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param callbackUrl
      * @return
      */
-    public FileUploadParameterBuilder callbackUrl(String callbackUrl)
+    public FileUploadParameterBuilder callbackUrl(final String callbackUrl)
     {
         this.callbackUrl = callbackUrl;
         return this;
@@ -77,7 +77,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param approveContent
      * @return
      */
-    public FileUploadParameterBuilder approveContent(Boolean approveContent)
+    public FileUploadParameterBuilder approveContent(final Boolean approveContent)
     {
         this.approveContent = approveContent;
         return this;
@@ -88,7 +88,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param fileUri
      * @return
      */
-    public FileUploadParameterBuilder fileUri(String fileUri)
+    public FileUploadParameterBuilder fileUri(final String fileUri)
     {
         this.fileUri = fileUri;
         return this;
@@ -104,10 +104,15 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param fileType
      * @return
      */
-    public FileUploadParameterBuilder fileType(FileType fileType)
+    public FileUploadParameterBuilder fileType(final FileType fileType)
     {
         this.fileType = fileType;
         return this;
+    }
+
+    public FileType getFileType()
+    {
+        return fileType;
     }
 
     @Override
@@ -129,9 +134,9 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return paramsList;
     }
 
-    private List<NameValuePair> convertLocalesBasedApproveParams(String prefix, List<String> values)
+    private List<NameValuePair> convertLocalesBasedApproveParams(final String prefix, final List<String> values)
     {
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
         for (int index = 0; index < values.size(); index++) {
             nameValuePairs.add(new BasicNameValuePair(prefix + "[" + index + "]", values.get(index)));
@@ -140,12 +145,12 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return nameValuePairs;
     }
 
-    private List<NameValuePair> convertMapParams(Map<String, String> paramMap)
+    private List<NameValuePair> convertMapParams(final Map<String, String> paramMap)
     {
         if (paramMap != null && !paramMap.isEmpty())
         {
             final List<NameValuePair> nameValuePairs = new LinkedList<NameValuePair>();
-            for (String key : paramMap.keySet())
+            for (final String key : paramMap.keySet())
                 nameValuePairs.add(new BasicNameValuePair(key, paramMap.get(key)));
 
             return nameValuePairs;

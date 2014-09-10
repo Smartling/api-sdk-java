@@ -22,9 +22,9 @@ import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
 import com.smartling.api.sdk.util.DateTypeAdapter;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -62,7 +62,7 @@ public abstract class BaseApiClientAdapter
      * @param apiKey    your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    protected BaseApiClientAdapter(String apiKey, String projectId)
+    protected BaseApiClientAdapter(final String apiKey, final String projectId)
     {
         this(SMARTLING_API_URL, apiKey, projectId);
     }
@@ -74,7 +74,7 @@ public abstract class BaseApiClientAdapter
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    protected BaseApiClientAdapter(String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    protected BaseApiClientAdapter(final String apiKey, final String projectId, final ProxyConfiguration proxyConfiguration)
     {
         this(SMARTLING_API_URL, apiKey, projectId, proxyConfiguration);
     }
@@ -86,7 +86,7 @@ public abstract class BaseApiClientAdapter
      * @param apiKey         your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId      your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    protected BaseApiClientAdapter(boolean productionMode, String apiKey, String projectId)
+    protected BaseApiClientAdapter(final boolean productionMode, final String apiKey, final String projectId)
     {
         this(productionMode ? SMARTLING_API_URL : SMARTLING_SANDBOX_API_URL, apiKey, projectId);
     }
@@ -99,7 +99,7 @@ public abstract class BaseApiClientAdapter
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    protected BaseApiClientAdapter(boolean productionMode, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    protected BaseApiClientAdapter(final boolean productionMode, final String apiKey, final String projectId, final ProxyConfiguration proxyConfiguration)
     {
         this(productionMode ? SMARTLING_API_URL : SMARTLING_SANDBOX_API_URL, apiKey, projectId, proxyConfiguration);
     }
@@ -109,7 +109,7 @@ public abstract class BaseApiClientAdapter
      * @param apiKey     your apiKey. Can be found at https://dashboard.smartling.com/settings/api
      * @param projectId  your projectId. Can be found at https://dashboard.smartling.com/settings/api
      */
-    protected BaseApiClientAdapter(String baseApiUrl, String apiKey, String projectId)
+    protected BaseApiClientAdapter(final String baseApiUrl, final String apiKey, final String projectId)
     {
         this(baseApiUrl, apiKey, projectId, null);
     }
@@ -120,7 +120,7 @@ public abstract class BaseApiClientAdapter
      * @param projectId          your projectId. Can be found at https://dashboard.smartling.com/settings/api
      * @param proxyConfiguration proxy configuration, pass {@code NULL} to never use proxy
      */
-    protected BaseApiClientAdapter(String baseApiUrl, String apiKey, String projectId, ProxyConfiguration proxyConfiguration)
+    protected BaseApiClientAdapter(final String baseApiUrl, final String apiKey, final String projectId, final ProxyConfiguration proxyConfiguration)
     {
         Validate.notNull(baseApiUrl, "Api url is required");
         Validate.notNull(apiKey, "apiKey is required");
@@ -133,18 +133,18 @@ public abstract class BaseApiClientAdapter
     }
 
 
-    protected String buildUrl(String apiServerUrl, String apiParameters)
+    protected String buildUrl(final String apiServerUrl, final String apiParameters)
     {
-        StringBuilder urlWithParameters = new StringBuilder(String.format(apiServerUrl, baseApiUrl));
+        final StringBuilder urlWithParameters = new StringBuilder(String.format(apiServerUrl, baseApiUrl));
         urlWithParameters.append(apiParameters);
         return urlWithParameters.toString();
     }
 
-    protected String buildParamsQuery(NameValuePair... nameValuePairs)
+    protected String buildParamsQuery(final NameValuePair... nameValuePairs)
     {
-        List<NameValuePair> qparams = getRequiredParams();
+        final List<NameValuePair> qparams = getRequiredParams();
 
-        for (NameValuePair nameValuePair : nameValuePairs)
+        for (final NameValuePair nameValuePair : nameValuePairs)
             if (nameValuePair.getValue() != null)
                 qparams.add(nameValuePair);
 
@@ -153,31 +153,31 @@ public abstract class BaseApiClientAdapter
 
     protected List<NameValuePair> getRequiredParams()
     {
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        final List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair(API_KEY, apiKey));
         qparams.add(new BasicNameValuePair(PROJECT_ID, projectId));
 
         return qparams;
     }
 
-    protected String maskApiKey(String apiKey)
+    protected String maskApiKey(final String apiKey)
     {
         return apiKey.contains("-") ? String.format(API_KEY_MASK, apiKey.substring(0, apiKey.lastIndexOf("-"))) : apiKey;
     }
 
-    protected List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)
+    protected List<BasicNameValuePair> getNameValuePairs(final String name, final List<String> values)
     {
         if (null == values || values.isEmpty())
             return Collections.emptyList();
 
-        List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
-        for (String value : values)
+        final List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+        for (final String value : values)
             nameValuePairs.add(new BasicNameValuePair(name, value));
 
         return nameValuePairs;
     }
 
-    protected String getApiResponseMessages(ApiResponse apiResponse)
+    protected String getApiResponseMessages(final ApiResponse<?> apiResponse)
     {
         String responseMessages = StringUtils.EMPTY;
 
@@ -187,13 +187,13 @@ public abstract class BaseApiClientAdapter
         return responseMessages;
     }
 
-    protected static <T extends Data> ApiResponse<T> getApiResponse(String response, TypeToken<ApiResponseWrapper<T>> responseType)
+    protected static <T extends Data> ApiResponse<T> getApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
     {
-        GsonBuilder builder = new GsonBuilder();
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
 
-        Gson gson = builder.create();
-        ApiResponseWrapper<T> responseWrapper = gson.fromJson(response, responseType.getType());
+        final Gson gson = builder.create();
+        final ApiResponseWrapper<T> responseWrapper = gson.fromJson(response, responseType.getType());
 
         return responseWrapper.getResponse();
     }

@@ -20,12 +20,14 @@ package com.smartling.api.sdk.exceptions;
  */
 public class ApiException extends Exception
 {
-    public ApiException(String message)
+    private static final long serialVersionUID = -397098626101615761L;
+
+    public ApiException(final String message)
     {
         super(message);
     }
 
-    public ApiException(Exception e)
+    public ApiException(final Exception e)
     {
         super(e);
     }

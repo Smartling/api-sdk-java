@@ -19,8 +19,8 @@ import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.ApiException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
@@ -68,11 +68,12 @@ public class HttpUtils
 
             final HttpResponse response = httpClient.execute(httpRequest);
 
-            String charset = EntityUtils.getContentCharSet(response.getEntity());
+            final String charset = EntityUtils.getContentCharSet(response.getEntity());
+            final StringResponse stringResponse = inputStreamToString(response.getEntity().getContent(), charset);
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
-                return inputStreamToString(response.getEntity().getContent(), charset);
+                return stringResponse;
 
-            throw new ApiException(inputStreamToString(response.getEntity().getContent(), charset).getContents());
+            throw new ApiException(stringResponse.getContents());
         }
         catch (final IOException ioe)
         {

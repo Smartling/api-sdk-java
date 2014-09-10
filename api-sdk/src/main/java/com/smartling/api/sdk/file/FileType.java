@@ -15,36 +15,42 @@
  */
 package com.smartling.api.sdk.file;
 
+import com.google.common.base.CaseFormat;
+
 public enum FileType
 {
-    JAVA_PROPERTIES("javaProperties"),  // Java resources
-    IOS("ios"),                         // iOS resources
-    ANDROID("android"),                 // Android resources
-    GETTEXT("gettext"),                 // GetText .PO/.POT file
-    XLIFF("xliff"),                     // XLIFF file
-    YAML("yaml"),                       // Ruby/YAML file
-    JSON("json"),                       // generic JSON file
-    XML("xml"),                         // generic XML file
-    HTML("html"),                       // HTML file
-    FREEMARKER("freemarker"),           // FreeMarker template
-    DOCX("docx"),                       // DOCX
-    DOC("doc"),                         // DOC file (Microsoft Word)
-    PPTX("pptx"),                       // PPTX
-    XLSX("xlsx"),                       // XLSX
-    XLS("xls"),                         // XLS
-    IDML("idml"),                       // IDML
-    RESX("resx"),                       // .NET resource (.resx, .resw)
-    QT("qt"),                           // Qt Linguist (.TS file)
-    CSV("csv"),                         // CSV (Comma-separated values)
-    PLAIN_TEXT("plainText"),            // plain text (.txt files)
-    PPT("ppt"),                         // PPT binary file format
-    PRES("pres");                       // Pres resources
+    JAVA_PROPERTIES("text/plain", true),            // Java resources
+    IOS("text/plain", true),                        // iOS resources
+    ANDROID("application/xml", true),               // Android resources
+    GETTEXT("text/plain", true),                    // GetText .PO/.POT file
+    XLIFF("application/xml", true),                 // XLIFF file
+    YAML("text/plain", true),                       // Ruby/YAML file
+    JSON("application/json", true),                 // generic JSON file
+    XML("application/xml", true),                   // generic XML file
+    HTML("text/html", true),                        // HTML file
+    FREEMARKER("application/octet-stream", false),  // FreeMarker template
+    DOCX("application/octet-stream", false),        // DOCX
+    DOC("application/octet-stream", false),         // DOC file (Microsoft Word)
+    PPTX("application/octet-stream", false),        // PPTX
+    XLSX("application/octet-stream", false),        // XLSX
+    XLS("application/octet-stream", false),         // XLS
+    IDML("application/octet-stream", false),        // IDML
+    RESX("application/xml", true),                  // .NET resource (.resx, .resw)
+    QT("application/xml", true),                    // Qt Linguist (.TS file)
+    CSV("text/csv", true),                          // CSV (Comma-separated values)
+    PLAIN_TEXT("text/plain", true),                 // plain text (.txt files)
+    PPT("application/octet-stream", false),         // PPT binary file format
+    PRES("text/plain", true);                       // Pres resources
 
-    private String identifier;
+    private final String identifier;
+    private final String mimeType;
+    private final boolean isTextFormat;
 
-    private FileType(String identifier)
+    private FileType(final String mimeType, final boolean isTextFormat)
     {
-        this.identifier = identifier;
+        this.identifier = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name());
+        this.mimeType = mimeType;
+        this.isTextFormat = isTextFormat;
     }
 
     public String getIdentifier()
@@ -52,9 +58,19 @@ public enum FileType
         return identifier;
     }
 
-    public static FileType lookup(String fileTypeString)
+    public String getMimeType()
     {
-        for (FileType fileType : FileType.values())
+        return mimeType;
+    }
+
+    public boolean isTextFormat()
+    {
+        return isTextFormat;
+    }
+
+    public static FileType lookup(final String fileTypeString)
+    {
+        for (final FileType fileType : FileType.values())
         {
             if (fileType.identifier.equalsIgnoreCase(fileTypeString))
                 return fileType;
