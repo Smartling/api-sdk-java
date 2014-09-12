@@ -19,6 +19,10 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+// TODO(AShesterov): refactor API-SDK: rename ApiResponse to SmartlingApiResponse
+
+// TODO(AShesterov): refactor API-SDK: do NOT use generics for response, but OOP! e.g. UploadFileDataApiResponse extends ApiResponse
+
 /**
  * Base response class returned from the Smartling Translation API.
  *

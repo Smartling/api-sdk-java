@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.exceptions;
 
+// TODO(AShesterov): refactor API-SDK: rename ApiException to SmartlingApiException
 /**
  * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.FileApiClientAdapter}.
  */

@@ -34,6 +34,7 @@ import java.util.Date;
 /**
  * Communication point for interacting files with the Smartling Translation API.
  */
+// TODO(AShesterov): why is it actually called "adapter"?? It's not a client adapter, but a client.
 public interface FileApiClientAdapter
 {
     /**
@@ -45,6 +46,7 @@ public interface FileApiClientAdapter
      * @return ApiResponse from a success response from the File API.
      * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
+    // TODO(AShesterov): refactor API-SDK to the following style: fileApiClientAdapter.uploadFile().file(String|Stream|File).charset(Charset|String).fileType(FileType|String).<FileUploadParameterBuilderMethods>().perform();
     ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
                                        final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws ApiException;

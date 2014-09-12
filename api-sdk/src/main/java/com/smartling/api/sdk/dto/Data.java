@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.dto;
 
+// TODO(AShesterov): refactor API-SDK: `Data` is a VERY BAD NAME for a class / an interface!!
 /**
  * Simple marker interface for indicating that a class represents the Data object expected as the return from the Smartling Translation API.
  */
