@@ -40,7 +40,8 @@ public enum FileType
     CSV("text/csv", true),                          // CSV (Comma-separated values)
     PLAIN_TEXT("text/plain", true),                 // plain text (.txt files)
     PPT("application/octet-stream", false),         // PPT binary file format
-    PRES("text/plain", true);                       // Pres resources
+    PRES("text/plain", true),                       // Pres resources
+    STRINGSDICT("application/xml", true);           // iOS/OSX resources in dictionary format
 
     private final String identifier;
     private final String mimeType;
