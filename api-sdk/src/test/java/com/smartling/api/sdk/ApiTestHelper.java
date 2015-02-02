@@ -50,8 +50,8 @@ public class ApiTestHelper
 
     public static String getLocale()
     {
-        String locale = System.getProperty("locale");
-        Assert.assertNotNull("The locale system property must be set", locale);
+        String locale = System.getProperty("testLocale");
+        Assert.assertNotNull("The testLocale system property must be set", locale);
 
         return locale;
     }
