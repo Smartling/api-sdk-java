@@ -15,31 +15,30 @@
  */
 package com.smartling.api.sdk;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
-import com.smartling.api.sdk.exceptions.ApiException;
-import com.smartling.api.sdk.file.FileListSearchParams;
-import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
-import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.dto.file.FileLastModified;
-import java.util.HashMap;
-import java.util.List;
-
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.EmptyResponse;
+import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.FileList;
 import com.smartling.api.sdk.dto.file.FileStatus;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
+import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.file.FileListSearchParams;
+import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 public class FileApiClientAdapterTest
 {
@@ -63,7 +62,7 @@ public class FileApiClientAdapterTest
         fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testInvalidConstructor()
     {
         fileApiClientAdapter = new FileApiClientAdapterImpl(null, null);
