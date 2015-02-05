@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
@@ -33,7 +34,6 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -70,7 +70,7 @@ public class HttpUtils
 
             final String charset = EntityUtils.getContentCharSet(response.getEntity());
             final StringResponse stringResponse = inputStreamToString(response.getEntity().getContent(), charset);
-            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK)
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
                 return stringResponse;
 
             throw new ApiException(stringResponse.getContents());
