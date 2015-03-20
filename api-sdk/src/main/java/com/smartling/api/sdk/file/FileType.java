@@ -15,7 +15,7 @@
  */
 package com.smartling.api.sdk.file;
 
-import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.StringUtils;
 
 public enum FileType
 {
@@ -47,9 +47,20 @@ public enum FileType
     private final String mimeType;
     private final boolean isTextFormat;
 
+    private static String createIdentifier(String s)
+    {
+        StringBuilder buf = new StringBuilder();
+        String[] parts = s.split("_");
+
+        for (int i = 0; i < parts.length; i++)
+            buf.append((i == 0) ? parts[i].toLowerCase() : StringUtils.capitalize(parts[i].toLowerCase()));
+
+        return buf.toString();
+    }
+
     private FileType(final String mimeType, final boolean isTextFormat)
     {
-        this.identifier = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name());
+        this.identifier = createIdentifier(name());
         this.mimeType = mimeType;
         this.isTextFormat = isTextFormat;
     }
