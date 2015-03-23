@@ -18,41 +18,42 @@ package com.smartling.api.sdk.file.commandline;
 import static junit.framework.Assert.assertNotNull;
 
 import com.smartling.api.sdk.exceptions.ApiException;
-import java.io.File;
-
 import com.smartling.api.sdk.ApiTestHelper;
-
-import java.io.IOException;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 
-public class RetrieveFileTest
+public class UploadFileITest
 {
     @Test
-    public void testRetrieveFile() throws ApiException, IOException
+    public void testUploadFile() throws ApiException
     {
-        List<String> argList = buildFileRetrieveArgs();
-        String[] args = new String[] {};
-        File file = RetrieveFile.retrieve(argList.toArray(args));
-        assertNotNull(file);
+        List<String> argList = buildFileUploadArgs();
+        String[] args = new String[]{};
+        ApiResponse<UploadFileData> uploadFileResponse = UploadFile.upload(argList.toArray(args));
+        assertNotNull(uploadFileResponse);
+        ApiTestHelper.verifyApiResponse(uploadFileResponse);
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidNumberOfArguments() throws ApiException, IOException
+    public void testInvalidNumberOfArguments() throws ApiException
     {
-        RetrieveFile.retrieve(new String[]{});
+        UploadFile.upload(new String[]{});
     }
 
-    private List<String> buildFileRetrieveArgs()
+    private List<String> buildFileUploadArgs()
     {
         List<String> args = new ArrayList<String>();
         args.add(String.valueOf(ApiTestHelper.getTestMode()));
         args.add(ApiTestHelper.getApiKey());
         args.add(ApiTestHelper.getProjectId());
         args.add(ApiTestHelper.getTestFile().getAbsolutePath());
-        args.add(ApiTestHelper.getLocale());
-        args.add("bin/");
+        args.add(ApiTestHelper.getTestFileType().getIdentifier());
+        args.add(null);
+        args.add(ApiTestHelper.getCallbackUrl());
 
         return args;
     }

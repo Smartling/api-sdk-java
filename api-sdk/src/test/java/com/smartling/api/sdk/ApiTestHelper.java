@@ -15,15 +15,13 @@
  */
 package com.smartling.api.sdk;
 
-import static junit.framework.Assert.assertEquals;
-
+import static org.junit.Assert.*;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.Data;
 
 import java.io.File;
 
 import com.smartling.api.sdk.file.FileType;
-import junit.framework.Assert;
 import org.apache.commons.io.FilenameUtils;
 
 public class ApiTestHelper
@@ -35,7 +33,7 @@ public class ApiTestHelper
     public static String getApiKey()
     {
         String apiKey = System.getProperty("apiKey");
-        Assert.assertNotNull("The apiKey system property must be set", apiKey);
+        assertNotNull("The apiKey system property must be set", apiKey);
 
         return apiKey;
     }
@@ -43,7 +41,7 @@ public class ApiTestHelper
     public static String getProjectId()
     {
         String projectId = System.getProperty("projectId");
-        Assert.assertNotNull("The projectId system property must be set", projectId);
+        assertNotNull("The projectId system property must be set", projectId);
 
         return projectId;
     }
@@ -51,7 +49,7 @@ public class ApiTestHelper
     public static String getLocale()
     {
         String locale = System.getProperty("testLocale");
-        Assert.assertNotNull("The testLocale system property must be set", locale);
+        assertNotNull("The testLocale system property must be set", locale);
 
         return locale;
     }

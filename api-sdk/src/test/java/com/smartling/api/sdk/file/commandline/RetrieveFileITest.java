@@ -18,42 +18,41 @@ package com.smartling.api.sdk.file.commandline;
 import static junit.framework.Assert.assertNotNull;
 
 import com.smartling.api.sdk.exceptions.ApiException;
+import java.io.File;
+
 import com.smartling.api.sdk.ApiTestHelper;
-import com.smartling.api.sdk.dto.ApiResponse;
-import com.smartling.api.sdk.dto.file.UploadFileData;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
 
-public class UploadFileTest
+public class RetrieveFileITest
 {
     @Test
-    public void testUploadFile() throws ApiException
+    public void testRetrieveFile() throws ApiException, IOException
     {
-        List<String> argList = buildFileUploadArgs();
-        String[] args = new String[]{};
-        ApiResponse<UploadFileData> uploadFileResponse = UploadFile.upload(argList.toArray(args));
-        assertNotNull(uploadFileResponse);
-        ApiTestHelper.verifyApiResponse(uploadFileResponse);
+        List<String> argList = buildFileRetrieveArgs();
+        String[] args = new String[] {};
+        File file = RetrieveFile.retrieve(argList.toArray(args));
+        assertNotNull(file);
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidNumberOfArguments() throws ApiException
+    public void testInvalidNumberOfArguments() throws ApiException, IOException
     {
-        UploadFile.upload(new String[]{});
+        RetrieveFile.retrieve(new String[]{});
     }
 
-    private List<String> buildFileUploadArgs()
+    private List<String> buildFileRetrieveArgs()
     {
         List<String> args = new ArrayList<String>();
         args.add(String.valueOf(ApiTestHelper.getTestMode()));
         args.add(ApiTestHelper.getApiKey());
         args.add(ApiTestHelper.getProjectId());
         args.add(ApiTestHelper.getTestFile().getAbsolutePath());
-        args.add(ApiTestHelper.getTestFileType().getIdentifier());
-        args.add(null);
-        args.add(ApiTestHelper.getCallbackUrl());
+        args.add(ApiTestHelper.getLocale());
+        args.add("bin/");
 
         return args;
     }

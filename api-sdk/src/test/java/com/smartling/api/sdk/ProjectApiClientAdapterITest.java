@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
-public class ProjectApiClientAdapterTest
+public class ProjectApiClientAdapterITest
 {
     private ProjectApiClientAdapter projectApiClientAdapter;
 

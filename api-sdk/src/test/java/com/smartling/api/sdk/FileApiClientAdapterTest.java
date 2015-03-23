@@ -19,47 +19,61 @@ import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.EmptyResponse;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.FileList;
+import com.smartling.api.sdk.dto.file.FileLocaleLastModified;
 import com.smartling.api.sdk.dto.file.FileStatus;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.file.FileApiParams;
 import com.smartling.api.sdk.file.FileListSearchParams;
+import com.smartling.api.sdk.file.FileType;
+import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
-import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import org.apache.commons.io.FileUtils;
+import com.smartling.api.sdk.util.DateFormatter;
+import com.smartling.api.sdk.util.HttpUtils;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class FileApiClientAdapterTest
 {
-    private static final Boolean APPROVE_CONTENT    = null;
-    private static final String  SKD_FILE_URI       = "sdk-test-file-%s";
-    private static final String  TEST_FILE_ENCODING = "UTF-8";
-    private static final String  CALLBACK_URL       = "http://site.com/callback";
+    private static final String CALLBACK_URL = "callbackUrl";
+    private static final String API_KEY = "apiKeyValue";
+    private static final String PROJECT_ID = "projectIdValue";
+    private static final String LOCALE = "en-US";
+    private static final String FILE_URI = "fileUri";
+    private static final String FILE_URI2 = "fileUri2";
+    private static final String HOST = "host";
+    private static final String BASE_URL = "http://" + HOST;
+    private static final String FILE_LIST_RESPONSE = "{\"response\":{\"data\":{\"fileCount\": 1, \"fileList\": [{\"fileUri\": \"fileUri\", \"stringCount\": 2, \"wordCount\": 3, \"approvedStringCount\": 4, \"completedStringCount\": 5, \"lastUploaded\": \"lastDate\", \"fileType\": \"JAVA_PROPERTIES\", \"callbackUrl\": \"callbackUrl\"}]},\"code\":\"SUCCESS\",\"messages\":[]}}";
+    private static final String EMPTY_SUCESS_RESPONSE = "{\"response\":{\"data\": null,\"code\":\"SUCCESS\",\"messages\":[]}}";
+    private static final String LAST_MODIFIED_RESPONSE = "{\"response\":{\"data\": {\"items\": [{\"locale\": \"%s\", \"lastModified\": \"%s\"}]}, \"code\":\"SUCCESS\", \"messages\":[]}}";
+    private static final String UPLOAD_RESPONSE = "{\"response\":{\"data\": {\"stringCount\": 1, \"wordCount\": 2, \"overWritten\": true},\"code\":\"SUCCESS\",\"messages\":[]}}";
 
-    private FileApiClientAdapter fileApiClientAdapter;
-
-    private String locale;
+    private FileApiClientAdapterImpl fileApiClientAdapter;
+    private HttpUtils httpUtils;
+    private ProxyConfiguration proxyConfiguration;
 
     @Before
     public void setup()
     {
-        boolean testMode = ApiTestHelper.getTestMode();
-        String apiKey = ApiTestHelper.getApiKey();
-        String projectId = ApiTestHelper.getProjectId();
-        locale = ApiTestHelper.getLocale();
-
-        fileApiClientAdapter = new FileApiClientAdapterImpl(testMode, apiKey, projectId);
+        proxyConfiguration = mock(ProxyConfiguration.class);
+        fileApiClientAdapter = new FileApiClientAdapterImpl(BASE_URL, API_KEY, PROJECT_ID, proxyConfiguration);
+        fileApiClientAdapter.setHttpUtils(httpUtils = mock(HttpUtils.class));
     }
 
     @Test(expected = NullPointerException.class)
@@ -69,131 +83,208 @@ public class FileApiClientAdapterTest
     }
 
     @Test
-    public void testFileActions() throws ApiException, IOException
+    public void testFileGet() throws ApiException, IOException
     {
-        // /file/upload
-        String originalFileUri = createFileUri();
-        File fileForUpload = ApiTestHelper.getTestFile();
-        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
-        fileUploadParameterBuilder
-                .fileType(ApiTestHelper.getTestFileType())
-                .fileUri(originalFileUri)
-                .approveContent(APPROVE_CONTENT)
-                .callbackUrl(CALLBACK_URL);
+        fileApiClientAdapter.getFile(FILE_URI, LOCALE, RetrievalType.PUBLISHED);
 
-        ApiResponse<UploadFileData> uploadFileResponse = fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
-                fileUploadParameterBuilder
-        );
-        ApiTestHelper.verifyApiResponse(uploadFileResponse);
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
 
-        // /file/upload (with directives)
-        String originalFileUri2 = createFileUri();
-        File fileForUpload2 = ApiTestHelper.getTestFile();
+        verify(httpUtils).executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration));
 
-        Map<String, String> smartlingDirectives = new HashMap<String, String>();
+        HttpRequestBase request = requestCaptor.getValue();
 
-        smartlingDirectives.put("smartling.placeholder_format", "JAVA");
-        smartlingDirectives.put("smartling.instruction_attributes", "comment, note");
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LOCALE, LOCALE)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_URI, FILE_URI)));
+        assertEquals(HOST, request.getURI().getHost());
+    }
 
-        FileUploadParameterBuilder fileUploadParameterBuilderExtended = new FileUploadParameterBuilder();
-        fileUploadParameterBuilderExtended.fileType(ApiTestHelper.getTestFileType())
-                .fileUri(originalFileUri2)
-                .approveContent(APPROVE_CONTENT)
-                .callbackUrl(CALLBACK_URL)
-                .localesToApprove(null)
-                .overwriteApprovedLocales(null)
-                .directives(smartlingDirectives);
+    @Test
+    public void testFileGetList() throws ApiException, IOException
+    {
+        String uriMask = "URI_MASK";
+        Date lastUploadedAfter = new Date();
+        Date lastUploadedBefore = new Date();
+        List<String> conditions = Collections.singletonList("CONDITION1");
+        List<String> orderBy = Collections.singletonList("ORDER1");
 
-        ApiResponse<UploadFileData> uploadFileResponse2 = fileApiClientAdapter.uploadFile(fileForUpload2,
-                TEST_FILE_ENCODING, fileUploadParameterBuilderExtended
-        );
-
-        ApiTestHelper.verifyApiResponse(uploadFileResponse2);
-
-        // /file/last_modified
-        ApiResponse<FileLastModified> lastModifiedResponse = fileApiClientAdapter.getLastModified(originalFileUri, null, locale);
-        ApiTestHelper.verifyApiResponse(lastModifiedResponse);
-        verifyFileLastModified(lastModifiedResponse.getData());
-
-        // /file/get
-        StringResponse fileContents = fileApiClientAdapter.getFile(originalFileUri, null, null);
-        assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
-
-        // /file/get
-        GetFileParameterBuilder getFileParameterBuilder = new GetFileParameterBuilder()
-                .fileUri(originalFileUri)
-                .locale(null)
-                .retrievalType(null)
-                .includeOriginalStrings(null);
-        fileContents = fileApiClientAdapter.getFile(getFileParameterBuilder);
-        assertEquals(FileUtils.readFileToString(fileForUpload), fileContents.getContents());
-
-        // /file/rename
-        String fileUri = createFileUri();
-        ApiResponse<EmptyResponse> renameFileResponse = fileApiClientAdapter.renameFile(originalFileUri, fileUri);
-        ApiTestHelper.verifyApiResponse(renameFileResponse);
-
-        // /file/list
         FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        ApiResponse<FileList> fileListResponse = fileApiClientAdapter.getFilesList(fileListSearchParams);
-        ApiTestHelper.verifyApiResponse(fileListResponse);
-        verifyFileListHasFileUri(fileUri, CALLBACK_URL, fileListResponse.getData().getFileList());
+        fileListSearchParams.setLimit(12);
+        fileListSearchParams.setLastUploadedAfter(lastUploadedAfter);
+        fileListSearchParams.setLocale(LOCALE);
+        fileListSearchParams.setOffset(3);
+        fileListSearchParams.setFileTypes(Collections.singletonList(FileType.JAVA_PROPERTIES.name()));
+        fileListSearchParams.setConditions(conditions);
+        fileListSearchParams.setOrderBy(orderBy);
+        fileListSearchParams.setUriMask(uriMask);
+        fileListSearchParams.setLastUploadedBefore(lastUploadedBefore);
 
-        // /file/status
-        ApiResponse<FileStatus> fileStatusResponse = fileApiClientAdapter.getFileStatus(fileUri, locale);
-        ApiTestHelper.verifyApiResponse(fileStatusResponse);
-        verifyFileStatus(fileUri, CALLBACK_URL, fileStatusResponse.getData());
+        StringResponse response = mock(StringResponse.class);
+        when(response.getContents()).thenReturn(FILE_LIST_RESPONSE);
 
-        // file/delete
-        ApiResponse<EmptyResponse> deleteFileResponse = fileApiClientAdapter.deleteFile(fileUri);
-        ApiTestHelper.verifyApiResponse(deleteFileResponse);
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+
+        ApiResponse<FileList> apiResponse = fileApiClientAdapter.getFilesList(fileListSearchParams);
+
+        // Validate the request
+        HttpRequestBase request = requestCaptor.getValue();
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LOCALE, LOCALE)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LIMIT, "12")));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LAST_UPLOADED_AFTER, DateFormatter.format(lastUploadedAfter))));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LAST_UPLOADED_BEFORE, DateFormatter.format(lastUploadedBefore))));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.OFFSET, "3")));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_TYPES, FileType.JAVA_PROPERTIES.name())));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.CONDITIONS, "CONDITION1")));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.ORDERBY, "ORDER1")));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.URI_MASK, "URI_MASK")));
+        assertEquals(HOST, request.getURI().getHost());
+
+        // Validate the response
+        FileList fileList = apiResponse.getData();
+        assertEquals(1, fileList.getFileCount());
+        assertEquals(1, fileList.getFileList().size());
+
+        FileStatus status = fileList.getFileList().get(0);
+        assertEquals(2, status.getStringCount());
+        assertEquals(3, status.getWordCount());
+        assertEquals("fileUri", status.getFileUri());
+        assertEquals("JAVA_PROPERTIES", status.getFileType());
+        assertEquals(4, status.getApprovedStringCount());
+        assertEquals(5, status.getCompletedStringCount());
+        assertEquals("lastDate", status.getLastUploaded());
+        assertEquals("callbackUrl", status.getCallbackUrl());
     }
 
-    @Test(expected = ApiException.class)
-    public void testUploadWithoutFileUri() throws ApiException
+    @Test
+    public void testRenameFile() throws ApiException, IOException
     {
-        File fileForUpload = ApiTestHelper.getTestFile();
+        StringResponse response = mock(StringResponse.class);
+        when(response.getContents()).thenReturn(EMPTY_SUCESS_RESPONSE);
+
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+
+        ApiResponse<EmptyResponse> apiResponse = fileApiClientAdapter.renameFile(FILE_URI, FILE_URI2);
+
+        // Validate the request
+        HttpRequestBase request = requestCaptor.getValue();
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_URI, FILE_URI)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.NEW_FILE_URI, FILE_URI2)));
+        assertEquals(HOST, request.getURI().getHost());
+
+        // Validate the response
+        assertEquals("SUCCESS", apiResponse.getCode());
+        assertNull(apiResponse.getData());
+    }
+
+    @Test
+    public void testDeleteFile() throws ApiException, IOException
+    {
+        StringResponse response = mock(StringResponse.class);
+        when(response.getContents()).thenReturn(EMPTY_SUCESS_RESPONSE);
+
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+
+        ApiResponse<EmptyResponse> apiResponse = fileApiClientAdapter.deleteFile(FILE_URI);
+
+        // Validate the request
+        HttpRequestBase request = requestCaptor.getValue();
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_URI, FILE_URI)));
+        assertEquals(HOST, request.getURI().getHost());
+
+        // Validate the response
+        assertEquals("SUCCESS", apiResponse.getCode());
+        assertNull(apiResponse.getData());
+    }
+
+    @Test
+    public void testLastModified() throws ApiException, IOException
+    {
+        Date lastModifiedAfter = new Date();
+
+        StringResponse response = mock(StringResponse.class);
+        when(response.getContents()).thenReturn(String.format(LAST_MODIFIED_RESPONSE, LOCALE, DateFormatter.format(lastModifiedAfter)));
+
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+
+        ApiResponse<FileLastModified> apiResponse = fileApiClientAdapter.getLastModified(FILE_URI, lastModifiedAfter, LOCALE);
+
+        // Validate the request
+        HttpRequestBase request = requestCaptor.getValue();
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_URI, FILE_URI)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LAST_MODIFIED_AFTER, DateFormatter.format(lastModifiedAfter))));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LOCALE, LOCALE)));
+        assertEquals(HOST, request.getURI().getHost());
+
+        // Validate the response
+        assertEquals("SUCCESS", apiResponse.getCode());
+        assertNotNull(apiResponse.getData());
+
+        FileLastModified fileLastModified = apiResponse.getData();
+        assertEquals(1, fileLastModified.getItems().size());
+
+        FileLocaleLastModified fileLocaleLastModified = fileLastModified.getItems().get(0);
+        assertEquals(lastModifiedAfter.getTime() / 1000, fileLocaleLastModified.getLastModified().getTime() / 1000);
+        assertEquals(LOCALE, fileLocaleLastModified.getLocale());
+    }
+
+    @Test
+    public void testUploadFile() throws ApiException, IOException
+    {
         FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
-        fileUploadParameterBuilder
-                .fileType(ApiTestHelper.getTestFileType())
-                .approveContent(APPROVE_CONTENT)
-                .callbackUrl(CALLBACK_URL);
-        fileApiClientAdapter.uploadFile(fileForUpload, TEST_FILE_ENCODING,
-                fileUploadParameterBuilder
-        );
+        fileUploadParameterBuilder.approveContent(true);
+        fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
+        fileUploadParameterBuilder.fileType(FileType.JAVA_PROPERTIES);
+        fileUploadParameterBuilder.localesToApprove(Collections.singletonList(LOCALE));
+        fileUploadParameterBuilder.overwriteApprovedLocales(true);
+        fileUploadParameterBuilder.fileUri(FILE_URI);
 
-    }
+        File uploadFile = mock(File.class);
+        when(uploadFile.getName()).thenReturn(FILE_URI);
 
-    private void verifyFileListHasFileUri(String fileUri, String callbackUrl, List<FileStatus> fileList)
-    {
-        boolean foundMatchingFileUri = false;
-        for (FileStatus fileStatus : fileList)
-        {
-            if (fileStatus.getFileUri().equals(fileUri) && fileStatus.getCallbackUrl().equals(callbackUrl))
-            {
-                foundMatchingFileUri = true;
-                break;
-            }
-        }
-        assertTrue("File Uri not found", foundMatchingFileUri);
-    }
+        StringResponse response = mock(StringResponse.class);
+        when(response.getContents()).thenReturn(UPLOAD_RESPONSE);
 
-    private String createFileUri()
-    {
-        return String.format(SKD_FILE_URI, System.currentTimeMillis());
-    }
+        ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
 
-    private void verifyFileStatus(String expectedFileUri, String expectedCallbackUrl, FileStatus fileStatus)
-    {
-        assertEquals(expectedFileUri, fileStatus.getFileUri());
-        assertEquals(expectedCallbackUrl, fileStatus.getCallbackUrl());
-    }
+        ApiResponse<UploadFileData> apiResponse = fileApiClientAdapter.uploadFile(uploadFile, "UTF-8", fileUploadParameterBuilder);
 
-    private void verifyFileLastModified(FileLastModified lastModified)
-    {
-        assertNotNull(lastModified.getItems());
-        assertEquals(1, lastModified.getItems().size());
-        assertEquals(locale, lastModified.getItems().get(0).getLocale());
-        assertNotNull(lastModified.getItems().get(0).getLastModified());
+        // Validate the request
+        HttpRequestBase request = requestCaptor.getValue();
+        List<NameValuePair> params = URLEncodedUtils.parse(request.getURI(), "UTF-8");
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.API_KEY, API_KEY)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.PROJECT_ID, PROJECT_ID)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.CALLBACK_URL, CALLBACK_URL)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_URI, FILE_URI)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.FILE_TYPE, FileType.JAVA_PROPERTIES.getIdentifier())));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.LOCALES_TO_APPROVE + "[0]", LOCALE)));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.APPROVED, Boolean.TRUE.toString())));
+        assertTrue(params.contains(new BasicNameValuePair(FileApiParams.OVERWRITE_APPROVED_LOCALES, Boolean.TRUE.toString())));
+        assertEquals(HOST, request.getURI().getHost());
+
+        // Validate the response
+        assertEquals("SUCCESS", apiResponse.getCode());
+        UploadFileData uploadFileData = apiResponse.getData();
+        assertEquals(1, uploadFileData.getStringCount());
+        assertEquals(2, uploadFileData.getWordCount());
+        assertTrue(uploadFileData.isOverWritten());
     }
 }

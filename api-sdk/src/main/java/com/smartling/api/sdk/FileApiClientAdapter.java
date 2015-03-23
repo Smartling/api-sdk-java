@@ -29,6 +29,7 @@ import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -46,10 +47,21 @@ public interface FileApiClientAdapter
      * @return ApiResponse from a success response from the File API.
      * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    // TODO(AShesterov): refactor API-SDK to the following style: fileApiClientAdapter.uploadFile().file(String|Stream|File).charset(Charset|String).fileType(FileType|String).<FileUploadParameterBuilderMethods>().perform();
     ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String fileEncoding,
-                                       final FileUploadParameterBuilder fileUploadParameterBuilder)
-            throws ApiException;
+                                       final FileUploadParameterBuilder fileUploadParameterBuilder) throws ApiException;
+
+    /**
+     * Uploads a file for translation to the Smartling Translation API.
+     *
+     * @param inputStream stream to be read from to collect data and then upload as a file.
+     * @param fileName name used to identify the file
+     * @param fileEncoding the encoding of the file. Can be null but best if encoding is specified.
+     * @param fileUploadParameterBuilder  parameters
+     * @return ApiResponse from a success response from the File API.
+     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     */
+    ApiResponse<UploadFileData> uploadFile(final InputStream inputStream, final String fileName, final String fileEncoding,
+                                       final FileUploadParameterBuilder fileUploadParameterBuilder) throws ApiException;
 
     /**
      * Get the translated (or original) file contents.

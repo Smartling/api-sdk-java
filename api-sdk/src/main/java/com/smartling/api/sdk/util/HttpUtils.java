@@ -18,20 +18,17 @@ package com.smartling.api.sdk.util;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.ApiException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -45,9 +42,23 @@ public class HttpUtils
     private static final Log logger = LogFactory.getLog(HttpUtils.class);
 
     private static final String LOG_MESSAGE_ERROR_TEMPLATE = "GENERAL ERROR: %s";
+    static final String SCHEME_HTTPS = "https";
+    static final String SCHEME_HTTP = "http";
+    static final String PROPERTY_SUFFIX_PROXY_HOST = ".proxyHost";
+    static final String PROPERTY_SUFFIX_PROXY_PORT = ".proxyPort";
+    static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
+    static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
 
-    private HttpUtils()
+    private HttpProxyUtils httpProxyUtils;
+
+    public void setHttpProxyUtils(HttpProxyUtils httpProxyUtils)
     {
+        this.httpProxyUtils = httpProxyUtils;
+    }
+
+    public HttpUtils()
+    {
+        this.httpProxyUtils = new HttpProxyUtils();
     }
 
     /**
@@ -57,14 +68,18 @@ public class HttpUtils
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    public static StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws ApiException
+    public StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws ApiException
     {
-        HttpClient httpClient = null;
+        CloseableHttpClient httpClient = null;
         try
         {
-            httpClient = new DefaultHttpClient();
+            ProxyConfiguration newProxyConfiguration = mergeSystemProxyConfiguration(proxyConfiguration);
+            httpClient = httpProxyUtils.getHttpClient(newProxyConfiguration);
 
-            ProxyUtils.setupProxy(httpClient, proxyConfiguration);
+            RequestConfig proxyRequestConfig = httpProxyUtils.getProxyRequestConfig(httpRequest, newProxyConfiguration);
+
+            if (proxyRequestConfig != null)
+                httpRequest.setConfig(proxyRequestConfig);
 
             final HttpResponse response = httpClient.execute(httpRequest);
 
@@ -82,12 +97,19 @@ public class HttpUtils
         }
         finally
         {
-            if (null != httpClient)
-                httpClient.getConnectionManager().shutdown();
+            try
+            {
+                if (null != httpClient)
+                    httpClient.close();
+            }
+            catch (final IOException ioe)
+            {
+                logger.warn(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
+            }
         }
     }
 
-    private static StringResponse inputStreamToString(final InputStream inputStream, final String encoding) throws IOException
+    private StringResponse inputStreamToString(final InputStream inputStream, final String encoding) throws IOException
     {
         final byte[] contentsRaw = IOUtils.toByteArray(inputStream);
         // unless UTF-16 explicitly specified, use default UTF-8 encoding.
@@ -96,64 +118,30 @@ public class HttpUtils
         return new StringResponse(contents, contentsRaw, responseEncoding);
     }
 
-    private static class ProxyUtils
+    private ProxyConfiguration mergeSystemProxyConfiguration(final ProxyConfiguration proxyConfiguration)
     {
-        private static final String SCHEME_HTTPS                   = "https";
-        private static final String SCHEME_HTTP                    = "http";
-        private static final String PROPERTY_SUFFIX_PROXY_HOST     = ".proxyHost";
-        private static final String PROPERTY_SUFFIX_PROXY_PORT     = ".proxyPort";
-        private static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
-        private static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
-
-        public static void setupProxy(final HttpClient httpClient, final ProxyConfiguration configuration)
+        String protocol = defineSchemeFromSystemProperties();
+        if (protocol != null)
         {
-            if (null != configuration)
-                setProxyToHttpClient(httpClient, configuration.getHost(), configuration.getPort(), configuration.getUsername(), configuration.getPassword());
-            else
-                setupProxyFromSystemProperties(httpClient);
+            ProxyConfiguration newProxyConfiguration = new ProxyConfiguration();
+            newProxyConfiguration.setHost(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_HOST));
+            newProxyConfiguration.setPort(Integer.valueOf(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PORT)));
+            newProxyConfiguration.setUsername(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_USERNAME));
+            newProxyConfiguration.setPassword(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PASSWORD));
+
+            return newProxyConfiguration;
         }
+        return proxyConfiguration;
+    }
 
-        public static void setupProxyFromSystemProperties(final HttpClient httpClient)
-        {
-            final String protocol = defineSchemeFromSystemProperties();
+    private String defineSchemeFromSystemProperties()
+    {
+        if (StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_HOST)) && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_PORT)))
+            return SCHEME_HTTPS;
 
-            if (null != protocol)
-                setProxyToHttpClient(httpClient,
-                        System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_HOST),
-                        Integer.valueOf(System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PORT)),
-                        System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_USERNAME),
-                        System.getProperty(protocol + PROPERTY_SUFFIX_PROXY_PASSWORD)
-                );
-        }
+        if (StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_HOST)) && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_PORT)))
+            return SCHEME_HTTP;
 
-        private static void setProxyToHttpClient(final HttpClient httpClient, final String proxyHost, final Integer proxyPort, final String username, final String password)
-        {
-            if (null == proxyHost || null == proxyPort)
-                return;
-
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password) && httpClient instanceof DefaultHttpClient)
-            {
-                ((DefaultHttpClient)httpClient).getCredentialsProvider().setCredentials(
-                        new AuthScope(proxyHost, proxyPort),
-                        new UsernamePasswordCredentials(username, password)
-                );
-            }
-
-            final HttpHost proxy = new HttpHost(proxyHost, proxyPort);
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-        }
-
-        private static String defineSchemeFromSystemProperties()
-        {
-            if (StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_HOST))
-                    && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTPS + PROPERTY_SUFFIX_PROXY_PORT)))
-                return SCHEME_HTTPS;
-
-            if (StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_HOST))
-                    && StringUtils.isNotBlank(System.getProperty(SCHEME_HTTP + PROPERTY_SUFFIX_PROXY_PORT)))
-                return SCHEME_HTTP;
-
-            return null;
-        }
+        return null;
     }
 }

@@ -21,7 +21,6 @@ import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.project.ProjectLocaleList;
 import com.smartling.api.sdk.exceptions.ApiException;
-import com.smartling.api.sdk.util.HttpUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpGet;
@@ -76,7 +75,7 @@ public class ProjectApiClientAdapterImpl extends BaseApiClientAdapter implements
         String params = buildParamsQuery();
         HttpGet getRequest = new HttpGet(buildUrl(GET_PROJECT_LOCALES_API_URL, params));
 
-        StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
         ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
         logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 

@@ -47,10 +47,9 @@ import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
-
-import com.smartling.api.sdk.util.HttpUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -61,7 +60,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.message.BasicNameValuePair;
 
 /**
@@ -131,7 +132,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
 
-        final StringResponse stringResponse = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse stringResponse = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
         logger.debug(String.format("Get file: %s", SUCCESS_CODE));
 
         return stringResponse;
@@ -146,7 +147,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildFileListParams(fileListSearchParams);
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LIST_API_URL, params));
 
-        final StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {});
         logger.debug(String.format("Get files list: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -161,7 +162,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_STATUS_API_URL, params));
 
-        final StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
         logger.debug(String.format("Get file status: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -172,19 +173,16 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
     public ApiResponse<UploadFileData> uploadFile(final File fileToUpload, final String charsetName, final FileUploadParameterBuilder fileUploadParameterBuilder)
             throws ApiException
     {
-        logger.debug(String.format("Upload file: fileUri = %s, projectId = %s, apiKey = %s, localesToApprove = %s",
-                fileUploadParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), StringUtils.join(fileUploadParameterBuilder.getLocalesToApprove(), ", ")));
+        FileBody fileBody = new FileBody(fileToUpload, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileToUpload.getName());
+        return uploadFile(fileUploadParameterBuilder, fileBody);
+    }
 
-        final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
-        final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
-        final HttpPost httpPostFile = createFileUploadHttpPostRequest(params, fileToUpload,
-                createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)));
-
-        final StringResponse response = HttpUtils.executeHttpCall(httpPostFile, proxyConfiguration);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
-        logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
-
-        return apiResponse;
+    @Override
+    public ApiResponse<UploadFileData> uploadFile(final InputStream inputStream, final String fileName, final String charsetName,
+        final FileUploadParameterBuilder fileUploadParameterBuilder) throws ApiException
+    {
+        InputStreamBody inputStreamBody = new InputStreamBody(inputStream, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileName);
+        return uploadFile(fileUploadParameterBuilder, inputStreamBody);
     }
 
     @Override
@@ -196,7 +194,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpDelete httpDeleteFileRequest = new HttpDelete(buildUrl(DELETE_FILE_URL, params));
 
-        final StringResponse response = HttpUtils.executeHttpCall(httpDeleteFileRequest, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(httpDeleteFileRequest, proxyConfiguration);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Delete file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -212,7 +210,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(NEW_FILE_URI, newFileUri));
         final HttpPost httpPostRequest = new HttpPost(buildUrl(RENAME_FILE_URL, params));
 
-        final StringResponse response = HttpUtils.executeHttpCall(httpPostRequest, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(httpPostRequest, proxyConfiguration);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Rename file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -232,22 +230,39 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         );
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LAST_MODIFIED, params));
 
-        final StringResponse response = HttpUtils.executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
         logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
     }
 
-    private HttpPost createFileUploadHttpPostRequest(final String apiParameters, final File file, final ContentType contentType)
+    private HttpPost createFileUploadHttpPostRequest(final String apiParameters, final ContentBody contentBody)
     {
         final MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create()
-                .addPart(FileApiParams.FILE, new FileBody(file, contentType, file.getName()));
+                .addPart(FileApiParams.FILE, contentBody);
 
         final HttpPost httpPost = new HttpPost(String.format(UPLOAD_FILE_API_URL, baseApiUrl) + apiParameters);
         httpPost.setEntity(multipartEntityBuilder.build());
 
         return httpPost;
+    }
+
+    private ApiResponse<UploadFileData> uploadFile(final FileUploadParameterBuilder fileUploadParameterBuilder, final ContentBody contentBody)
+            throws ApiException
+    {
+        logger.debug(String.format("Upload file: fileUri = %s, projectId = %s, apiKey = %s, localesToApprove = %s",
+                fileUploadParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), StringUtils.join(fileUploadParameterBuilder.getLocalesToApprove(), ", ")));
+
+        final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
+        final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
+        final HttpPost httpPostFile = createFileUploadHttpPostRequest(params, contentBody);
+
+        final StringResponse response = getHttpUtils().executeHttpCall(httpPostFile, proxyConfiguration);
+        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
+        logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+        return apiResponse;
     }
 
     private String buildFileListParams(final FileListSearchParams fileListSearchParams)

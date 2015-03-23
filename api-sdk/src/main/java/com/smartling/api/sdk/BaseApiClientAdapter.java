@@ -22,6 +22,8 @@ import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
 import com.smartling.api.sdk.util.DateTypeAdapter;
+import com.smartling.api.sdk.util.HttpUtils;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -48,6 +50,8 @@ public abstract class BaseApiClientAdapter
     private static final String SMARTLING_API_URL         = "https://api.smartling.com/v1";
     private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
 
+    private HttpUtils httpUtils;
+
     protected static final String SUCCESS_CODE       = "SUCCESS";
 
     protected String baseApiUrl;
@@ -55,6 +59,16 @@ public abstract class BaseApiClientAdapter
     protected String projectId;
 
     protected ProxyConfiguration proxyConfiguration;
+
+    public HttpUtils getHttpUtils()
+    {
+        return httpUtils;
+    }
+
+    public void setHttpUtils(HttpUtils httpUtils)
+    {
+        this.httpUtils = httpUtils;
+    }
 
     /**
      * Instantiate using the production mode setting (non sandbox).
@@ -130,8 +144,9 @@ public abstract class BaseApiClientAdapter
         this.apiKey = apiKey;
         this.projectId = projectId;
         this.proxyConfiguration = proxyConfiguration;
-    }
 
+        this.httpUtils = new HttpUtils();
+    }
 
     protected String buildUrl(final String apiServerUrl, final String apiParameters)
     {
@@ -187,7 +202,7 @@ public abstract class BaseApiClientAdapter
         return responseMessages;
     }
 
-    protected static <T extends Data> ApiResponse<T> getApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
+    protected <T extends Data> ApiResponse<T> getApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
     {
         final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
