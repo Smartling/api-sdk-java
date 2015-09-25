@@ -37,14 +37,15 @@ class ProjectPropertiesHolder
     {
         private static final Properties PROPERTIES;
 
-        static {
+        static
+        {
             PROPERTIES = new Properties();
             try
             {
                 PROPERTIES.load(Holder.class.getClassLoader().getResourceAsStream(PROJECT_PROPERTIES_FILE));
             } catch (IOException e)
             {
-                LOGGER.error(String.format("Could not read properties file=%s",PROJECT_PROPERTIES_FILE));
+                LOGGER.error(String.format("Could not read properties file=%s", PROJECT_PROPERTIES_FILE));
                 throw new RuntimeException(e);
             }
         }
