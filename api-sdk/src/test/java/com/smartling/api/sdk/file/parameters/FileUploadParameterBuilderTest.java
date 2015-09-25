@@ -33,11 +33,15 @@ public class FileUploadParameterBuilderTest
     @Test
     public void shouldContainGivenClientLibIdDirective()
     {
-        String clientLibUid = "client-lib-id@1.0.0";
-        testedInstance.clientUid(clientLibUid);
+        String name = "client-lib-id";
+        String version = "1.0.0";
+
+        String expectedValue = "{\"client\":\"client-lib-id\",\"version\":\"1.0.0\"}";
+
+        testedInstance.clientUid(name, version);
 
         List<NameValuePair> nameValueList = testedInstance.getNameValueList();
-        assertTrue(nameValueList.contains(new BasicNameValuePair(FileApiParams.CLIENT_LIB_ID, clientLibUid)));
+        assertTrue(nameValueList.contains(new BasicNameValuePair(FileApiParams.CLIENT_LIB_ID, expectedValue)));
 
     }
 

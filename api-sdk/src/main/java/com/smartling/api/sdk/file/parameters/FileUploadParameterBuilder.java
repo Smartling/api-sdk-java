@@ -114,12 +114,13 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     /**
      * library UID that uses sdk for sending files
      * if UID is not provided default UID that is equal to sdk library UID is set
-     * @param clientUid
+     * @param name
+     * @param version
      * @return
      */
-    public FileUploadParameterBuilder clientUid(final String clientUid)
+    public FileUploadParameterBuilder clientUid(final String name, final String version)
     {
-        this.clientUid = clientUid;
+        this.clientUid = ProjectPropertiesHolder.clientUid(name, version);
         return this;
     }
 

@@ -1,6 +1,7 @@
 package com.smartling.api.sdk.file.parameters;
 
 
+import com.google.gson.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,19 +20,14 @@ class ProjectPropertiesHolder {
     private static final String VERSION_KEY = "version";
 
     static String defaultClientUid() {
-        StringBuilder builder = new StringBuilder();
-        Properties properties = Holder.PROPERTIES;
-        builder
-                .append("{")
-                    .append("\"").append(CLIENT_KEY).append("\"")
-                    .append(":")
-                    .append("\"").append(properties.getProperty(PROJECT_ARTIFACT_ID)).append("\"")
-                .append(",")
-                    .append("\"").append(VERSION_KEY).append("\"")
-                    .append(":")
-                    .append("\"").append(properties.getProperty(PROJECT_VERSION)).append("\"")
-                .append("}");
-        return builder.toString();
+        return clientUid(Holder.PROPERTIES.getProperty(PROJECT_ARTIFACT_ID), Holder.PROPERTIES.getProperty(PROJECT_VERSION));
+    }
+
+    static String clientUid(String name, String version) {
+        JsonObject object = new JsonObject();
+        object.addProperty(CLIENT_KEY, name);
+        object.addProperty(VERSION_KEY, version);
+        return object.toString();
     }
 
     private static class Holder {
@@ -42,7 +38,7 @@ class ProjectPropertiesHolder {
             try {
                 PROPERTIES.load(Holder.class.getClassLoader().getResourceAsStream(PROJECT_PROPERTIES_FILE));
             } catch (IOException e) {
-                logger.error("Could not read properties file="+ PROJECT_PROPERTIES_FILE);
+                logger.error(String.format("Could not read properties file=%s",PROJECT_PROPERTIES_FILE));
                 throw new RuntimeException(e);
             }
         }
