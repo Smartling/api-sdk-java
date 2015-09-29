@@ -15,13 +15,10 @@
  */
 package com.smartling.api.sdk;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
-import com.smartling.api.sdk.util.DateTypeAdapter;
 import com.smartling.api.sdk.util.HttpUtils;
 
 import org.apache.commons.lang3.CharEncoding;
@@ -33,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
@@ -168,7 +164,7 @@ public abstract class BaseApiClientAdapter
 
     protected List<NameValuePair> getRequiredParams()
     {
-        final List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        final List<NameValuePair> qparams = new ArrayList<>();
         qparams.add(new BasicNameValuePair(API_KEY, apiKey));
         qparams.add(new BasicNameValuePair(PROJECT_ID, projectId));
 
@@ -185,7 +181,7 @@ public abstract class BaseApiClientAdapter
         if (null == values || values.isEmpty())
             return Collections.emptyList();
 
-        final List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+        final List<BasicNameValuePair> nameValuePairs = new ArrayList<>();
         for (final String value : values)
             nameValuePairs.add(new BasicNameValuePair(name, value));
 
@@ -204,12 +200,6 @@ public abstract class BaseApiClientAdapter
 
     protected <T extends Data> ApiResponse<T> getApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
     {
-        final GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
-
-        final Gson gson = builder.create();
-        final ApiResponseWrapper<T> responseWrapper = gson.fromJson(response, responseType.getType());
-
-        return responseWrapper.getResponse();
+        return JsonReader.getApiResponse(response, responseType);
     }
 }
