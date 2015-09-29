@@ -15,9 +15,10 @@
  */
 package com.smartling.api.sdk.dto;
 
-import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.List;
 
 // TODO(AShesterov): refactor API-SDK: rename ApiResponse to SmartlingApiResponse
 
@@ -31,7 +32,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class ApiResponse<T extends Data>
 {
     private T            data;
-    private String       code;
+    private ApiCode      code;
     private List<String> messages;
 
     /**
@@ -47,15 +48,17 @@ public class ApiResponse<T extends Data>
 
     /**
      * The response code returned from the Smartling Translation API.
+     *
      * @return response code
      */
-    public String getCode()
+    public ApiCode getCode()
     {
         return code;
     }
 
     /**
      * The messages returned form the Smartling Translation API.
+     *
      * @return list of messages.
      */
     public List<String> getMessages()

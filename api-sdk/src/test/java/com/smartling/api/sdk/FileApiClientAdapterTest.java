@@ -31,7 +31,6 @@ import com.smartling.api.sdk.file.RetrievalType;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.util.DateFormatter;
 import com.smartling.api.sdk.util.HttpUtils;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -46,8 +45,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static com.smartling.api.sdk.dto.ApiCode.SUCCESS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FileApiClientAdapterTest
 {
@@ -182,7 +188,7 @@ public class FileApiClientAdapterTest
         assertEquals(HOST, request.getURI().getHost());
 
         // Validate the response
-        assertEquals("SUCCESS", apiResponse.getCode());
+        assertEquals(SUCCESS, apiResponse.getCode());
         assertNull(apiResponse.getData());
     }
 
@@ -206,7 +212,7 @@ public class FileApiClientAdapterTest
         assertEquals(HOST, request.getURI().getHost());
 
         // Validate the response
-        assertEquals("SUCCESS", apiResponse.getCode());
+        assertEquals(SUCCESS, apiResponse.getCode());
         assertNull(apiResponse.getData());
     }
 
@@ -234,7 +240,7 @@ public class FileApiClientAdapterTest
         assertEquals(HOST, request.getURI().getHost());
 
         // Validate the response
-        assertEquals("SUCCESS", apiResponse.getCode());
+        assertEquals(SUCCESS, apiResponse.getCode());
         assertNotNull(apiResponse.getData());
 
         FileLastModified fileLastModified = apiResponse.getData();
@@ -281,7 +287,7 @@ public class FileApiClientAdapterTest
         assertEquals(HOST, request.getURI().getHost());
 
         // Validate the response
-        assertEquals("SUCCESS", apiResponse.getCode());
+        assertEquals(SUCCESS, apiResponse.getCode());
         UploadFileData uploadFileData = apiResponse.getData();
         assertEquals(1, uploadFileData.getStringCount());
         assertEquals(2, uploadFileData.getWordCount());
