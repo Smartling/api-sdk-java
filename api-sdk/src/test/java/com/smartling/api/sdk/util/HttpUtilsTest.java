@@ -15,14 +15,9 @@
  */
 package com.smartling.api.sdk.util;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
+import com.smartling.api.sdk.ProxyConfiguration;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.exceptions.ApiException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -35,9 +30,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.smartling.api.sdk.ProxyConfiguration;
-import com.smartling.api.sdk.dto.file.StringResponse;
-import com.smartling.api.sdk.exceptions.ApiException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class HttpUtilsTest
 {
@@ -50,7 +55,9 @@ public class HttpUtilsTest
     private HttpEntity httpEntity;
     private StatusLine statusLine;
 
-    private static final String TEST_RESPONSE = "test response";
+    private static final String TEST_RESPONSE = "{\"response\":{\"data\":null,\"code\":\"VALIDATION_ERROR\",\"messages\":[\"apiKey parameter is required\"]}}";
+    private static final String TEST_MESSAGE  = "apiKey parameter is required";
+
     private static final String HOST = "host";
     private static final String PASSWORD = "password";
     private static final String PORT = "5000";
@@ -107,7 +114,7 @@ public class HttpUtilsTest
         }
         catch (ApiException e)
         {
-            assertEquals(TEST_RESPONSE, e.getMessage());
+            assertEquals(TEST_MESSAGE, e.getMessage());
         }
     }
 
