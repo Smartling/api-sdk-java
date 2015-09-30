@@ -22,12 +22,12 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 
-import static com.smartling.api.sdk.dto.ApiCode.SUCCESS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ApiTestHelper
 {
+    private static final String   SUCCESS            = "SUCCESS";
     private static final FileType TEST_FILE_TYPE     = FileType.JAVA_PROPERTIES;
     private static final String   TEST_FILE_LOCATION = "resources/test.properties";
 

@@ -32,7 +32,7 @@ import java.util.List;
 public class ApiResponse<T extends Data>
 {
     private T            data;
-    private ApiCode      code;
+    private String       code;
     private List<String> messages;
 
     /**
@@ -48,17 +48,15 @@ public class ApiResponse<T extends Data>
 
     /**
      * The response code returned from the Smartling Translation API.
-     *
      * @return response code
      */
-    public ApiCode getCode()
+    public String getCode()
     {
         return code;
     }
 
     /**
      * The messages returned form the Smartling Translation API.
-     *
      * @return list of messages.
      */
     public List<String> getMessages()

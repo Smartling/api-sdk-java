@@ -20,6 +20,7 @@ import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
 import com.smartling.api.sdk.util.HttpUtils;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.smartling.api.sdk.dto.ApiCode.SUCCESS;
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
 import static com.smartling.api.sdk.file.FileApiParams.PROJECT_ID;
 
@@ -47,6 +47,8 @@ public abstract class BaseApiClientAdapter
     private static final String SMARTLING_SANDBOX_API_URL = "https://sandbox-api.smartling.com/v1";
 
     private HttpUtils httpUtils;
+
+    protected static final String SUCCESS_CODE       = "SUCCESS";
 
     protected String baseApiUrl;
     protected String apiKey;
@@ -190,7 +192,7 @@ public abstract class BaseApiClientAdapter
     {
         String responseMessages = StringUtils.EMPTY;
 
-        if (SUCCESS != apiResponse.getCode())
+        if (!SUCCESS_CODE.equals(apiResponse.getCode()))
             responseMessages = String.format(RESPONSE_MESSAGES, StringUtils.join(apiResponse.getMessages(), ", "));
 
         return responseMessages;

@@ -56,7 +56,6 @@ public class HttpUtilsTest
     private StatusLine statusLine;
 
     private static final String TEST_RESPONSE = "{\"response\":{\"data\":null,\"code\":\"VALIDATION_ERROR\",\"messages\":[\"apiKey parameter is required\"]}}";
-    private static final String TEST_MESSAGE  = "apiKey parameter is required";
 
     private static final String HOST = "host";
     private static final String PASSWORD = "password";
@@ -114,7 +113,7 @@ public class HttpUtilsTest
         }
         catch (ApiException e)
         {
-            assertEquals(TEST_MESSAGE, e.getMessage());
+            assertEquals(TEST_RESPONSE, e.getMessage());
         }
     }
 

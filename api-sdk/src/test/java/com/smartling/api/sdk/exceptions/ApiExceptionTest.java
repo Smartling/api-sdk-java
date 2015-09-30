@@ -1,6 +1,5 @@
 package com.smartling.api.sdk.exceptions;
 
-import com.smartling.api.sdk.dto.ApiCode;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,7 +28,7 @@ public class ApiExceptionTest
     {
         ApiException apiException = ApiException.newException(ERROR_RESPONSE, 0);
 
-        assertThat(apiException.getApiCode(), is(equalTo(ApiCode.VALIDATION_ERROR)));
+        assertThat(apiException.getApiCode(), is(equalTo("VALIDATION_ERROR")));
     }
 
     @Test
@@ -52,6 +51,6 @@ public class ApiExceptionTest
     public void shouldSetNetworkErrorCodeInCaseIoException() {
         ApiException apiException = ApiException.newException(new IOException("Some exception"));
 
-        assertThat(apiException.getApiCode(), is(ApiCode.NETWORK_ERROR));
+        assertThat(apiException.getApiCode(), is("GENERAL_ERROR"));
     }
 }

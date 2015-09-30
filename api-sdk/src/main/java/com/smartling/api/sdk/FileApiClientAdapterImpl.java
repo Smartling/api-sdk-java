@@ -134,7 +134,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
 
         final StringResponse stringResponse = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
-        logger.debug("Get file: SUCCESS");
+        logger.debug(String.format("Get file: %s", SUCCESS_CODE));
 
         return stringResponse;
     }

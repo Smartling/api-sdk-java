@@ -19,7 +19,6 @@ package com.smartling.api.sdk.exceptions;
 
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.JsonReader;
-import com.smartling.api.sdk.dto.ApiCode;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.EmptyResponse;
@@ -35,11 +34,11 @@ public class ApiException extends Exception
 {
     private static final long serialVersionUID = -397098626101615761L;
 
-    private ApiCode apiCode;
+    private String apiCode;
     private int     httpCode;
     private List<String> messages = new ArrayList<>();
 
-    ApiException(final String contents, List<String> messages, final ApiCode apiCode, int httpCode)
+    ApiException(final String contents, List<String> messages, final String apiCode, int httpCode)
     {
         super(contents);
         this.messages = messages;
@@ -47,7 +46,7 @@ public class ApiException extends Exception
         this.httpCode = httpCode;
     }
 
-    ApiException(final Exception e, ApiCode apiCode)
+    ApiException(final Exception e, String apiCode)
     {
         super(e);
         messages.add(e.getMessage());
@@ -60,16 +59,16 @@ public class ApiException extends Exception
                 {
                 }
         );
-        ApiCode apiCode = apiResponse.getCode();
+        String apiCode = apiResponse.getCode();
         List<String> messages = apiResponse.getMessages();
         return new ApiException(contents, messages, apiCode, httpCode);
     }
 
     public static ApiException newException(IOException e) {
-        return new ApiException(e, ApiCode.NETWORK_ERROR);
+        return new ApiException(e, "GENERAL_ERROR");
     }
 
-    public ApiCode getApiCode()
+    public String getApiCode()
     {
         return apiCode;
     }
