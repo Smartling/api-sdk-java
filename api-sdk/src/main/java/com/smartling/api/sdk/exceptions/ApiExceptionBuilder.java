@@ -14,7 +14,7 @@ public class ApiExceptionBuilder
 {
     public ApiException newException(String contents, int httpCode)
     {
-        ApiResponse<EmptyResponse> apiResponse = JsonReader.getApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>()
+        ApiResponse<EmptyResponse> apiResponse = JsonReader.parseApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>()
                 {
                 }
         );

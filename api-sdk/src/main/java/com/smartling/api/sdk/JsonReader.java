@@ -11,7 +11,7 @@ import com.smartling.api.sdk.util.DateTypeAdapter;
 import java.util.Date;
 
 public class JsonReader {
-        public static <T extends Data> ApiResponse<T> getApiResponse(String response, TypeToken<ApiResponseWrapper<T>> responseType) {
+        public static <T extends Data> ApiResponse<T> parseApiResponse(String response, TypeToken<ApiResponseWrapper<T>> responseType) {
             final GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
 
