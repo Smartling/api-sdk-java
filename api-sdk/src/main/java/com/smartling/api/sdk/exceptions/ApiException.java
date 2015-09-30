@@ -34,23 +34,20 @@ public class ApiException extends Exception
 {
     private static final long serialVersionUID = -397098626101615761L;
 
-    private String apiCode;
-    private int     httpCode;
+    private int httpCode;
     private List<String> messages = new ArrayList<>();
 
-    ApiException(final String contents, List<String> messages, final String apiCode, int httpCode)
+    ApiException(final String contents, List<String> messages, int httpCode)
     {
         super(contents);
         this.messages = messages;
-        this.apiCode = apiCode;
         this.httpCode = httpCode;
     }
 
-    ApiException(final Exception e, String apiCode)
+    ApiException(final Exception e)
     {
         super(e);
         messages.add(e.getMessage());
-        this.apiCode = apiCode;
     }
 
     public static ApiException newException(String contents, int httpCode)
@@ -61,16 +58,35 @@ public class ApiException extends Exception
         );
         String apiCode = apiResponse.getCode();
         List<String> messages = apiResponse.getMessages();
-        return new ApiException(contents, messages, apiCode, httpCode);
+        return getApiException(contents, httpCode, apiCode, messages);
     }
 
-    public static ApiException newException(IOException e) {
-        return new ApiException(e, "GENERAL_ERROR");
-    }
-
-    public String getApiCode()
+    private static ApiException getApiException(final String contents, final int httpCode, final String apiCode, final List<String> messages)
     {
-        return apiCode;
+        switch (apiCode)
+        {
+            case "VALIDATION_ERROR":
+                return new ValidationException(contents, messages, httpCode);
+            case "AUTHENTICATION_ERROR":
+                return new AuthenticationException(contents, messages, httpCode);
+            case "AUTHORIZATION_ERROR":
+                return new AuthorizationException(contents, messages, httpCode);
+            case "RESOURCE_LOCKED":
+                return new ResourceLockedException(contents, messages, httpCode);
+            case "MAX_OPERATIONS_LIMIT_EXCEEDED":
+                return new OperationsLimitExceeded(contents, messages, httpCode);
+            case "GENERAL_ERROR":
+                return new UnexpectedException(contents, messages, httpCode);
+            case "MAINTENANCE_MODE_ERROR":
+                return new ServiceTemporaryUnavailableException(contents, messages, httpCode);
+            default:
+                return new ApiException(contents, messages, httpCode);
+        }
+    }
+
+    public static ApiException newException(IOException e)
+    {
+        return new ApiException(e);
     }
 
     public int getHttpCode()
