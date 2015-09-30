@@ -23,7 +23,6 @@ import com.smartling.api.sdk.dto.ApiCode;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.EmptyResponse;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,9 +39,9 @@ public class ApiException extends Exception
     private int     httpCode;
     private List<String> messages = new ArrayList<>();
 
-    ApiException(List<String> messages, final ApiCode apiCode, int httpCode)
+    ApiException(final String contents, List<String> messages, final ApiCode apiCode, int httpCode)
     {
-        super(StringUtils.join(messages, " ,"));
+        super(contents);
         this.messages = messages;
         this.apiCode = apiCode;
         this.httpCode = httpCode;
@@ -63,7 +62,7 @@ public class ApiException extends Exception
         );
         ApiCode apiCode = apiResponse.getCode();
         List<String> messages = apiResponse.getMessages();
-        return new ApiException(messages, apiCode, httpCode);
+        return new ApiException(contents, messages, apiCode, httpCode);
     }
 
     public static ApiException newException(IOException e) {
