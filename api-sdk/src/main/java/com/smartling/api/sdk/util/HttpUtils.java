@@ -18,7 +18,6 @@ package com.smartling.api.sdk.util;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.ApiException;
-import com.smartling.api.sdk.exceptions.ApiExceptionBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -89,12 +88,12 @@ public class HttpUtils
             if (statusCode == HttpStatus.SC_OK)
                 return stringResponse;
 
-            throw new ApiExceptionBuilder().newException(stringResponse.getContents(), statusCode);
+            throw ApiException.newException(stringResponse.getContents(), statusCode);
         }
         catch (final IOException ioe)
         {
             logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
-            throw new ApiExceptionBuilder().newException(ioe);
+            throw ApiException.newException(ioe);
         }
         finally
         {

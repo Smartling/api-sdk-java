@@ -17,9 +17,15 @@ package com.smartling.api.sdk.exceptions;
 
 // TODO(AShesterov): refactor API-SDK: rename ApiException to SmartlingApiException
 
+import com.google.gson.reflect.TypeToken;
+import com.smartling.api.sdk.JsonReader;
 import com.smartling.api.sdk.dto.ApiCode;
+import com.smartling.api.sdk.dto.ApiResponse;
+import com.smartling.api.sdk.dto.ApiResponseWrapper;
+import com.smartling.api.sdk.dto.EmptyResponse;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +53,21 @@ public class ApiException extends Exception
         super(e);
         messages.add(e.getMessage());
         this.apiCode = apiCode;
+    }
+
+    public static ApiException newException(String contents, int httpCode)
+    {
+        ApiResponse<EmptyResponse> apiResponse = JsonReader.parseApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>()
+                {
+                }
+        );
+        ApiCode apiCode = apiResponse.getCode();
+        List<String> messages = apiResponse.getMessages();
+        return new ApiException(messages, apiCode, httpCode);
+    }
+
+    public static ApiException newException(IOException e) {
+        return new ApiException(e, ApiCode.NETWORK_ERROR);
     }
 
     public ApiCode getApiCode()
