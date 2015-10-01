@@ -39,6 +39,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -133,7 +134,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_API_URL, params));
 
-        final StringResponse stringResponse = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse stringResponse = getStringResponse(getRequest);
         logger.debug(String.format("Get file: %s", SUCCESS_CODE));
 
         return stringResponse;
@@ -148,7 +149,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildFileListParams(fileListSearchParams);
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LIST_API_URL, params));
 
-        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse response = getStringResponse(getRequest);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {});
         logger.debug(String.format("Get files list: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -163,11 +164,16 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_STATUS_API_URL, params));
 
-        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
+        final ApiResponse apiResponse = getApiResponse(getRequest);
         logger.debug(String.format("Get file status: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
+    }
+
+    private ApiResponse getApiResponse(final HttpGet getRequest) throws ApiException
+    {
+        final StringResponse response = getStringResponse(getRequest);
+        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
     }
 
     @Override
@@ -195,7 +201,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpDelete httpDeleteFileRequest = new HttpDelete(buildUrl(DELETE_FILE_URL, params));
 
-        final StringResponse response = getHttpUtils().executeHttpCall(httpDeleteFileRequest, proxyConfiguration);
+        final StringResponse response = getStringResponse(httpDeleteFileRequest);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Delete file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -211,11 +217,16 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(NEW_FILE_URI, newFileUri));
         final HttpPost httpPostRequest = new HttpPost(buildUrl(RENAME_FILE_URL, params));
 
-        final StringResponse response = getHttpUtils().executeHttpCall(httpPostRequest, proxyConfiguration);
+        final StringResponse response = getStringResponse(httpPostRequest);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Rename file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
+    }
+
+    private StringResponse getStringResponse(final HttpRequestBase httpRequest) throws ApiException
+    {
+        return getHttpUtils().executeHttpCall(httpRequest, proxyConfiguration);
     }
 
     @Override
@@ -231,7 +242,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         );
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LAST_MODIFIED, params));
 
-        final StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
+        final StringResponse response = getStringResponse(getRequest);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
         logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
@@ -259,7 +270,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
         final HttpPost httpPostFile = createFileUploadHttpPostRequest(params, contentBody);
 
-        final StringResponse response = getHttpUtils().executeHttpCall(httpPostFile, proxyConfiguration);
+        final StringResponse response = getStringResponse(httpPostFile);
         final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
         logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
