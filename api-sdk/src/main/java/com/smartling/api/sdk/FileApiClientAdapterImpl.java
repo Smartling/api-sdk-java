@@ -275,10 +275,10 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
         String contents = stringResponse.getContents();
         logger.error(String.format("Non-successful response: \n contents: %s", contents));
-        throw getApiException(contents);
+        throw createApiException(contents);
     }
 
-    private ApiException getApiException(final String contents)
+    private ApiException createApiException(final String contents)
     {
         ApiResponse<EmptyResponse> emptyResponseApiResponse = parseApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
 
