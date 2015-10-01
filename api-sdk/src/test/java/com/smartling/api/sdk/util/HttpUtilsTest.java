@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -94,27 +93,6 @@ public class HttpUtilsTest
 
         assertEquals(TEST_RESPONSE, response.getContents());
         verify(httpRequest, never()).setConfig(any(RequestConfig.class));
-    }
-
-    @Test
-    public void testExecuteHttpCall404() throws ApiException, ClientProtocolException, IOException
-    {
-        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_NOT_FOUND);
-
-        CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        when(httpProxyUtils.getHttpClient(proxyConfiguration)).thenReturn(httpClient);
-        when(httpProxyUtils.getProxyRequestConfig(httpRequest, proxyConfiguration)).thenReturn(null);
-        when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
-
-        try
-        {
-            StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
-            fail();
-        }
-        catch (ApiException e)
-        {
-            assertEquals(TEST_RESPONSE, e.getMessage());
-        }
     }
 
     @Test

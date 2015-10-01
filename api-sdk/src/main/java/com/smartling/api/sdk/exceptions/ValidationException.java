@@ -4,8 +4,8 @@ import java.util.List;
 
 public class ValidationException extends ApiException
 {
-    ValidationException(final String contents, List<String> messages, int httpCode)
+    public ValidationException(final String contents, List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

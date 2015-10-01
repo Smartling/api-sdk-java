@@ -83,17 +83,14 @@ public class HttpUtils
             final HttpResponse response = httpClient.execute(httpRequest);
 
             final String charset = EntityUtils.getContentCharSet(response.getEntity());
-            final StringResponse stringResponse = inputStreamToString(response.getEntity().getContent(), charset);
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.SC_OK)
-                return stringResponse;
 
-            throw ApiException.newException(stringResponse.getContents(), statusCode);
+            return inputStreamToString(response.getEntity().getContent(), charset, statusCode);
         }
         catch (final IOException ioe)
         {
             logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
-            throw ApiException.newException(ioe);
+            throw new ApiException(ioe);
         }
         finally
         {
@@ -109,13 +106,13 @@ public class HttpUtils
         }
     }
 
-    private StringResponse inputStreamToString(final InputStream inputStream, final String encoding) throws IOException
+    private StringResponse inputStreamToString(final InputStream inputStream, final String encoding, final int httpCode) throws IOException
     {
         final byte[] contentsRaw = IOUtils.toByteArray(inputStream);
         // unless UTF-16 explicitly specified, use default UTF-8 encoding.
         final String responseEncoding = (null == encoding || !encoding.toUpperCase().contains(CharEncoding.UTF_16) ? CharEncoding.UTF_8 : CharEncoding.UTF_16);
         final String contents = new String(contentsRaw, responseEncoding);
-        return new StringResponse(contents, contentsRaw, responseEncoding);
+        return new StringResponse(contents, contentsRaw, responseEncoding, httpCode == HttpStatus.SC_OK);
     }
 
     private ProxyConfiguration mergeSystemProxyConfiguration(final ProxyConfiguration proxyConfiguration)

@@ -4,8 +4,8 @@ import java.util.List;
 
 public class UnexpectedException extends ApiException
 {
-    UnexpectedException(final String contents, final List<String> messages, final int httpCode)
+    public UnexpectedException(final String contents, final List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

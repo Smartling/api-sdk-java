@@ -4,8 +4,8 @@ import java.util.List;
 
 public class AuthorizationException extends ApiException
 {
-    AuthorizationException(final String contents, final List<String> messages, final int httpCode)
+    public AuthorizationException(final String contents, final List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

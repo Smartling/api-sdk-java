@@ -4,8 +4,8 @@ import java.util.List;
 
 public class OperationsLimitExceeded extends ApiException
 {
-    OperationsLimitExceeded(final String contents, final List<String> messages, final int httpCode)
+    public OperationsLimitExceeded(final String contents, final List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

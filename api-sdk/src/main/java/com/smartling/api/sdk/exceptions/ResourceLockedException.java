@@ -4,8 +4,8 @@ import java.util.List;
 
 public class ResourceLockedException extends ApiException
 {
-    ResourceLockedException(final String contents, final List<String> messages, final int httpCode)
+    public ResourceLockedException(final String contents, final List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

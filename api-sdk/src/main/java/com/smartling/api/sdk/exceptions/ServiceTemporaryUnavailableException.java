@@ -4,9 +4,8 @@ import java.util.List;
 
 public class ServiceTemporaryUnavailableException extends ApiException
 {
-    ServiceTemporaryUnavailableException(final String contents, final List<String> messages,
-            final int httpCode)
+    public ServiceTemporaryUnavailableException(final String contents, final List<String> messages)
     {
-        super(contents, messages, httpCode);
+        super(contents, messages);
     }
 }

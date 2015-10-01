@@ -39,6 +39,8 @@ public class ApiTestHelper
         return apiKey;
     }
 
+    //-DapiKey=fb806b96-07da-4a3c-ba45-9cd26c52cf8d -DprojectId=1295c174d -DtestLocale=es -DcallbackUrl=localhost:8080 -DtestMode=true
+
     public static String getProjectId()
     {
         String projectId = System.getProperty("projectId");

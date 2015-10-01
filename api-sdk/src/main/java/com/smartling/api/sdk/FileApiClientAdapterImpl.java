@@ -26,6 +26,13 @@ import com.smartling.api.sdk.dto.file.FileStatus;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.AuthenticationException;
+import com.smartling.api.sdk.exceptions.AuthorizationException;
+import com.smartling.api.sdk.exceptions.OperationsLimitExceeded;
+import com.smartling.api.sdk.exceptions.ResourceLockedException;
+import com.smartling.api.sdk.exceptions.ServiceTemporaryUnavailableException;
+import com.smartling.api.sdk.exceptions.UnexpectedException;
+import com.smartling.api.sdk.exceptions.ValidationException;
 import com.smartling.api.sdk.file.FileApiParams;
 import com.smartling.api.sdk.file.FileListSearchParams;
 import com.smartling.api.sdk.file.FileType;
@@ -254,12 +261,49 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
     private <T extends Data> ApiResponse<T> getResponse(final HttpRequestBase httpRequest, final TypeToken<ApiResponseWrapper<T>> typeToken) throws ApiException
     {
         final StringResponse response = getStringResponse(httpRequest);
+
         return parseApiResponse(response.getContents(), typeToken);
     }
 
     private StringResponse getStringResponse(final HttpRequestBase httpRequest) throws ApiException
     {
-        return getHttpUtils().executeHttpCall(httpRequest, proxyConfiguration);
+        StringResponse stringResponse = getHttpUtils().executeHttpCall(httpRequest, proxyConfiguration);
+
+        if (stringResponse.isSuccess()) {
+            return stringResponse;
+        }
+
+        String contents = stringResponse.getContents();
+        logger.error(String.format("Non-successful response: \n contents: %s", contents));
+        throw getApiException(contents);
+    }
+
+    private ApiException getApiException(final String contents)
+    {
+        ApiResponse<EmptyResponse> emptyResponseApiResponse = parseApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+
+        String apiCode = emptyResponseApiResponse.getCode();
+        List<String> messages = emptyResponseApiResponse.getMessages();
+
+        switch (apiCode)
+        {
+            case "VALIDATION_ERROR":
+                return new ValidationException(contents, messages);
+            case "AUTHENTICATION_ERROR":
+                return new AuthenticationException(contents, messages);
+            case "AUTHORIZATION_ERROR":
+                return new AuthorizationException(contents, messages);
+            case "RESOURCE_LOCKED":
+                return new ResourceLockedException(contents, messages);
+            case "MAX_OPERATIONS_LIMIT_EXCEEDED":
+                return new OperationsLimitExceeded(contents, messages);
+            case "GENERAL_ERROR":
+                return new UnexpectedException(contents, messages);
+            case "MAINTENANCE_MODE_ERROR":
+                return new ServiceTemporaryUnavailableException(contents, messages);
+            default:
+                return new ApiException(contents, messages);
+        }
     }
 
     private HttpPost createFileUploadHttpPostRequest(final String apiParameters, final ContentBody contentBody)

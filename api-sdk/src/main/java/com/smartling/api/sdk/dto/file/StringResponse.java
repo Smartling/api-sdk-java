@@ -23,12 +23,14 @@ public class StringResponse
     private final String contents;
     private final byte[] contentsRaw;
     private final String encoding;
+    private final boolean success;
 
-    public StringResponse(final String contents, final byte[] contentsRaw, final String encoding)
+    public StringResponse(final String contents, final byte[] contentsRaw, final String encoding, final boolean success)
     {
         this.contents = contents;
         this.contentsRaw = contentsRaw;
         this.encoding = encoding;
+        this.success = success;
     }
 
     public String getContents()
@@ -44,5 +46,10 @@ public class StringResponse
     public String getEncoding()
     {
         return encoding;
+    }
+
+    public boolean isSuccess()
+    {
+        return success;
     }
 }
