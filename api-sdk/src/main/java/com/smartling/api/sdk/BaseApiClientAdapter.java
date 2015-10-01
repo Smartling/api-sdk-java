@@ -198,7 +198,7 @@ public abstract class BaseApiClientAdapter
         return responseMessages;
     }
 
-    protected <T extends Data> ApiResponse<T> getApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
+    protected <T extends Data> ApiResponse<T> parseApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
     {
         return JsonReader.parseApiResponse(response, responseType);
     }

@@ -76,7 +76,7 @@ public class ProjectApiClientAdapterImpl extends BaseApiClientAdapter implements
         HttpGet getRequest = new HttpGet(buildUrl(GET_PROJECT_LOCALES_API_URL, params));
 
         StringResponse response = getHttpUtils().executeHttpCall(getRequest, proxyConfiguration);
-        ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
+        ApiResponse apiResponse = parseApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<ProjectLocaleList>>() {});
         logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;

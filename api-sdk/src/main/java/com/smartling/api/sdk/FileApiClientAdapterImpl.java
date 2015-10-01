@@ -18,6 +18,7 @@ package com.smartling.api.sdk;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
+import com.smartling.api.sdk.dto.Data;
 import com.smartling.api.sdk.dto.EmptyResponse;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.FileList;
@@ -149,8 +150,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildFileListParams(fileListSearchParams);
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LIST_API_URL, params));
 
-        final StringResponse response = getStringResponse(getRequest);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileList>>() {});
+        final ApiResponse<FileList> apiResponse = getResponse(getRequest, new TypeToken<ApiResponseWrapper<FileList>>() {});
         logger.debug(String.format("Get files list: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
@@ -159,21 +159,15 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
     @Override
     public ApiResponse<FileStatus> getFileStatus(final String fileUri, final String locale) throws ApiException
     {
-        logger.debug(String.format("Get file satatus: fileUri = %s, projectId = %s, apiKey = %s, locale = %s", fileUri, this.projectId, maskApiKey(this.apiKey), locale));
+        logger.debug(String.format("Get file status: fileUri = %s, projectId = %s, apiKey = %s, locale = %s", fileUri, this.projectId, maskApiKey(this.apiKey), locale));
 
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(LOCALE, locale));
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_STATUS_API_URL, params));
 
-        final ApiResponse apiResponse = getApiResponse(getRequest);
+        final ApiResponse<FileStatus> apiResponse = getResponse(getRequest, new TypeToken<ApiResponseWrapper<FileStatus>>() {});
         logger.debug(String.format("Get file status: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
-    }
-
-    private ApiResponse getApiResponse(final HttpGet getRequest) throws ApiException
-    {
-        final StringResponse response = getStringResponse(getRequest);
-        return getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileStatus>>() {});
     }
 
     @Override
@@ -201,8 +195,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpDelete httpDeleteFileRequest = new HttpDelete(buildUrl(DELETE_FILE_URL, params));
 
-        final StringResponse response = getStringResponse(httpDeleteFileRequest);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+        final ApiResponse<EmptyResponse> apiResponse = getResponse(httpDeleteFileRequest, new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Delete file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
@@ -217,16 +210,10 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri), new BasicNameValuePair(NEW_FILE_URI, newFileUri));
         final HttpPost httpPostRequest = new HttpPost(buildUrl(RENAME_FILE_URL, params));
 
-        final StringResponse response = getStringResponse(httpPostRequest);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
+        final ApiResponse<EmptyResponse> apiResponse = getResponse(httpPostRequest, new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
         logger.debug(String.format("Rename file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
-    }
-
-    private StringResponse getStringResponse(final HttpRequestBase httpRequest) throws ApiException
-    {
-        return getHttpUtils().executeHttpCall(httpRequest, proxyConfiguration);
     }
 
     @Override
@@ -242,11 +229,37 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         );
         final HttpGet getRequest = new HttpGet(buildUrl(GET_FILE_LAST_MODIFIED, params));
 
-        final StringResponse response = getStringResponse(getRequest);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
+        final ApiResponse<FileLastModified> apiResponse = getResponse(getRequest, new TypeToken<ApiResponseWrapper<FileLastModified>>() {});
         logger.debug(String.format("Get last modified: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
 
         return apiResponse;
+    }
+
+    private ApiResponse<UploadFileData> uploadFile(final FileUploadParameterBuilder fileUploadParameterBuilder, final ContentBody contentBody)
+            throws ApiException
+    {
+        logger.debug(String.format("Upload file: fileUri = %s, projectId = %s, apiKey = %s, localesToApprove = %s",
+                        fileUploadParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), StringUtils.join(fileUploadParameterBuilder.getLocalesToApprove(), ", ")));
+
+        final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
+        final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
+        final HttpPost httpPostFile = createFileUploadHttpPostRequest(params, contentBody);
+
+        final ApiResponse<UploadFileData> apiResponse = getResponse(httpPostFile, new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
+        logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
+
+        return apiResponse;
+    }
+
+    private <T extends Data> ApiResponse<T> getResponse(final HttpRequestBase httpRequest, final TypeToken<ApiResponseWrapper<T>> typeToken) throws ApiException
+    {
+        final StringResponse response = getStringResponse(httpRequest);
+        return parseApiResponse(response.getContents(), typeToken);
+    }
+
+    private StringResponse getStringResponse(final HttpRequestBase httpRequest) throws ApiException
+    {
+        return getHttpUtils().executeHttpCall(httpRequest, proxyConfiguration);
     }
 
     private HttpPost createFileUploadHttpPostRequest(final String apiParameters, final ContentBody contentBody)
@@ -258,23 +271,6 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         httpPost.setEntity(multipartEntityBuilder.build());
 
         return httpPost;
-    }
-
-    private ApiResponse<UploadFileData> uploadFile(final FileUploadParameterBuilder fileUploadParameterBuilder, final ContentBody contentBody)
-            throws ApiException
-    {
-        logger.debug(String.format("Upload file: fileUri = %s, projectId = %s, apiKey = %s, localesToApprove = %s",
-                fileUploadParameterBuilder.getFileUri(), this.projectId, maskApiKey(this.apiKey), StringUtils.join(fileUploadParameterBuilder.getLocalesToApprove(), ", ")));
-
-        final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
-        final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
-        final HttpPost httpPostFile = createFileUploadHttpPostRequest(params, contentBody);
-
-        final StringResponse response = getStringResponse(httpPostFile);
-        final ApiResponse apiResponse = getApiResponse(response.getContents(), new TypeToken<ApiResponseWrapper<UploadFileData>>() {});
-        logger.debug(String.format("Upload file: %s. %s", apiResponse.getCode(), getApiResponseMessages(apiResponse)));
-
-        return apiResponse;
     }
 
     private String buildFileListParams(final FileListSearchParams fileListSearchParams)
