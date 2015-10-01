@@ -30,7 +30,7 @@ import com.smartling.api.sdk.exceptions.AuthenticationException;
 import com.smartling.api.sdk.exceptions.AuthorizationException;
 import com.smartling.api.sdk.exceptions.OperationsLimitExceeded;
 import com.smartling.api.sdk.exceptions.ResourceLockedException;
-import com.smartling.api.sdk.exceptions.ServiceTemporaryUnavailableException;
+import com.smartling.api.sdk.exceptions.MaintenanceModeException;
 import com.smartling.api.sdk.exceptions.UnexpectedException;
 import com.smartling.api.sdk.exceptions.ValidationException;
 import com.smartling.api.sdk.file.FileApiParams;
@@ -300,7 +300,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
             case "GENERAL_ERROR":
                 return new UnexpectedException(contents, messages);
             case "MAINTENANCE_MODE_ERROR":
-                return new ServiceTemporaryUnavailableException(contents, messages);
+                return new MaintenanceModeException(contents, messages);
             default:
                 return new ApiException(contents, messages);
         }
