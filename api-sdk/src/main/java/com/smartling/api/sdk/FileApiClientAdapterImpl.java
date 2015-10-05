@@ -258,9 +258,9 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
         return apiResponse;
     }
 
-    private <T extends Data> ApiResponse<T> getResponse(final HttpRequestBase httpRequest, final TypeToken<ApiResponseWrapper<T>> typeToken) throws ApiException
+    private <T extends Data> ApiResponse<T> getResponse(final HttpRequestBase executeRequest, final TypeToken<ApiResponseWrapper<T>> typeToken) throws ApiException
     {
-        final StringResponse response = getStringResponse(httpRequest);
+        final StringResponse response = getStringResponse(executeRequest);
 
         return parseApiResponse(response.getContents(), typeToken);
     }
@@ -275,10 +275,10 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
         String contents = stringResponse.getContents();
         logger.error(String.format("Non-successful response: \n contents: %s", contents));
-        throw createApiException(contents);
+        throw newApiException(contents);
     }
 
-    private ApiException createApiException(final String contents)
+    private ApiException newApiException(final String contents)
     {
         ApiResponse<EmptyResponse> emptyResponseApiResponse = parseApiResponse(contents, new TypeToken<ApiResponseWrapper<EmptyResponse>>() {});
 
