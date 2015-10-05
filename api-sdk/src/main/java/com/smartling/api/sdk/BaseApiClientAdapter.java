@@ -15,10 +15,13 @@
  */
 package com.smartling.api.sdk;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.dto.ApiResponse;
 import com.smartling.api.sdk.dto.ApiResponseWrapper;
 import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.util.DateTypeAdapter;
 import com.smartling.api.sdk.util.HttpUtils;
 
 import org.apache.commons.lang3.CharEncoding;
@@ -30,6 +33,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static com.smartling.api.sdk.file.FileApiParams.API_KEY;
@@ -200,6 +204,12 @@ public abstract class BaseApiClientAdapter
 
     protected <T extends Data> ApiResponse<T> parseApiResponse(final String response, final TypeToken<ApiResponseWrapper<T>> responseType)
     {
-        return JsonReader.parseApiResponse(response, responseType);
+        final GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
+
+        final Gson gson = builder.create();
+        final ApiResponseWrapper<T> responseWrapper = gson.fromJson(response, responseType.getType());
+
+        return responseWrapper.getResponse();
     }
 }
