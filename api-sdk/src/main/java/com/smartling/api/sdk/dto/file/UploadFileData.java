@@ -15,14 +15,14 @@
  */
 package com.smartling.api.sdk.dto.file;
 
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * The data returned from uploading a file to the Smartling Translation API.
  */
-public class UploadFileData implements Data
+public class UploadFileData implements ResponseData
 {
     private int     stringCount;
     private int     wordCount;

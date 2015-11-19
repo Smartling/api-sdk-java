@@ -15,28 +15,28 @@
  */
 package com.smartling.api.sdk.dto.file;
 
-import java.util.Date;
-
 import com.smartling.api.sdk.dto.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.Date;
+
 /**
- * Contains information about when a file was last modified for a particular locale
+ * Contains information about when a file was last modified for a particular localeId
  */
 public class FileLocaleLastModified implements Data
 {
-    private String locale;
+    private String localeId;
     private Date lastModified;
 
     /**
-     * Get locale identifier
+     * Get localeId identifier
      *
-     * @return locale identifier
+     * @return localeId identifier
      */
-    public String getLocale()
+    public String getLocaleId()
     {
-        return locale;
+        return localeId;
     }
 
     /**
@@ -53,7 +53,7 @@ public class FileLocaleLastModified implements Data
     public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("locale", getLocale())
+                .append("localeId", getLocaleId())
                 .append("lastModified", getLastModified())
                 .toString();
     }

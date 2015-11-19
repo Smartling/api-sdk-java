@@ -1,6 +1,5 @@
 package com.smartling.api.sdk.file.parameters;
 
-import com.smartling.api.sdk.file.FileApiParams;
 import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -134,15 +133,15 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     {
         final List<NameValuePair> paramsList = new LinkedList<NameValuePair>();
 
-        paramsList.add(new BasicNameValuePair(FileApiParams.FILE_URI, fileUri));
-        paramsList.add(new BasicNameValuePair(FileApiParams.FILE_TYPE, fileType.getIdentifier()));
-        paramsList.add(new BasicNameValuePair(FileApiParams.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
-        paramsList.add(new BasicNameValuePair(FileApiParams.CALLBACK_URL, callbackUrl));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_URI, fileUri));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_TYPE, fileType.getIdentifier()));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.CALLBACK_URL, callbackUrl));
         if (localesToApprove != null && !localesToApprove.isEmpty())
-            paramsList.addAll(convertLocalesBasedApproveParams(FileApiParams.LOCALES_TO_APPROVE, localesToApprove));
+            paramsList.addAll(convertLocalesBasedApproveParams(FileApiParameter.LOCALES_TO_APPROVE, localesToApprove));
         if (overwriteApprovedLocales != null)
-            paramsList.add(new BasicNameValuePair(FileApiParams.OVERWRITE_APPROVED_LOCALES, overwriteApprovedLocales.toString()));
-        paramsList.add(new BasicNameValuePair(FileApiParams.CLIENT_LIB_ID, clientUid != null ? clientUid : ProjectPropertiesHolder.defaultClientUid()));
+            paramsList.add(new BasicNameValuePair(FileApiParameter.OVERWRITE_APPROVED_LOCALES, overwriteApprovedLocales.toString()));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.CLIENT_LIB_ID, clientUid != null ? clientUid : ProjectPropertiesHolder.defaultClientUid()));
 
         paramsList.addAll(convertMapParams(directives));
 

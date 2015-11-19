@@ -6,14 +6,12 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.smartling.api.sdk.file.parameters.FileApiParameter.INCLUDE_ORIGINAL_STRINGS;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.RETRIEVAL_TYPE;
 
-public class GetFileParameterBuilder implements ParameterBuilder
+public class GetOriginalFileParameterBuilder implements ParameterBuilder
 {
     private String fileUri;
     private RetrievalType retrievalType;
-    private Boolean includeOriginalStrings;
 
     public String getFileUri()
     {
@@ -25,17 +23,12 @@ public class GetFileParameterBuilder implements ParameterBuilder
         return retrievalType;
     }
 
-    public Boolean getIncludeOriginalStrings()
-    {
-        return includeOriginalStrings;
-    }
-
     /**
      * fileUri the identifier of the file
      * @param fileUri
      * @return
      */
-    public GetFileParameterBuilder fileUri(String fileUri)
+    public GetOriginalFileParameterBuilder fileUri(String fileUri)
     {
         this.fileUri = fileUri;
         return this;
@@ -46,20 +39,9 @@ public class GetFileParameterBuilder implements ParameterBuilder
      * @param retrievalType
      * @return
      */
-    public GetFileParameterBuilder retrievalType(RetrievalType retrievalType)
+    public GetOriginalFileParameterBuilder retrievalType(RetrievalType retrievalType)
     {
         this.retrievalType = retrievalType;
-        return this;
-    }
-
-    /**
-     * include original strings
-     * @param includeOriginalStrings
-     * @return
-     */
-    public GetFileParameterBuilder includeOriginalStrings(Boolean includeOriginalStrings)
-    {
-        this.includeOriginalStrings = includeOriginalStrings;
         return this;
     }
 
@@ -70,7 +52,6 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
         paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_URI, fileUri));
         paramsList.add(new BasicNameValuePair(RETRIEVAL_TYPE, null == retrievalType ? null : retrievalType.name()));
-        paramsList.add(new BasicNameValuePair(INCLUDE_ORIGINAL_STRINGS, null == includeOriginalStrings ? null : includeOriginalStrings.toString()));
 
         return paramsList;
     }

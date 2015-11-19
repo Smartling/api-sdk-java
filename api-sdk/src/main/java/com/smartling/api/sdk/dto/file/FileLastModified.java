@@ -15,18 +15,29 @@
  */
 package com.smartling.api.sdk.dto.file;
 
-import java.util.List;
-
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.List;
 
 /**
  * Contains information about when a file was last modified
  */
-public class FileLastModified implements Data
+public class FileLastModified implements ResponseData
 {
     private List<FileLocaleLastModified> items;
+    private int totalCount;
+
+    public void setItems(final List<FileLocaleLastModified> items)
+    {
+        this.items = items;
+    }
+
+    public void setTotalCount(final int totalCount)
+    {
+        this.totalCount = totalCount;
+    }
 
     /**
      * Get information about when a file was last modified for a particular locale
@@ -38,10 +49,16 @@ public class FileLastModified implements Data
         return items;
     }
 
+    public int getTotalCount()
+    {
+        return totalCount;
+    }
+
     @Override
     public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("totalCount: ", totalCount)
                 .append("items", getItems())
                 .toString();
     }
