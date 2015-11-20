@@ -134,6 +134,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
+    //ToDo check using old wrapped format should cause troubles in exception case
     public Response<FileLastModified> getLastModified(AuthenticationContext authenticationContext, FileLastModifiedParameterBuilder builder, ConnectionConfig config) throws ApiException
     {
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, config.getBaseFileApiUrl(), config.getProjectId()), buildParamsQuery(
