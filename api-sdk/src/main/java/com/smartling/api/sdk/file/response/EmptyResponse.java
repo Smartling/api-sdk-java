@@ -15,9 +15,9 @@
  */
 package com.smartling.api.sdk.file.response;
 
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.dto.SmartlingData;
 import com.smartling.web.api.v2.ResponseData;
 
-public class EmptyResponse implements Data, ResponseData
+public class EmptyResponse implements SmartlingData, ResponseData
 {
 }

@@ -1,10 +1,10 @@
 package com.smartling.api.sdk.file.response;
 
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.dto.SmartlingData;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class FileStatusItem implements Data
+public class FileStatusItem implements SmartlingData
 {
     private String localeId;
     private int    authorizedStringCount;

@@ -1,13 +1,13 @@
 package com.smartling.api.sdk.file.response;
 
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.dto.SmartlingData;
 import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
-public class FileImportData implements Data, ResponseData
+public class FileImportSmartlingData implements SmartlingData, ResponseData
 {
     private int     stringCount;
     private int     wordCount;

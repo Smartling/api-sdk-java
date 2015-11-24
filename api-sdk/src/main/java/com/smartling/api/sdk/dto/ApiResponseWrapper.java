@@ -19,20 +19,20 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Simple class for wrapping the {@link ApiResponse}.
+ * Simple class for wrapping the {@link SmartlingApiResponse}.
  *
  * @param <T> The type of data expected back in the response.
  */
-public class ApiResponseWrapper<T extends Data>
+public class ApiResponseWrapper<T extends SmartlingData>
 {
-    private ApiResponse<T> response;
+    private SmartlingApiResponse<T> response;
 
     /**
      * Retrieve the response.
      *
      * @return the response.
      */
-    public ApiResponse<T> getResponse()
+    public SmartlingApiResponse<T> getResponse()
     {
         return response;
     }

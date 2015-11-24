@@ -26,7 +26,7 @@ public class UploadFileData implements ResponseData
 {
     private int     stringCount;
     private int     wordCount;
-    private boolean overWritten;
+    private boolean overwritten;
 
     /**
      * The number of strings in the uploaded file.
@@ -51,12 +51,11 @@ public class UploadFileData implements ResponseData
     /**
      * Returns whether or not the uploaded file was previously uploaded, i.e. was a file with the same fileUri previously uploaded.
      *
-     * @return overWritten
+     * @return overwritten
      */
-    // TODO(AShesterov): refactor API-SDK: fix spelling: response.retrieveData().isOverWritten() ~> response.retrieveData().isOverwritten()
-    public boolean isOverWritten()
+    public boolean isOverwritten()
     {
-        return overWritten;
+        return overwritten;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class UploadFileData implements ResponseData
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("stringCount", getStringCount())
                 .append("wordCount", getWordCount())
-                .append("overWritten", isOverWritten())
+                .append("overwritten", isOverwritten())
                 .toString();
     }
 }

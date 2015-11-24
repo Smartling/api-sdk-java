@@ -20,16 +20,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
-// TODO(AShesterov): refactor API-SDK: rename ApiResponse to SmartlingApiResponse
-
-// TODO(AShesterov): refactor API-SDK: do NOT use generics for response, but OOP! e.g. UploadFileDataApiResponse extends ApiResponse
+// TODO(AShesterov): refactor API-SDK: do NOT use generics for response, but OOP! e.g. UploadFileDataApiResponse extends SmartlingApiResponse
 
 /**
  * Base response class returned from the Smartling Translation API.
  *
  * @param <T> The type of the data class expected in the return.
  */
-public class ApiResponse<T extends Data>
+public class SmartlingApiResponse<T extends SmartlingData>
 {
     private T            data;
     private String       code;

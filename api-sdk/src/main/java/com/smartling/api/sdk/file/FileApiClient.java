@@ -8,17 +8,20 @@ import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
+import com.smartling.api.sdk.file.parameters.AuthorizeLocalesCommand;
 import com.smartling.api.sdk.file.parameters.FileApiParameter;
+import com.smartling.api.sdk.file.parameters.FileDeleteCommand;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileListSearchParameter;
+import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
+import com.smartling.api.sdk.file.parameters.FileRenameCommand;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileImportData;
+import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
@@ -100,9 +103,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_DELETE, config.getBaseFileApiUrl(), config.getProjectId()),
-                new FileDeleteCommand.Builder()
-                        .setFileUri(fileUri)
-                        .build()
+                new FileDeleteCommand(fileUri)
         );
         authenticationContext.applyTo(httpPost);
 
@@ -119,10 +120,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_RENAME, config.getBaseFileApiUrl(), config.getProjectId()),
-                new FileRenameCommand.Builder()
-                        .setFileUri(fileUri)
-                        .setNewFileUri(newFileUri)
-                        .build()
+                new FileRenameCommand(fileUri, newFileUri)
         );
         authenticationContext.applyTo(httpPost);
 
@@ -134,7 +132,6 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    //ToDo check using old wrapped format should cause troubles in exception case
     public Response<FileLastModified> getLastModified(AuthenticationContext authenticationContext, FileLastModifiedParameterBuilder builder, ConnectionConfig config) throws
                                                                                                                                                                       SmartlingApiException
     {
@@ -177,10 +174,10 @@ public class FileApiClient extends BaseApiClient
         return httpUtils.executeHttpCall(httpGet, config.getProxyConfiguration());
     }
 
-    public Response<FileList> getFilesList(AuthenticationContext authenticationContext, FileListSearchParameter fileListSearchParameter,
+    public Response<FileList> getFilesList(AuthenticationContext authenticationContext, FileListSearchParameterBuilder fileListSearchParameterBuilder,
             ConnectionConfig config) throws SmartlingApiException
     {
-        final String params = buildFileListParams(fileListSearchParameter);
+        final String params = buildFileListParams(fileListSearchParameterBuilder);
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, config.getBaseFileApiUrl(), config.getProjectId()), params));
         authenticationContext.applyTo(httpGet);
 
@@ -221,7 +218,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    public Response<FileImportData> importTranslations(AuthenticationContext authenticationContext, File fileToUpload, String locale, String charsetName,
+    public Response<FileImportSmartlingData> importTranslations(AuthenticationContext authenticationContext, File fileToUpload, String locale, String charsetName,
             FileImportParameterBuilder fileImportParameterBuilder, ConnectionConfig config)
             throws SmartlingApiException
     {
@@ -253,7 +250,7 @@ public class FileApiClient extends BaseApiClient
         authenticationContext.applyTo(httpPost);
 
         final StringResponse response = httpUtils.executeHttpCall(httpPost, config.getProxyConfiguration());
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileImportData>>()
+        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileImportSmartlingData>>()
                 {
                 }
         );
@@ -278,10 +275,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, config.getBaseFileApiUrl(), config.getProjectId()),
-                new AuthorizeLocalesCommand.Builder()
-                        .setFileUri(fileUri)
-                        .setLocaleIds(localeIds)
-                        .build()
+                new AuthorizeLocalesCommand(fileUri, localeIds)
         );
         authenticationContext.applyTo(httpPost);
 
@@ -381,15 +375,15 @@ public class FileApiClient extends BaseApiClient
         return urlWithParameters.toString();
     }
 
-    private String buildFileListParams(FileListSearchParameter fileListSearchParameter)
+    private String buildFileListParams(FileListSearchParameterBuilder fileListSearchParameterBuilder)
     {
         final List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParameter.getUriMask()));
-        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.format(fileListSearchParameter.getLastUploadedAfter())));
-        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.format(fileListSearchParameter.getLastUploadedBefore())));
-        nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParameter.getOffset() ? null : String.valueOf(fileListSearchParameter.getOffset())));
-        nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParameter.getLimit() ? null : String.valueOf(fileListSearchParameter.getLimit())));
-        nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParameter.getFileTypes()));
+        nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParameterBuilder.getUriMask()));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.format(fileListSearchParameterBuilder.getLastUploadedAfter())));
+        nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.format(fileListSearchParameterBuilder.getLastUploadedBefore())));
+        nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParameterBuilder.getOffset() ? null : String.valueOf(fileListSearchParameterBuilder.getOffset())));
+        nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParameterBuilder.getLimit() ? null : String.valueOf(fileListSearchParameterBuilder.getLimit())));
+        nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParameterBuilder.getFileTypes()));
 
         return buildParamsQuery(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
     }

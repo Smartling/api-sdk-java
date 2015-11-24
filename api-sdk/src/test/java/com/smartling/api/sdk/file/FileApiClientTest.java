@@ -9,13 +9,13 @@ import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileListSearchParameter;
+import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.EmptyResponse;
-import com.smartling.api.sdk.file.response.FileImportData;
+import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
@@ -92,7 +92,7 @@ public class FileApiClientTest
         assertNotNull(((HttpPost)request).getEntity());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, uploadFileDataResponse.getCode());
-        assertEquals(false, uploadFileDataResponse.retrieveData().isOverWritten());
+        assertEquals(false, uploadFileDataResponse.retrieveData().isOverwritten());
         assertEquals(1, uploadFileDataResponse.retrieveData().getStringCount());
         assertEquals(2, uploadFileDataResponse.retrieveData().getWordCount());
     }
@@ -178,7 +178,7 @@ public class FileApiClientTest
     public void testGetFilesList() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LIST_RESPONSE);
-        Response<FileList> apiResponse = fileApiClient.getFilesList(authenticationContext, new FileListSearchParameter(), connectionConfig);
+        Response<FileList> apiResponse = fileApiClient.getFilesList(authenticationContext, new FileListSearchParameterBuilder(), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -235,7 +235,7 @@ public class FileApiClientTest
     {
         when(response.getContents()).thenReturn(ResponseExamples.IMPORT_TRANSLATIONS_RESPONSE);
         File fileToImport = mock(File.class);
-        Response<FileImportData> apiResponse = fileApiClient
+        Response<FileImportSmartlingData> apiResponse = fileApiClient
                 .importTranslations(authenticationContext, fileToImport, LOCALE, ENCODING, new FileImportParameterBuilder(FileType.CSV, FILE_URI), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());

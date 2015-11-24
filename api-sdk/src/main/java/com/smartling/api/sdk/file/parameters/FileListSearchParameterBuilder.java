@@ -21,8 +21,7 @@ import java.util.List;
 /**
  * Contains the search parameters that can be set when executing a file/list query through the Smartling Translation API.
  */
-//ToDO make me builder
-public class FileListSearchParameter
+public class FileListSearchParameterBuilder
 {
     private String       uriMask;
     private List<String> fileTypes;
@@ -36,9 +35,10 @@ public class FileListSearchParameter
         return uriMask;
     }
 
-    public void setUriMask(String uriMask)
+    public FileListSearchParameterBuilder withUriMask(String uriMask)
     {
         this.uriMask = uriMask;
+        return this;
     }
 
     public List<String> getFileTypes()
@@ -46,9 +46,10 @@ public class FileListSearchParameter
         return fileTypes;
     }
 
-    public void setFileTypes(List<String> fileTypes)
+    public FileListSearchParameterBuilder withFileTypes(List<String> fileTypes)
     {
         this.fileTypes = fileTypes;
+        return this;
     }
 
     public Date getLastUploadedAfter()
@@ -56,9 +57,10 @@ public class FileListSearchParameter
         return lastUploadedAfter;
     }
 
-    public void setLastUploadedAfter(Date lastUploadedAfter)
+    public FileListSearchParameterBuilder withLastUploadedAfter(Date lastUploadedAfter)
     {
         this.lastUploadedAfter = lastUploadedAfter;
+        return this;
     }
 
     public Date getLastUploadedBefore()
@@ -66,9 +68,10 @@ public class FileListSearchParameter
         return lastUploadedBefore;
     }
 
-    public void setLastUploadedBefore(Date lastUploadedBefore)
+    public FileListSearchParameterBuilder withLastUploadedBefore(Date lastUploadedBefore)
     {
         this.lastUploadedBefore = lastUploadedBefore;
+        return this;
     }
 
     public Integer getOffset()
@@ -76,9 +79,10 @@ public class FileListSearchParameter
         return offset;
     }
 
-    public void setOffset(Integer offset)
+    public FileListSearchParameterBuilder withOffset(Integer offset)
     {
         this.offset = offset;
+        return this;
     }
 
     public Integer getLimit()
@@ -86,8 +90,9 @@ public class FileListSearchParameter
         return limit;
     }
 
-    public void setLimit(Integer limit)
+    public FileListSearchParameterBuilder withLimit(Integer limit)
     {
         this.limit = limit;
+        return this;
     }
 }

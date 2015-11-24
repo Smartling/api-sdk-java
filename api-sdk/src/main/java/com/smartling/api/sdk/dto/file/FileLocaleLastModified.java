@@ -15,7 +15,7 @@
  */
 package com.smartling.api.sdk.dto.file;
 
-import com.smartling.api.sdk.dto.Data;
+import com.smartling.api.sdk.dto.SmartlingData;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -24,7 +24,7 @@ import java.util.Date;
 /**
  * Contains information about when a file was last modified for a particular localeId
  */
-public class FileLocaleLastModified implements Data
+public class FileLocaleLastModified implements SmartlingData
 {
     private String localeId;
     private Date lastModified;

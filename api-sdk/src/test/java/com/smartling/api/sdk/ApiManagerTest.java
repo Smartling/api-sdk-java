@@ -1,11 +1,14 @@
 package com.smartling.api.sdk;
 
+import com.smartling.api.sdk.auth.AuthApiClient;
+import com.smartling.api.sdk.auth.AuthenticationCommand;
+import com.smartling.api.sdk.auth.AuthenticationContext;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileListSearchParameter;
+import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
@@ -14,16 +17,21 @@ import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.api.sdk.file.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static com.smartling.api.sdk.file.FileType.JAVA_PROPERTIES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ApiManagerTest
 {
@@ -97,7 +105,7 @@ public class ApiManagerTest
         apiManager.renameFile(FILE_URI, FILE_URI_RENAMED);
 
         boolean renamedFileFound = false;
-        FileList list = apiManager.getFilesList(new FileListSearchParameter());
+        FileList list = apiManager.getFilesList(new FileListSearchParameterBuilder());
         for(FileListItem item : list.getItems())
         {
             if (item.getFileUri().equals(FILE_URI_RENAMED))
@@ -110,5 +118,22 @@ public class ApiManagerTest
         FileLastModified fileLastModified = apiManager.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
         assertEquals(5, fileLastModified.getTotalCount());
         apiManager.deleteFile(FILE_URI);
+    }
+
+    @Test
+    public void testGenerateAuthenticationContext() throws SmartlingApiException, InterruptedException
+    {
+        AuthApiClient authApiClient = mock(AuthApiClient.class);
+        apiManager.authApiClient = authApiClient;
+        Response<AuthenticationContext> response = new Response<>();
+        AuthenticationContext context = new AuthenticationContext();
+        context.setExpiresIn(2);
+        context.setAccessToken("111");
+        response.setData(context);
+        when(authApiClient.authenticate(any(AuthenticationCommand.class), any(ProxyConfiguration.class), anyString())).thenReturn(response);
+
+        apiManager.generateAuthenticationContext();
+        apiManager.expireExecutor.shutdown();
+        apiManager.expireExecutor.awaitTermination(30, TimeUnit.MINUTES);
     }
 }
