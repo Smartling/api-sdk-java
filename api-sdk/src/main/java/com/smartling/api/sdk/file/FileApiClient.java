@@ -7,7 +7,7 @@ import com.smartling.api.sdk.auth.AuthenticationContext;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.parameters.FileApiParameter;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
@@ -83,20 +83,20 @@ public class FileApiClient extends BaseApiClient
 
     public Response<UploadFileData> uploadFile(AuthenticationContext authenticationContext, File fileToUpload, String charsetName,
             FileUploadParameterBuilder fileUploadParameterBuilder, ConnectionConfig config)
-            throws ApiException
+            throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileToUpload, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileToUpload.getName());
         return uploadFile(authenticationContext, fileUploadParameterBuilder, fileBody, config);
     }
 
     public Response<UploadFileData> uploadFile(AuthenticationContext authenticationContext, InputStream inputStream, String fileName, String charsetName,
-            FileUploadParameterBuilder fileUploadParameterBuilder, ConnectionConfig config) throws ApiException
+            FileUploadParameterBuilder fileUploadParameterBuilder, ConnectionConfig config) throws SmartlingApiException
     {
         InputStreamBody inputStreamBody = new InputStreamBody(inputStream, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileName);
         return uploadFile(authenticationContext, fileUploadParameterBuilder, inputStreamBody, config);
     }
 
-    public Response<EmptyResponse> deleteFile(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws ApiException
+    public Response<EmptyResponse> deleteFile(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_DELETE, config.getBaseFileApiUrl(), config.getProjectId()),
@@ -115,7 +115,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public Response<EmptyResponse> renameFile(AuthenticationContext authenticationContext, String fileUri, String newFileUri,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_RENAME, config.getBaseFileApiUrl(), config.getProjectId()),
@@ -135,7 +135,8 @@ public class FileApiClient extends BaseApiClient
     }
 
     //ToDo check using old wrapped format should cause troubles in exception case
-    public Response<FileLastModified> getLastModified(AuthenticationContext authenticationContext, FileLastModifiedParameterBuilder builder, ConnectionConfig config) throws ApiException
+    public Response<FileLastModified> getLastModified(AuthenticationContext authenticationContext, FileLastModifiedParameterBuilder builder, ConnectionConfig config) throws
+                                                                                                                                                                      SmartlingApiException
     {
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, config.getBaseFileApiUrl(), config.getProjectId()), buildParamsQuery(
                         builder.getNameValueList().toArray(new NameValuePair[builder.getNameValueList().size()])
@@ -153,7 +154,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public StringResponse getFile(AuthenticationContext authenticationContext, String locale, GetFileParameterBuilder getFileParameterBuilder,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
@@ -165,7 +166,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public StringResponse getOriginalFile(AuthenticationContext authenticationContext, GetOriginalFileParameterBuilder getFileParameterBuilder,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
@@ -177,7 +178,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public Response<FileList> getFilesList(AuthenticationContext authenticationContext, FileListSearchParameter fileListSearchParameter,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final String params = buildFileListParams(fileListSearchParameter);
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, config.getBaseFileApiUrl(), config.getProjectId()), params));
@@ -192,7 +193,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public Response<FileLocaleStatus> getFileLocaleStatus(AuthenticationContext authenticationContext, String fileUri, String locale,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale, config.getBaseFileApiUrl(), config.getProjectId()), params));
@@ -206,7 +207,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    public Response<FileStatus> getFileStatus(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws ApiException
+    public Response<FileStatus> getFileStatus(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS, config.getBaseFileApiUrl(), config.getProjectId()), params));
@@ -222,7 +223,7 @@ public class FileApiClient extends BaseApiClient
 
     public Response<FileImportData> importTranslations(AuthenticationContext authenticationContext, File fileToUpload, String locale, String charsetName,
             FileImportParameterBuilder fileImportParameterBuilder, ConnectionConfig config)
-            throws ApiException
+            throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileToUpload, createContentType(fileImportParameterBuilder.getFileType(), Charset.forName(charsetName)), fileToUpload.getName());
 
@@ -258,7 +259,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    public Response<AuthorizedLocales> getAuthorizedLocales(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws ApiException
+    public Response<AuthorizedLocales> getAuthorizedLocales(AuthenticationContext authenticationContext, String fileUri, ConnectionConfig config) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, config.getBaseFileApiUrl(), config.getProjectId()), params));
@@ -273,7 +274,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public Response<EmptyResponse> authorizeLocales(AuthenticationContext authenticationContext, String fileUri, String[] localeIds,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, config.getBaseFileApiUrl(), config.getProjectId()),
@@ -293,7 +294,7 @@ public class FileApiClient extends BaseApiClient
     }
 
     public Response<EmptyResponse> unAuthorizeLocales(AuthenticationContext authenticationContext, String fileUri, String[] localeIds,
-            ConnectionConfig config) throws ApiException
+            ConnectionConfig config) throws SmartlingApiException
     {
         final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair(FILE_URI, fileUri));
@@ -323,7 +324,7 @@ public class FileApiClient extends BaseApiClient
 
     private Response<UploadFileData> uploadFile(AuthenticationContext authenticationContext, FileUploadParameterBuilder fileUploadParameterBuilder,
             ContentBody contentBody, ConnectionConfig config)
-            throws ApiException
+            throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
 

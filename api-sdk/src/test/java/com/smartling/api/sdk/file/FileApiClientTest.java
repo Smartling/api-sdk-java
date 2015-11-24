@@ -6,7 +6,7 @@ import com.smartling.api.sdk.auth.AuthenticationContext;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameter;
@@ -64,7 +64,7 @@ public class FileApiClientTest
     private ConnectionConfig connectionConfig;
 
     @Before
-    public void setup() throws ApiException
+    public void setup() throws SmartlingApiException
     {
         proxyConfiguration = mock(ProxyConfiguration.class);
         authenticationContext = mock(AuthenticationContext.class);
@@ -92,9 +92,9 @@ public class FileApiClientTest
         assertNotNull(((HttpPost)request).getEntity());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, uploadFileDataResponse.getCode());
-        assertEquals(false, uploadFileDataResponse.getData().isOverWritten());
-        assertEquals(1, uploadFileDataResponse.getData().getStringCount());
-        assertEquals(2, uploadFileDataResponse.getData().getWordCount());
+        assertEquals(false, uploadFileDataResponse.retrieveData().isOverWritten());
+        assertEquals(1, uploadFileDataResponse.retrieveData().getStringCount());
+        assertEquals(2, uploadFileDataResponse.retrieveData().getWordCount());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class FileApiClientTest
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/delete", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(EmptyResponse.class, apiResponse.getData().getClass());
+        assertEquals(EmptyResponse.class, apiResponse.retrieveData().getClass());
     }
 
     @Test
@@ -136,31 +136,31 @@ public class FileApiClientTest
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/rename", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(EmptyResponse.class, apiResponse.getData().getClass());
+        assertEquals(EmptyResponse.class, apiResponse.retrieveData().getClass());
     }
 
     @Test
     public void testGetLastModified() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.LAST_MODIFICATION_RESPONSE);
-        Response<FileLastModified> apiResponse = fileApiClient.getLastModified(authenticationContext, new FileLastModifiedParameterBuilder().fileUri(FILE_URI), connectionConfig);
+        Response<FileLastModified> apiResponse = fileApiClient.getLastModified(authenticationContext, new FileLastModifiedParameterBuilder(FILE_URI), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpGet.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/last_modified?fileUri=fileUri", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(5, apiResponse.getData().getItems().size());
-        assertEquals(5, apiResponse.getData().getTotalCount());
-        assertEquals("be-BY", apiResponse.getData().getItems().get(0).getLocaleId());
-        assertEquals("Wed Sep 16 00:24:42 EEST 2015", apiResponse.getData().getItems().get(0).getLastModified().toString());
+        assertEquals(5, apiResponse.retrieveData().getItems().size());
+        assertEquals(5, apiResponse.retrieveData().getTotalCount());
+        assertEquals("be-BY", apiResponse.retrieveData().getItems().get(0).getLocaleId());
+        assertEquals("Wed Sep 16 00:24:42 EEST 2015", apiResponse.retrieveData().getItems().get(0).getLastModified().toString());
     }
 
     @Test
     public void testGetFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
-        fileApiClient.getFile(authenticationContext, LOCALE, new GetFileParameterBuilder().fileUri(FILE_URI), connectionConfig);
+        fileApiClient.getFile(authenticationContext, LOCALE, new GetFileParameterBuilder(FILE_URI), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/" + LOCALE + "/file?fileUri=fileUri", request.getURI().toString());
     }
@@ -169,7 +169,7 @@ public class FileApiClientTest
     public void testGetOriginalFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
-        fileApiClient.getOriginalFile(authenticationContext, new GetOriginalFileParameterBuilder().fileUri(FILE_URI), connectionConfig);
+        fileApiClient.getOriginalFile(authenticationContext, new GetOriginalFileParameterBuilder(FILE_URI), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file?fileUri=fileUri", request.getURI().toString());
     }
@@ -185,26 +185,26 @@ public class FileApiClientTest
         assertEquals(HttpGet.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/files/list?", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(2, apiResponse.getData().getItems().size());
-        assertEquals(2, apiResponse.getData().getTotalCount());
-        assertEquals("FileListItem[fileUri=3-namespace-explicit.xml,lastUploaded=2015-07-29T10:34:30+0000,fileType=xml]", apiResponse.getData().getItems().get(0).toString());
+        assertEquals(2, apiResponse.retrieveData().getItems().size());
+        assertEquals(2, apiResponse.retrieveData().getTotalCount());
+        assertEquals("FileListItem[fileUri=3-namespace-explicit.xml,lastUploaded=2015-07-29T10:34:30+0000,fileType=xml]", apiResponse.retrieveData().getItems().get(0).toString());
     }
 
     @Test
     public void testGetFileLocaleStatus() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LOCALES_STATUS_RESPONSE);
-        Response<FileLocaleStatus> apiResponse = fileApiClient.getFileLocaleStatus(authenticationContext, LOCALE, FILE_URI, connectionConfig);
+        Response<FileLocaleStatus> apiResponse = fileApiClient.getFileLocaleStatus(authenticationContext, FILE_URI, LOCALE, connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpGet.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/fileUri/file/status?fileUri=en-US", request.getURI().toString());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/en-US/file/status?fileUri=fileUri", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
         assertEquals(
                 "FileLocaleStatus[fileUri=test-cancel-translation.xml,totalStringCount=1,totalWordCount=3,authorizedStringCount=0,authorizedWordCount=0,completedStringCount=0,"
                         + "completedWordCount=0,excludedStringCount=0,excludedWordCount=0,lastUploaded=2015-09-15T21:28:25+0000,fileType=xml]",
-                apiResponse.getData().toString()
+                apiResponse.retrieveData().toString()
         );
     }
 
@@ -219,14 +219,14 @@ public class FileApiClientTest
         assertEquals(HttpGet.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/status?fileUri=fileUri", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(5, apiResponse.getData().getItems().size());
-        assertEquals(5, apiResponse.getData().getTotalCount());
-        assertEquals(3, apiResponse.getData().getTotalWordCount());
-        assertEquals(1, apiResponse.getData().getTotalStringCount());
+        assertEquals(5, apiResponse.retrieveData().getItems().size());
+        assertEquals(5, apiResponse.retrieveData().getTotalCount());
+        assertEquals(3, apiResponse.retrieveData().getTotalWordCount());
+        assertEquals(1, apiResponse.retrieveData().getTotalStringCount());
         assertEquals(
                 "FileStatusItem[localeId=be-BY,authorizedStringCount=0,authorizedWordCount=0,completedStringCount=0,completedWordCount=0,excludedStringCount=0,"
                         + "excludedWordCount=0]",
-                apiResponse.getData().getItems().get(0).toString()
+                apiResponse.retrieveData().getItems().get(0).toString()
         );
     }
 
@@ -236,15 +236,15 @@ public class FileApiClientTest
         when(response.getContents()).thenReturn(ResponseExamples.IMPORT_TRANSLATIONS_RESPONSE);
         File fileToImport = mock(File.class);
         Response<FileImportData> apiResponse = fileApiClient
-                .importTranslations(authenticationContext, fileToImport, LOCALE, ENCODING, new FileImportParameterBuilder().fileType(FileType.CSV), connectionConfig);
+                .importTranslations(authenticationContext, fileToImport, LOCALE, ENCODING, new FileImportParameterBuilder(FileType.CSV, FILE_URI), connectionConfig);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/en-US/file/import", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(0, apiResponse.getData().getStringCount());
-        assertEquals(0, apiResponse.getData().getTranslationImportErrors().size());
+        assertEquals(0, apiResponse.retrieveData().getStringCount());
+        assertEquals(0, apiResponse.retrieveData().getTranslationImportErrors().size());
     }
 
     @Test
@@ -258,8 +258,8 @@ public class FileApiClientTest
         assertEquals(HttpGet.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales?fileUri=fileUri", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(2, apiResponse.getData().getItems().size());
-        assertEquals("it-IT", apiResponse.getData().getItems().get(0));
+        assertEquals(2, apiResponse.retrieveData().getItems().size());
+        assertEquals("it-IT", apiResponse.retrieveData().getItems().get(0));
     }
 
     @Test
@@ -273,7 +273,7 @@ public class FileApiClientTest
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(EmptyResponse.class, apiResponse.getData().getClass());
+        assertEquals(EmptyResponse.class, apiResponse.retrieveData().getClass());
     }
 
     @Test
@@ -287,18 +287,16 @@ public class FileApiClientTest
         assertEquals(HttpDelete.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales?fileUri=fileUri&localeIds%5B%5D=en-US", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, apiResponse.getCode());
-        assertEquals(EmptyResponse.class, apiResponse.getData().getClass());
+        assertEquals(EmptyResponse.class, apiResponse.retrieveData().getClass());
     }
 
     private FileUploadParameterBuilder getFileUploadParameterBuilder()
     {
-        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder(FileType.JAVA_PROPERTIES, FILE_URI);
         fileUploadParameterBuilder.approveContent(true);
         fileUploadParameterBuilder.callbackUrl(CALLBACK_URL);
-        fileUploadParameterBuilder.fileType(FileType.JAVA_PROPERTIES);
-        fileUploadParameterBuilder.localesToApprove(Collections.singletonList(LOCALE));
-        fileUploadParameterBuilder.overwriteApprovedLocales(true);
-        fileUploadParameterBuilder.fileUri(FILE_URI);
+        fileUploadParameterBuilder.localeIdsToAuthorize(Collections.singletonList(LOCALE));
+        fileUploadParameterBuilder.overwriteAuthorizedLocales(true);
         return fileUploadParameterBuilder;
     }
 }

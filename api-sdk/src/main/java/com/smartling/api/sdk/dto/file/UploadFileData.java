@@ -53,7 +53,7 @@ public class UploadFileData implements ResponseData
      *
      * @return overWritten
      */
-    // TODO(AShesterov): refactor API-SDK: fix spelling: response.getData().isOverWritten() ~> response.getData().isOverwritten()
+    // TODO(AShesterov): refactor API-SDK: fix spelling: response.retrieveData().isOverWritten() ~> response.retrieveData().isOverwritten()
     public boolean isOverWritten()
     {
         return overWritten;

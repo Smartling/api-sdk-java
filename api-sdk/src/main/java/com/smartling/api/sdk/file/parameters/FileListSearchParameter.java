@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * Contains the search parameters that can be set when executing a file/list query through the Smartling Translation API.
  */
+//ToDO make me builder
 public class FileListSearchParameter
 {
     private String       uriMask;

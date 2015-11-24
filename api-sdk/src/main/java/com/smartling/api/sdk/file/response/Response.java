@@ -1,8 +1,10 @@
 package com.smartling.api.sdk.file.response;
 
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.web.api.v2.ResponseCode;
 import com.smartling.web.api.v2.ResponseData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Response<T extends ResponseData> {
@@ -35,7 +37,19 @@ public class Response<T extends ResponseData> {
         this.errors = errors;
     }
 
-    public T getData() {
+    public T getData()
+    {
+        return data;
+    }
+
+    public T retrieveData() throws SmartlingApiException
+    {
+        if (this.data == null && this.errors != null && !errors.isEmpty())
+        {
+            List<String> messages = new ArrayList<>(errors.size());
+            for(Error error : errors) messages.add(error.toString());
+            throw new SmartlingApiException(code.toString(), messages);
+        }
         return this.data;
     }
 

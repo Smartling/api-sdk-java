@@ -17,7 +17,7 @@ package com.smartling.api.sdk.util;
 
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -80,7 +80,7 @@ public class HttpUtilsTest
     }
     
     @Test
-    public void testExecuteHttpCall() throws ApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCall() throws SmartlingApiException, ClientProtocolException, IOException
     {
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
         
@@ -96,7 +96,7 @@ public class HttpUtilsTest
     }
 
     @Test
-    public void testExecuteHttpCallWithProxy() throws ApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxy() throws SmartlingApiException, ClientProtocolException, IOException
     {
         RequestConfig requestConfig = mock(RequestConfig.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
@@ -113,7 +113,7 @@ public class HttpUtilsTest
     }
 
     @Test
-    public void testExecuteHttpCallWithProxySystemHttp() throws ApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxySystemHttp() throws SmartlingApiException, ClientProtocolException, IOException
     {
         RequestConfig requestConfig = mock(RequestConfig.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
@@ -142,7 +142,7 @@ public class HttpUtilsTest
     }
 
     @Test
-    public void testExecuteHttpCallWithProxySystemHttps() throws ApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxySystemHttps() throws SmartlingApiException, ClientProtocolException, IOException
     {
         RequestConfig requestConfig = mock(RequestConfig.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);

@@ -13,6 +13,11 @@ public class GetOriginalFileParameterBuilder implements ParameterBuilder
     private String fileUri;
     private RetrievalType retrievalType;
 
+    public GetOriginalFileParameterBuilder(String fileUri)
+    {
+        this.fileUri = fileUri;
+    }
+
     public String getFileUri()
     {
         return fileUri;
@@ -21,17 +26,6 @@ public class GetOriginalFileParameterBuilder implements ParameterBuilder
     public RetrievalType getRetrievalType()
     {
         return retrievalType;
-    }
-
-    /**
-     * fileUri the identifier of the file
-     * @param fileUri
-     * @return
-     */
-    public GetOriginalFileParameterBuilder fileUri(String fileUri)
-    {
-        this.fileUri = fileUri;
-        return this;
     }
 
     /**

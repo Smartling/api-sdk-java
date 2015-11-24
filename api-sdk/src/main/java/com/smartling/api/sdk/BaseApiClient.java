@@ -3,7 +3,7 @@ package com.smartling.api.sdk;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
 import com.smartling.api.sdk.util.DateTypeAdapter;
@@ -23,7 +23,7 @@ public abstract class BaseApiClient
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected HttpUtils httpUtils;
+    protected HttpUtils httpUtils = new HttpUtils();
 
     public HttpUtils getHttpUtils()
     {
@@ -43,7 +43,7 @@ public abstract class BaseApiClient
         return responseWrapper.getResponse();
     }
 
-    protected HttpPost createJsonPostRequest(final String url, final Object command) throws ApiException
+    protected HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
     {
         final HttpPost httpPost = new HttpPost(url);
         final StringEntity stringEntity;
@@ -56,7 +56,7 @@ public abstract class BaseApiClient
         }
         catch (IOException e)
         {
-            throw new ApiException(e);
+            throw new SmartlingApiException(e);
         }
 
         return httpPost;

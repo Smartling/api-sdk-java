@@ -6,7 +6,7 @@ import com.smartling.api.sdk.auth.AuthenticationContext;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.FileApiClient;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
@@ -22,107 +22,147 @@ import com.smartling.api.sdk.file.response.FileStatus;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+/**
+ *  It's the class your looking for! All iteractions with SmartlingApi should be done via calling methods of this class
+ *  ApiManager should be declared singleton in your application
+ */
 public class ApiManager
 {
     private AuthApiClient authApiClient;
     private FileApiClient fileApiClient;
-    private AuthenticationContext authenticationContext;
+    private volatile AuthenticationContext authenticationContext;
     private ProxyConfiguration proxyConfiguration;
-    //ToDo move to properties file
-    private String baseAuthApiUrl = "https://api.smartling.com";
-    private String baseFileApiUrl = "https://api.smartling.com";
+    private String baseAuthApiUrl;
     private String userId;
     private String userSecret;
-    private ScheduledThreadPoolExecutor executor;
     private ConnectionConfig connectionConfig;
+    private ScheduledExecutorService expireExecutor;
 
-    public ApiManager(ProxyConfiguration proxyConfiguration, String userId, String userSecret, String projectId)
+    /**
+     * You should provide batch of configuration parameters
+     * @param userId your hashed Identifier in Smartling
+     * @param userSecret your security token
+     * @param projectId you projectId provided by Smartling
+     * @param baseAuthApiUrl https://api.smartling.com by default
+     * @param baseFileApiUrl https://api.smartling.com by default
+     */
+    public ApiManager(String userId, String userSecret, String projectId, String baseAuthApiUrl, String baseFileApiUrl)
     {
-        this.proxyConfiguration = proxyConfiguration;
+        authApiClient = new AuthApiClient();
+        fileApiClient = new FileApiClient();
+        this.proxyConfiguration = null;
         this.userId = userId;
         this.userSecret = userSecret;
+        this.baseAuthApiUrl = baseAuthApiUrl;
         this.connectionConfig = new ConnectionConfig(proxyConfiguration, baseFileApiUrl, projectId);
+        expireExecutor = Executors.newScheduledThreadPool(10);
     }
 
-    public AuthenticationContext initAuthenticationContext() throws ApiException
+    /**
+     * You could also add your proxy configuration if yo need it
+     * @param proxyConfiguration proxy configuration
+     */
+    public ApiManager withProxy(ProxyConfiguration proxyConfiguration)
     {
-        authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret), proxyConfiguration, baseAuthApiUrl).getData();
+        this.proxyConfiguration = proxyConfiguration;
+        return this;
+    }
+
+    //ToDo proper unit test for scheduling is required
+    public AuthenticationContext initAuthenticationContext() throws SmartlingApiException
+    {
+        if (authenticationContext == null)
+        {
+            authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret), proxyConfiguration, baseAuthApiUrl).retrieveData();
+            expireExecutor.schedule(new Runnable()
+                                    {
+                                        @Override public void run()
+                                        {
+                                            synchronized (ApiManager.this)
+                                            {
+                                                authenticationContext = null;
+                                            }
+                                        }
+                                    }, authenticationContext.getExpiresIn() - 1, TimeUnit.SECONDS
+            );
+        }
         return authenticationContext;
     }
 
-    //ToDo make it smart and save accessKey
-    public UploadFileData uploadFile(File fileToUpload, String charset, FileUploadParameterBuilder builder) throws ApiException
+    public UploadFileData uploadFile(File fileToUpload, String charset, FileUploadParameterBuilder builder) throws SmartlingApiException
     {
-        return fileApiClient.uploadFile(initAuthenticationContext(), fileToUpload, charset, builder, connectionConfig).getData();
+        return fileApiClient.uploadFile(initAuthenticationContext(), fileToUpload, charset, builder, connectionConfig).retrieveData();
     }
 
     //ToDo fileName + fileUri in builder looks like duplication
-    public UploadFileData uploadFile(InputStream stream, String fileName, String charset, FileUploadParameterBuilder builder) throws ApiException
+    public UploadFileData uploadFile(InputStream stream, String fileName, String charset, FileUploadParameterBuilder builder) throws SmartlingApiException
     {
-        return fileApiClient.uploadFile(initAuthenticationContext(), stream, fileName, charset, builder, connectionConfig).getData();
+        return fileApiClient.uploadFile(initAuthenticationContext(), stream, fileName, charset, builder, connectionConfig).retrieveData();
     }
 
-    public void deleteFile(String fileUri) throws ApiException
+    public void deleteFile(String fileUri) throws SmartlingApiException
     {
         fileApiClient.deleteFile(initAuthenticationContext(), fileUri, connectionConfig);
     }
 
-    public void renameFile(String oldFileUri, String newFileUri) throws ApiException
+    public void renameFile(String oldFileUri, String newFileUri) throws SmartlingApiException
     {
         fileApiClient.renameFile(initAuthenticationContext(), oldFileUri, newFileUri, connectionConfig);
     }
 
-    public FileLastModified getLastModified(FileLastModifiedParameterBuilder fileLastModifiedParameterBuilder) throws ApiException
+    public FileLastModified getLastModified(FileLastModifiedParameterBuilder fileLastModifiedParameterBuilder) throws SmartlingApiException
     {
-        return fileApiClient.getLastModified(initAuthenticationContext(), fileLastModifiedParameterBuilder, connectionConfig).getData();
+        return fileApiClient.getLastModified(initAuthenticationContext(), fileLastModifiedParameterBuilder, connectionConfig).retrieveData();
     }
 
-    public StringResponse getFile(String locale, GetFileParameterBuilder getFileParameterBuilder) throws ApiException
+    public StringResponse getFile(String locale, GetFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
     {
         return fileApiClient.getFile(initAuthenticationContext(), locale, getFileParameterBuilder, connectionConfig);
     }
 
-    public StringResponse getOriginalFile(String locale, GetOriginalFileParameterBuilder getOriginalFileParameterBuilder) throws ApiException
+    public StringResponse getOriginalFile(String locale, GetOriginalFileParameterBuilder getOriginalFileParameterBuilder) throws SmartlingApiException
     {
         return fileApiClient.getOriginalFile(initAuthenticationContext(), getOriginalFileParameterBuilder, connectionConfig);
     }
 
     //ToDo convert FileListSearchParameter to builder
-    public FileList getFilesList(FileListSearchParameter fileListSearchParameter) throws ApiException
+    public FileList getFilesList(FileListSearchParameter fileListSearchParameter) throws SmartlingApiException
     {
-        return fileApiClient.getFilesList(initAuthenticationContext(), fileListSearchParameter, connectionConfig).getData();
+        return fileApiClient.getFilesList(initAuthenticationContext(), fileListSearchParameter, connectionConfig).retrieveData();
     }
 
-    public FileLocaleStatus getFileLocaleStatus(String locale, String fileUri) throws ApiException
+    public FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException
     {
-        return fileApiClient.getFileLocaleStatus(initAuthenticationContext(), locale, fileUri, connectionConfig).getData();
+        return fileApiClient.getFileLocaleStatus(initAuthenticationContext(), locale, fileUri, connectionConfig).retrieveData();
     }
 
-    public FileStatus getFileStatus( String fileUri) throws ApiException
+    public FileStatus getFileStatus( String fileUri) throws SmartlingApiException
     {
-        return fileApiClient.getFileStatus(initAuthenticationContext(), fileUri, connectionConfig).getData();
+        return fileApiClient.getFileStatus(initAuthenticationContext(), fileUri, connectionConfig).retrieveData();
     }
 
     public FileImportData importTranslations(File fileToUpload, String locale, String charsetName,
-                FileImportParameterBuilder fileImportParameterBuilder) throws ApiException
+                FileImportParameterBuilder fileImportParameterBuilder) throws SmartlingApiException
     {
-        return fileApiClient.importTranslations(initAuthenticationContext(), fileToUpload, locale, charsetName, fileImportParameterBuilder, connectionConfig).getData();
+        return fileApiClient.importTranslations(initAuthenticationContext(), fileToUpload, locale, charsetName, fileImportParameterBuilder, connectionConfig).retrieveData();
     }
 
-    public AuthorizedLocales getAuthorizedLocales(String fileUri) throws ApiException
+    public AuthorizedLocales getAuthorizedLocales(String fileUri) throws SmartlingApiException
     {
-        return fileApiClient.getAuthorizedLocales(initAuthenticationContext(), fileUri, connectionConfig).getData();
+        return fileApiClient.getAuthorizedLocales(initAuthenticationContext(), fileUri, connectionConfig).retrieveData();
     }
 
-    public void authorizeLocales(String fileUri, String... localeIds) throws ApiException
+    public void authorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException
     {
-        fileApiClient.authorizeLocales(initAuthenticationContext(), fileUri, localeIds, connectionConfig).getData();
+        fileApiClient.authorizeLocales(initAuthenticationContext(), fileUri, localeIds, connectionConfig).retrieveData();
     }
 
-    public void unAuthorizeLocales(String fileUri, String... localeIds) throws ApiException
+    public void unAuthorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException
     {
-        fileApiClient.unAuthorizeLocales(initAuthenticationContext(), fileUri, localeIds, connectionConfig).getData();
+        fileApiClient.unAuthorizeLocales(initAuthenticationContext(), fileUri, localeIds, connectionConfig).retrieveData();
     }
 }

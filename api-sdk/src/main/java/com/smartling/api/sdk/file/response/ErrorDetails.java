@@ -24,4 +24,12 @@ public class ErrorDetails
     {
         this.errorId = errorId;
     }
+
+    @Override public String toString()
+    {
+        return "ErrorDetails{" +
+                "field='" + field + '\'' +
+                ", errorId='" + errorId + '\'' +
+                '}';
+    }
 }

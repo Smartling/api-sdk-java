@@ -35,4 +35,22 @@ public class Error
     {
         this.details = details;
     }
+
+    public Error (){};
+
+    public Error(final String key, final String message, final ErrorDetails details)
+    {
+        this.key = key;
+        this.message = message;
+        this.details = details;
+    }
+
+    @Override public String toString()
+    {
+        return "Error{" +
+                "key='" + key + '\'' +
+                ", message='" + message + '\'' +
+                ", details=" + details +
+                '}';
+    }
 }

@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.BaseApiClient;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
 import com.smartling.api.sdk.util.HttpUtils;
@@ -14,7 +14,8 @@ public class AuthApiClient extends BaseApiClient
 {
     public static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
 
-    public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand, ProxyConfiguration proxyConfiguration, String baseAuthApiUrl) throws ApiException
+    public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand, ProxyConfiguration proxyConfiguration, String baseAuthApiUrl) throws
+                                                                                                                                                                   SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(AUTH_API_V2_AUTHENTICATE, baseAuthApiUrl),

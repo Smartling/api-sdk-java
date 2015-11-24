@@ -14,16 +14,15 @@ public class FileImportParameterBuilder implements ParameterBuilder
     private boolean overwrite;
     private String translationState;
 
+    public FileImportParameterBuilder(FileType fileType, String fileUri)
+    {
+        this.fileType = fileType;
+        this.fileUri = fileUri;
+    }
+
     public FileImportParameterBuilder directives(final boolean overwrite)
     {
         this.overwrite = overwrite;
-        return this;
-    }
-
-
-    public FileImportParameterBuilder fileUri(final String fileUri)
-    {
-        this.fileUri = fileUri;
         return this;
     }
 
@@ -33,9 +32,9 @@ public class FileImportParameterBuilder implements ParameterBuilder
         return this;
     }
 
-    public FileImportParameterBuilder fileType(final FileType fileType)
+    public FileImportParameterBuilder overwrite(final boolean overwrite)
     {
-        this.fileType = fileType;
+        this.overwrite = overwrite;
         return this;
     }
 

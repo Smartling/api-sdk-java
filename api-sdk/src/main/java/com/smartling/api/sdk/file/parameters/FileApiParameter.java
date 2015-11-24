@@ -35,8 +35,8 @@ public class FileApiParameter
     public static final String FILE                         = "file";
     public static final String RETRIEVAL_TYPE               = "retrievalType";
     public static final String CALLBACK_URL                 = "callbackUrl";
-    public static final String LOCALES_TO_APPROVE           = "localesToApprove";
-    public static final String OVERWRITE_APPROVED_LOCALES   = "overwriteApprovedLocales";
+    public static final String LOCALES_ID_TO_AUTHORIZE      = "localeIdsToAuthorize";
+    public static final String OVERWRITE_AUTHORIZED_LOCALES = "overwriteAuthorizedLocales";
     public static final String INCLUDE_ORIGINAL_STRINGS     = "includeOriginalStrings";
     public static final String CLIENT_LIB_ID                = "smartling.client_lib_id";
 }

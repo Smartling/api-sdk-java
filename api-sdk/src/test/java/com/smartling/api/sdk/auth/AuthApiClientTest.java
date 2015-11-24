@@ -2,7 +2,7 @@ package com.smartling.api.sdk.auth;
 
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.Response;
 import com.smartling.api.sdk.util.HttpUtils;
 import com.smartling.web.api.v2.ResponseCode;
@@ -46,7 +46,7 @@ public class AuthApiClientTest
             + "}";
 
     @Before
-    public void setup() throws ApiException
+    public void setup() throws SmartlingApiException
     {
         authApiClient = new AuthApiClient();
         httpUtils = mock(HttpUtils.class);
@@ -65,7 +65,7 @@ public class AuthApiClientTest
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/auth-api/v2/authenticate", request.getURI().toString());
         assertEquals(ResponseCode.SUCCESS, response.getCode());
-        assertEquals("eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI1MTFlODBlNy00ZTMxLTQwNWUtYWExMy0zZTY5YjQ4NmVmYzkiLCJleHAiOjE0NDc4NjYwMDksIm5iZiI6MCwiaWF0IjoxNDQ3ODY1NzA5LCJpc3MiOiJodHRwczovL3Nzby5zbWFydGxpbmcuY29tL2F1dGgvcmVhbG1zL1NtYXJ0bGluZyIsImF1ZCI6ImF1dGhlbnRpY2F0aW9uLXNlcnZpY2UiLCJzdWIiOiI5ZDY3ZmI5Yy00ZjIwLTQ1N2ItOTlmZC04MDg4OThjMzA0M2UiLCJhenAiOiJhdXRoZW50aWNhdGlvbi1zZXJ2aWNlIiwic2Vzc2lvbl9zdGF0ZSI6IjFkZDIwMjZiLTgyYzgtNGNlMy05NjUxLTY2NDZmOGY2MmJiZCIsImNsaWVudF9zZXNzaW9uIjoiMGQyYTQ4M2EtOTI3Ny00YWE2LTg1MzYtZWFkNDcyZDg2ZjQ3IiwiYWxsb3dlZC1vcmlnaW5zIjpbXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIlJPTEVfQVBJX1VTRVIiLCJ1c2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJ2aWV3LXByb2ZpbGUiLCJtYW5hZ2UtYWNjb3VudCJdfX0sInVpZCI6IjhmZTFiYTEyM2UyMyIsImVtYWlsIjoic3Jvc3NpbGxvK2RtcythY2NvdW50K293bkBzbWFydGxpbmcuY29tIiwibmFtZSI6IlRlc3QgQWNjb3VudCBPd25lciBUb2tlbiIsInByZWZlcnJlZF91c2VybmFtZSI6ImFwaTpxUHdvZWVDS1NIQXdpUEdKdHdpZk5pTFhsTktXaU8ifQ.K0HT0wOqQZzWEVWWeo1Uy21BZvbBj2rg0Kbvvz1ZhQA1l4pgx1KdkX1UCUiaIAdlSCv7N-O8EJwTSpVtwH-xHjAVwZavhRnbCMRqJOF1gB98NxUUA7Qp5w4Vt22hFZ6kfM72UAmfPs46VT8L61oqoRKUe9oxTF0WOOFDr9zpWbs", response.getData().getAccessToken());
-        assertEquals(300, response.getData().getExpiresIn());
+        assertEquals("eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI1MTFlODBlNy00ZTMxLTQwNWUtYWExMy0zZTY5YjQ4NmVmYzkiLCJleHAiOjE0NDc4NjYwMDksIm5iZiI6MCwiaWF0IjoxNDQ3ODY1NzA5LCJpc3MiOiJodHRwczovL3Nzby5zbWFydGxpbmcuY29tL2F1dGgvcmVhbG1zL1NtYXJ0bGluZyIsImF1ZCI6ImF1dGhlbnRpY2F0aW9uLXNlcnZpY2UiLCJzdWIiOiI5ZDY3ZmI5Yy00ZjIwLTQ1N2ItOTlmZC04MDg4OThjMzA0M2UiLCJhenAiOiJhdXRoZW50aWNhdGlvbi1zZXJ2aWNlIiwic2Vzc2lvbl9zdGF0ZSI6IjFkZDIwMjZiLTgyYzgtNGNlMy05NjUxLTY2NDZmOGY2MmJiZCIsImNsaWVudF9zZXNzaW9uIjoiMGQyYTQ4M2EtOTI3Ny00YWE2LTg1MzYtZWFkNDcyZDg2ZjQ3IiwiYWxsb3dlZC1vcmlnaW5zIjpbXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIlJPTEVfQVBJX1VTRVIiLCJ1c2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJ2aWV3LXByb2ZpbGUiLCJtYW5hZ2UtYWNjb3VudCJdfX0sInVpZCI6IjhmZTFiYTEyM2UyMyIsImVtYWlsIjoic3Jvc3NpbGxvK2RtcythY2NvdW50K293bkBzbWFydGxpbmcuY29tIiwibmFtZSI6IlRlc3QgQWNjb3VudCBPd25lciBUb2tlbiIsInByZWZlcnJlZF91c2VybmFtZSI6ImFwaTpxUHdvZWVDS1NIQXdpUEdKdHdpZk5pTFhsTktXaU8ifQ.K0HT0wOqQZzWEVWWeo1Uy21BZvbBj2rg0Kbvvz1ZhQA1l4pgx1KdkX1UCUiaIAdlSCv7N-O8EJwTSpVtwH-xHjAVwZavhRnbCMRqJOF1gB98NxUUA7Qp5w4Vt22hFZ6kfM72UAmfPs46VT8L61oqoRKUe9oxTF0WOOFDr9zpWbs", response.retrieveData().getAccessToken());
+        assertEquals(300, response.retrieveData().getExpiresIn());
     }
 }

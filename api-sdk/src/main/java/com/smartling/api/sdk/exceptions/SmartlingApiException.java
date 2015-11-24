@@ -15,27 +15,23 @@
  */
 package com.smartling.api.sdk.exceptions;
 
-// TODO(AShesterov): refactor API-SDK: rename ApiException to SmartlingApiException
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Thrown when an exception has occurred when using the {@link com.smartling.api.sdk.FileApiClientAdapter}.
- */
-public class ApiException extends Exception
+public class SmartlingApiException extends Exception
 {
     private static final long serialVersionUID = -397098626101615761L;
 
     private List<String> messages = new ArrayList<>();
 
-    public ApiException(final String contents, List<String> messages)
+    public SmartlingApiException(final String contents, List<String> messages)
     {
         super(contents);
         this.messages = messages;
     }
 
-    public ApiException(final Exception e)
+    public SmartlingApiException(final Exception e)
     {
         super(e);
         messages.add(e.getMessage());

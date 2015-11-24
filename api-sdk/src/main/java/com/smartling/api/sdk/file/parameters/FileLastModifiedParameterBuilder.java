@@ -14,10 +14,9 @@ public class FileLastModifiedParameterBuilder implements ParameterBuilder
     private Date lastModifiedAfter;
     private String locale;
 
-    public FileLastModifiedParameterBuilder fileUri(String fileURI)
+    public FileLastModifiedParameterBuilder (String fileURI)
     {
         this.fileUri = fileURI;
-        return this;
     }
 
     public FileLastModifiedParameterBuilder lastModifiedAfter(Date lastModifiedAfter)
