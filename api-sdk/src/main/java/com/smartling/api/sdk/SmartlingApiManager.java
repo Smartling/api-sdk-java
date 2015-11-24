@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *  It's the class your looking for! All iteractions with SmartlingApi should be done via calling methods of this class
- *  ApiManager should be declared singleton in your application
+ *  SmartlingApiManager should be declared singleton in your application
  */
-public class ApiManager
+public class SmartlingApiManager
 {
     AuthApiClient authApiClient;
     private FileApiClient fileApiClient;
@@ -50,7 +50,7 @@ public class ApiManager
      * @param baseAuthApiUrl https://api.smartling.com by default
      * @param baseFileApiUrl https://api.smartling.com by default
      */
-    public ApiManager(String userId, String userSecret, String projectId, String baseAuthApiUrl, String baseFileApiUrl)
+    public SmartlingApiManager(String userId, String userSecret, String projectId, String baseAuthApiUrl, String baseFileApiUrl)
     {
         authApiClient = new AuthApiClient();
         fileApiClient = new FileApiClient();
@@ -66,7 +66,7 @@ public class ApiManager
      * You could also add your proxy configuration if yo need it
      * @param proxyConfiguration proxy configuration
      */
-    public ApiManager withProxy(ProxyConfiguration proxyConfiguration)
+    public SmartlingApiManager withProxy(ProxyConfiguration proxyConfiguration)
     {
         this.proxyConfiguration = proxyConfiguration;
         return this;
