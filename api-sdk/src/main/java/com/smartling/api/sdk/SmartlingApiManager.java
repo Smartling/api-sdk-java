@@ -33,13 +33,13 @@ import java.util.concurrent.TimeUnit;
 public class SmartlingApiManager
 {
     AuthApiClient authApiClient;
-    private FileApiClient fileApiClient;
+    private final FileApiClient fileApiClient;
     private volatile AuthenticationContext authenticationContext;
     private ProxyConfiguration proxyConfiguration;
-    private String baseAuthApiUrl;
-    private String userId;
-    private String userSecret;
-    private ConnectionConfig connectionConfig;
+    private final String baseAuthApiUrl;
+    private final String userId;
+    private final String userSecret;
+    private final ConnectionConfig connectionConfig;
     final ScheduledExecutorService expireExecutor;
 
     /**
@@ -59,7 +59,7 @@ public class SmartlingApiManager
         this.userSecret = userSecret;
         this.baseAuthApiUrl = baseAuthApiUrl;
         this.connectionConfig = new ConnectionConfig(proxyConfiguration, baseFileApiUrl, projectId);
-        expireExecutor = Executors.newScheduledThreadPool(10);
+        expireExecutor = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -69,6 +69,7 @@ public class SmartlingApiManager
     public SmartlingApiManager withProxy(ProxyConfiguration proxyConfiguration)
     {
         this.proxyConfiguration = proxyConfiguration;
+        connectionConfig.setProxyConfiguration(proxyConfiguration);
         return this;
     }
 
@@ -125,7 +126,7 @@ public class SmartlingApiManager
         return fileApiClient.getFile(generateAuthenticationContext(), locale, getFileParameterBuilder, connectionConfig);
     }
 
-    public StringResponse getOriginalFile(String locale, GetOriginalFileParameterBuilder getOriginalFileParameterBuilder) throws SmartlingApiException
+    public StringResponse getOriginalFile(GetOriginalFileParameterBuilder getOriginalFileParameterBuilder) throws SmartlingApiException
     {
         return fileApiClient.getOriginalFile(generateAuthenticationContext(), getOriginalFileParameterBuilder, connectionConfig);
     }

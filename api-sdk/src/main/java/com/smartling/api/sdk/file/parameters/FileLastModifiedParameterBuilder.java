@@ -1,6 +1,7 @@
 package com.smartling.api.sdk.file.parameters;
 
 import com.smartling.api.sdk.util.DateFormatter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -36,7 +37,8 @@ public class FileLastModifiedParameterBuilder implements ParameterBuilder
         final List<NameValuePair> paramsList = new LinkedList<NameValuePair>();
 
         paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_URI, fileUri));
-        if (locale != null && !locale.isEmpty()){
+
+        if (StringUtils.isEmpty(locale)){
             paramsList.add(new BasicNameValuePair(FileApiParameter.LOCALE, locale));
         }
         if (lastModifiedAfter != null){

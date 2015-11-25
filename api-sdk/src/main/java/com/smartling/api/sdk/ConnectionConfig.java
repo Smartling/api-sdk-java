@@ -2,7 +2,7 @@ package com.smartling.api.sdk;
 
 public class ConnectionConfig
 {
-    private final ProxyConfiguration proxyConfiguration;
+    private ProxyConfiguration proxyConfiguration;
     private final String baseFileApiUrl;
     private final String projectId;
 
@@ -11,6 +11,11 @@ public class ConnectionConfig
         this.proxyConfiguration = proxyConfiguration;
         this.baseFileApiUrl = baseFileApiUrl;
         this.projectId = projectId;
+    }
+
+    public void setProxyConfiguration(final ProxyConfiguration proxyConfiguration)
+    {
+        this.proxyConfiguration = proxyConfiguration;
     }
 
     public ProxyConfiguration getProxyConfiguration()

@@ -99,7 +99,7 @@ public class SmartlingApiManagerTest
         assertEquals(1, localeStatus.getTotalStringCount());
         assertEquals(1, localeStatus.getTotalWordCount());
 
-        StringResponse originalFile = smartlingApiManager.getOriginalFile(LOCALE, new GetOriginalFileParameterBuilder(FILE_URI));
+        StringResponse originalFile = smartlingApiManager.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
         assertEquals("test=integrationTest", originalFile.getContents());
 
         smartlingApiManager.renameFile(FILE_URI, FILE_URI_RENAMED);
