@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  It's the class your looking for! All iteractions with SmartlingApi should be done via calling methods of this class
+ *  It's the class your looking for! All interactions with SmartlingApi should be done via calling methods of this class
  *  SmartlingApiManager should be declared singleton in your application
  */
 public class SmartlingApiManager
