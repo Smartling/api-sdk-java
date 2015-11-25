@@ -20,6 +20,7 @@ import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.file.response.Response;
+import com.smartling.api.sdk.util.DateFormatter;
 import com.smartling.api.sdk.util.HttpUtils;
 import com.smartling.web.api.v2.ResponseCode;
 import org.apache.http.HttpHeaders;
@@ -153,7 +154,7 @@ public class FileApiClientTest
         assertEquals(5, apiResponse.retrieveData().getItems().size());
         assertEquals(5, apiResponse.retrieveData().getTotalCount());
         assertEquals("be-BY", apiResponse.retrieveData().getItems().get(0).getLocaleId());
-        assertEquals("Wed Sep 16 00:24:42 EEST 2015", apiResponse.retrieveData().getItems().get(0).getLastModified().toString());
+        assertEquals(DateFormatter.parse("2015-09-15T21:24:42+0000").getTime(), apiResponse.retrieveData().getItems().get(0).getLastModified().getTime());
     }
 
     @Test
