@@ -3,8 +3,8 @@ package com.smartling.api.sdk;
 public class ConnectionConfig
 {
     private ProxyConfiguration proxyConfiguration;
-    private final String baseFileApiUrl;
-    private final String projectId;
+    private String baseFileApiUrl;
+    private String projectId;
 
     public ConnectionConfig(final ProxyConfiguration proxyConfiguration, final String baseFileApiUrl, final String projectId)
     {
@@ -31,5 +31,15 @@ public class ConnectionConfig
     public String getProjectId()
     {
         return projectId;
+    }
+
+    public void setBaseFileApiUrl(final String baseFileApiUrl)
+    {
+        this.baseFileApiUrl = baseFileApiUrl;
+    }
+
+    public void setProjectId(final String projectId)
+    {
+        this.projectId = projectId;
     }
 }

@@ -19,20 +19,6 @@
         <url>https://github.com/Smartling/api-sdk-java</url>
     </scm>
 
-    <!-- repositories -->
-    <repositories>
-        <repository>
-            <id>resolve-parent</id>
-            <url>https://artifactory.smartling.net/artifactory/repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <build>
         <filters>
             <filter>src/main/resources/sdk-project.properties</filter>
@@ -102,7 +88,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/SmartlingApiManagerTest.java</exclude>
+                        <exclude>**/SmartlingApiGatewayTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -116,7 +102,7 @@
                         <exclude>none</exclude>
                     </excludes>
                     <includes>
-                        <include>**/SmartlingApiManagerTest.java</include>
+                        <include>**/SmartlingApiGatewayTest.java</include>
                     </includes>
                 </configuration>
                 <executions>

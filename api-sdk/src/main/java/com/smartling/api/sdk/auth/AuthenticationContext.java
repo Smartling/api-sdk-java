@@ -13,6 +13,18 @@ public class AuthenticationContext implements ResponseData
     private String tokenType;
     private String sessionState;
 
+    public AuthenticationContext(){};
+
+    public AuthenticationContext (AuthenticationContext another){
+        if (another == null) return;
+        accessToken = another.accessToken;
+        expiresIn = another.expiresIn;
+        refreshExpiresIn = another.refreshExpiresIn;
+        refreshToken = another.refreshToken;
+        tokenType = another.tokenType;
+        sessionState = another.sessionState;
+    }
+
     public String getAccessToken()
     {
         return accessToken;
@@ -82,4 +94,6 @@ public class AuthenticationContext implements ResponseData
     {
         httpMessage.addHeader(HttpHeaders.AUTHORIZATION, getAuthorizationTokenString());
     }
+
+
 }

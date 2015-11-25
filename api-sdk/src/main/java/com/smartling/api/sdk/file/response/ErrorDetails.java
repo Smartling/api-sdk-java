@@ -1,6 +1,8 @@
 package com.smartling.api.sdk.file.response;
 
-public class ErrorDetails
+import com.smartling.web.api.v2.Details;
+
+public class ErrorDetails extends Details
 {
     private String field;
     private String errorId;

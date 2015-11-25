@@ -20,11 +20,16 @@ public abstract class BaseApiClient
 {
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
-    protected HttpUtils httpUtils = new HttpUtils();
+    private HttpUtils httpUtils = new HttpUtils();
 
     public HttpUtils getHttpUtils()
     {
         return httpUtils;
+    }
+
+    public void setHttpUtils(final HttpUtils httpUtils)
+    {
+        this.httpUtils = httpUtils;
     }
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType)

@@ -2,6 +2,7 @@ package com.smartling.api.sdk.file.response;
 
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.web.api.v2.ResponseCode;
+import com.smartling.web.api.v2.Error;
 import org.junit.Test;
 
 import java.util.LinkedList;

@@ -7,7 +7,6 @@ import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
-import com.smartling.api.sdk.util.HttpUtils;
 import org.apache.http.client.methods.HttpPost;
 
 public class AuthApiClient extends BaseApiClient
@@ -22,7 +21,7 @@ public class AuthApiClient extends BaseApiClient
                 authenticationCommand
         );
 
-        final StringResponse response = httpUtils.executeHttpCall(httpPost, proxyConfiguration);
+        final StringResponse response = getHttpUtils().executeHttpCall(httpPost, proxyConfiguration);
 
         return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<AuthenticationContext>>() {});
     }
@@ -32,8 +31,4 @@ public class AuthApiClient extends BaseApiClient
         return baseAuthApiUrl + url;
     }
 
-    public void setHttpUtils(HttpUtils httpUtils)
-    {
-        this.httpUtils = httpUtils;
-    }
 }
