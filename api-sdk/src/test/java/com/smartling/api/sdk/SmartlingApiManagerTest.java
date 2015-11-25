@@ -40,25 +40,23 @@ public class SmartlingApiManagerTest
 
     private static final String CHARSET = "UTF-8";
     private SmartlingApiManager smartlingApiManager;
-    private String userId;
-    private String userSecret;
-    private String projectId;
     private File fileToUpload;
     private File translatedFileToUpload;
     private static final String LOCALE = "en-US";
     private static final String LOCALE_ES = "es";
-    private String baseAuthApiUrl = "https://api.smartling.com";
-    private String baseFileApiUrl = "https://api.smartling.com";
 
     @Before
     public void setup() throws SmartlingApiException
     {
-        userId = System.getProperty("userId");
-        userSecret = System.getProperty("userSecret");
-        projectId = System.getProperty("projectId");
+        final String userId = System.getProperty("userId");
+        final String userSecret = System.getProperty("userSecret");
+        final String projectId = System.getProperty("projectId");
 
         ProxyConfiguration proxyConfiguration = mock(ProxyConfiguration.class);
-        smartlingApiManager = new SmartlingApiManager(userId, userSecret, projectId, baseAuthApiUrl,baseFileApiUrl).withProxy(proxyConfiguration);
+        final String baseAuthApiUrl = "https://api.smartling.com";
+        final String baseFileApiUrl = "https://api.smartling.com";
+
+        smartlingApiManager = new SmartlingApiManager(userId, userSecret, projectId, baseAuthApiUrl, baseFileApiUrl).withProxy(proxyConfiguration);
         fileToUpload = new File(getClass().getClassLoader().getResource("testfile.properties").getPath());
         translatedFileToUpload = new File(getClass().getClassLoader().getResource("testfileES.properties").getPath());
     }
