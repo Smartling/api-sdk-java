@@ -10,13 +10,13 @@
 
     <groupId>com.smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <scm>
-      <connection>scm:git:git://github.com/Smartling/api-sdk-java.git</connection>
-      <developerConnection>scm:git:git://github.com/Smartling/api-sdk-java.git</developerConnection>
-      <url>https://github.com/Smartling/api-sdk-java</url>
+        <connection>scm:git:git://github.com/Smartling/api-sdk-java.git</connection>
+        <developerConnection>scm:git:git://github.com/Smartling/api-sdk-java.git</developerConnection>
+        <url>https://github.com/Smartling/api-sdk-java</url>
     </scm>
 
     <build>
@@ -212,18 +212,13 @@
 
         <dependency>
             <groupId>commons-collections</groupId>
-           	<artifactId>commons-collections</artifactId>
-           	<version>3.2.1</version>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
         </dependency>
         <dependency>
-          <groupId>com.smartling</groupId>
-          <artifactId>public-api-commons</artifactId>
-          <version>1.3.0-RELEASE</version>
-        </dependency>
-        <dependency>
-          <groupId>org.codehaus.jackson</groupId>
-          <artifactId>jackson-mapper-asl</artifactId>
-          <version>1.9.13</version>
+            <groupId>com.smartling</groupId>
+            <artifactId>public-api-commons</artifactId>
+            <version>1.3.0-RELEASE</version>
         </dependency>
 
     </dependencies>

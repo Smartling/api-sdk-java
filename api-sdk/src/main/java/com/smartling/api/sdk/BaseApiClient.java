@@ -12,7 +12,6 @@ import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Date;
@@ -20,8 +19,6 @@ import java.util.Date;
 public abstract class BaseApiClient
 {
     private static final String APPLICATION_JSON_TYPE = "application/json";
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected HttpUtils httpUtils = new HttpUtils();
 
@@ -49,7 +46,8 @@ public abstract class BaseApiClient
         final StringEntity stringEntity;
         try
         {
-            stringEntity = new StringEntity(objectMapper.writeValueAsString(command));
+            Gson gson = new Gson();
+            stringEntity = new StringEntity(gson.toJson(command));
             stringEntity.setContentType(APPLICATION_JSON_TYPE);
             stringEntity.setContentEncoding(CharEncoding.UTF_8);
             httpPost.setEntity(stringEntity);
