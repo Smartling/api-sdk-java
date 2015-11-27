@@ -8,13 +8,13 @@ import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
-import com.smartling.api.sdk.file.parameters.AuthorizeLocalesCommand;
+import com.smartling.api.sdk.file.parameters.AuthorizeLocalesPayload;
 import com.smartling.api.sdk.file.parameters.FileApiParameter;
-import com.smartling.api.sdk.file.parameters.FileDeleteCommand;
+import com.smartling.api.sdk.file.parameters.FileDeletePayload;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileRenameCommand;
+import com.smartling.api.sdk.file.parameters.FileRenamePayload;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
@@ -103,7 +103,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_DELETE, config.getBaseFileApiUrl(), config.getProjectId()),
-                new FileDeleteCommand(fileUri)
+                new FileDeletePayload(fileUri)
         );
         authenticationContext.applyTo(httpPost);
 
@@ -120,7 +120,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_RENAME, config.getBaseFileApiUrl(), config.getProjectId()),
-                new FileRenameCommand(fileUri, newFileUri)
+                new FileRenamePayload(fileUri, newFileUri)
         );
         authenticationContext.applyTo(httpPost);
 
@@ -275,7 +275,7 @@ public class FileApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, config.getBaseFileApiUrl(), config.getProjectId()),
-                new AuthorizeLocalesCommand(fileUri, localeIds)
+                new AuthorizeLocalesPayload(fileUri, localeIds)
         );
         authenticationContext.applyTo(httpPost);
 

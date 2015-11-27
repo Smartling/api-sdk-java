@@ -105,7 +105,16 @@ public class SmartlingApiGatewayTest
 
         FileLastModified fileLastModified = smartlingApiGateway.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
         assertEquals(5, fileLastModified.getTotalCount());
+        ((SmartlingApiGatewayImpl)smartlingApiGateway).authenticationContext.setParsingTime(System.currentTimeMillis()-1000*3600);
+
+        status = smartlingApiGateway.getFileStatus(FILE_URI);
+        assertEquals(FILE_URI, status.getFileUri());
+        assertEquals("javaProperties", status.getFileType());
+        assertEquals(1, status.getTotalStringCount());
+        assertEquals(1, status.getTotalWordCount());
+
         smartlingApiGateway.deleteFile(FILE_URI);
+
     }
 
 }

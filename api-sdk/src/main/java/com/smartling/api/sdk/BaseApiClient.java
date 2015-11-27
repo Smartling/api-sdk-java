@@ -34,6 +34,7 @@ public abstract class BaseApiClient
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType)
     {
+        //Replace of empty data response to make Gson work properly
         String fixedResponse = response.replaceAll("\"data\"\\:\"\"", "\"data\":null");
 
         final GsonBuilder builder = new GsonBuilder();

@@ -1,11 +1,11 @@
 package com.smartling.api.sdk.file.parameters;
 
-public class AuthorizeLocalesCommand
+public class AuthorizeLocalesPayload
 {
     private String fileUri;
     private String[] localeIds;
 
-    public AuthorizeLocalesCommand(String fileUri, String[] localeIds)
+    public AuthorizeLocalesPayload(String fileUri, String[] localeIds)
     {
         this.fileUri = fileUri;
         this.localeIds = localeIds;

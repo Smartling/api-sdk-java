@@ -3,13 +3,14 @@ package com.smartling.api.sdk.file.response;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.web.api.v2.ResponseCode;
 import com.smartling.web.api.v2.ResponseData;
-import com.smartling.web.api.v2.Error;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Response<T extends ResponseData> {
     private ResponseCode code;
-    private List<com.smartling.web.api.v2.Error> errors;
+    private List<Error> errors;
     private T data;
 
     public Response() {
@@ -48,7 +49,7 @@ public class Response<T extends ResponseData> {
         {
             List<String> messages = new ArrayList<>(errors.size());
             for(Error error : errors) messages.add(error.toString());
-            throw new SmartlingApiException(code.toString(), messages);
+            throw new SmartlingApiException(code.toString()+ '\n' + StringUtils.join(messages, '\n'), errors, messages);
         }
         return this.data;
     }

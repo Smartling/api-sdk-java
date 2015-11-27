@@ -1,11 +1,11 @@
 package com.smartling.api.sdk.file.parameters;
 
-public class FileRenameCommand
+public class FileRenamePayload
 {
     private String fileUri;
     private String newFileUri;
 
-    public FileRenameCommand(String fileUri, String newFileUri)
+    public FileRenamePayload(String fileUri, String newFileUri)
     {
         this.fileUri = fileUri;
         this.newFileUri = newFileUri;

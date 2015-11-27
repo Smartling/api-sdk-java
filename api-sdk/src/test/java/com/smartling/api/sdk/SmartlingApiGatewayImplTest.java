@@ -7,11 +7,10 @@ import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.Response;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -28,14 +27,21 @@ public class SmartlingApiGatewayImplTest
         smartlingApiGatewayImpl.authApiClient = authApiClient;
         Response<AuthenticationContext> response = new Response<>();
         AuthenticationContext context = new AuthenticationContext();
-        context.setExpiresIn(2);
+        context.setExpiresIn(1);
         context.setAccessToken("111");
+        context.setRefreshToken("222");
         response.setData(context);
         when(authApiClient.authenticate(any(AuthenticationCommand.class), any(ProxyConfiguration.class), anyString())).thenReturn(response);
+        when(authApiClient.refresh(anyString(), any(ProxyConfiguration.class), anyString())).thenReturn(response);
 
         smartlingApiGatewayImpl.generateAuthenticationContext();
-        smartlingApiGatewayImpl.expireExecutor.shutdown();
-        smartlingApiGatewayImpl.expireExecutor.awaitTermination(30, TimeUnit.MINUTES);
+        verify(authApiClient).authenticate(new AuthenticationCommand("",""), null, "https://api.smartling.com");
+        context.setRefreshExpiresIn(1000);
+        smartlingApiGatewayImpl.generateAuthenticationContext();
+        verify(authApiClient).refresh("222", null, "https://api.smartling.com");
+        context.setRefreshExpiresIn(1);
+        verify(authApiClient).authenticate(new AuthenticationCommand("",""), null, "https://api.smartling.com");
+
     }
 
 }

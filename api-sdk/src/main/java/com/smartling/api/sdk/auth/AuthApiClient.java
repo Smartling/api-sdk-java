@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpPost;
 public class AuthApiClient extends BaseApiClient
 {
     public static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
+    public static final String AUTH_API_V2_REFRESH = "/auth-api/v2/authenticate/refresh";
 
     public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand, ProxyConfiguration proxyConfiguration, String baseAuthApiUrl)
             throws SmartlingApiException
@@ -19,6 +20,19 @@ public class AuthApiClient extends BaseApiClient
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(AUTH_API_V2_AUTHENTICATE, baseAuthApiUrl),
                 authenticationCommand
+        );
+
+        final StringResponse response = getHttpUtils().executeHttpCall(httpPost, proxyConfiguration);
+
+        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<AuthenticationContext>>() {});
+    }
+
+    public Response<AuthenticationContext> refresh(String refreshKey, ProxyConfiguration proxyConfiguration, String baseAuthApiUrl)
+            throws SmartlingApiException
+    {
+        final HttpPost httpPost = createJsonPostRequest(
+                getApiUrl(AUTH_API_V2_REFRESH, baseAuthApiUrl),
+                refreshKey
         );
 
         final StringResponse response = getHttpUtils().executeHttpCall(httpPost, proxyConfiguration);

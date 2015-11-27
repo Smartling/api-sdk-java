@@ -1,10 +1,10 @@
 package com.smartling.api.sdk.file.parameters;
 
-public class FileDeleteCommand
+public class FileDeletePayload
 {
     private String fileUri;
 
-    public FileDeleteCommand(String fileUri)
+    public FileDeletePayload(String fileUri)
     {
         this.fileUri = fileUri;
     }

@@ -22,9 +22,6 @@ import com.smartling.api.sdk.file.response.FileStatus;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  *  It's the class your looking for! All interactions with SmartlingApi should be done via calling methods of this class
@@ -34,14 +31,13 @@ public class SmartlingApiGatewayImpl implements SmartlingApiGateway
 {
     AuthApiClient authApiClient;
     private final FileApiClient fileApiClient;
-    private volatile AuthenticationContext authenticationContext;
+    volatile AuthenticationContext authenticationContext;
     private ProxyConfiguration proxyConfiguration;
     private String baseAuthApiUrl = "https://api.smartling.com";
     private String baseFileApiUrl = "https://api.smartling.com";
     private String userId;
     private String userSecret;
     private ConnectionConfig connectionConfig;
-    final ScheduledExecutorService expireExecutor;
 
     /**
      * You should provide batch of configuration parameters
@@ -57,7 +53,6 @@ public class SmartlingApiGatewayImpl implements SmartlingApiGateway
         this.userId = userId;
         this.userSecret = userSecret;
         this.connectionConfig = new ConnectionConfig(proxyConfiguration, baseFileApiUrl, projectId);
-        expireExecutor = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -72,7 +67,6 @@ public class SmartlingApiGatewayImpl implements SmartlingApiGateway
         this.userId = userId;
         this.userSecret = userSecret;
         this.connectionConfig = new ConnectionConfig(proxyConfiguration, baseFileApiUrl, projectId);
-        expireExecutor = Executors.newScheduledThreadPool(1);
     }
 
     public void setBaseAuthApiUrl(final String baseAuthApiUrl)
@@ -88,27 +82,26 @@ public class SmartlingApiGatewayImpl implements SmartlingApiGateway
 
     AuthenticationContext generateAuthenticationContext() throws SmartlingApiException
     {
-        AuthenticationContext defenciveCopy = new AuthenticationContext(authenticationContext);
-        if (authenticationContext == null)
+        if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime())
         {
-            synchronized (expireExecutor)
+            synchronized (this)
             {
-                if (authenticationContext == null)
+                if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime())
                 {
-                    authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret), proxyConfiguration, baseAuthApiUrl).retrieveData();
-                    expireExecutor.schedule(new Runnable()
-                                            {
-                                                @Override public void run()
-                                                {
-                                                    authenticationContext = null;
-                                                }
-                                            }, authenticationContext.getExpiresIn() - 1, TimeUnit.SECONDS
-                    );
+                    if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getRefreshTokenExpireTime())
+                    {
+                        authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret), proxyConfiguration, baseAuthApiUrl).retrieveData();
+                        authenticationContext.setParsingTime(System.currentTimeMillis());
+                    }
+                    else
+                    {
+                        authenticationContext = authApiClient.refresh(authenticationContext.getRefreshToken(), proxyConfiguration, baseAuthApiUrl).retrieveData();
+                        authenticationContext.setParsingTime(System.currentTimeMillis());
+                    }
                 }
             }
         }
-
-        return defenciveCopy;
+        return authenticationContext;
     }
 
     @Override public UploadFileData uploadFile(File fileToUpload, String charset, FileUploadParameterBuilder builder) throws SmartlingApiException

@@ -6,7 +6,9 @@ import org.apache.http.HttpMessage;
 
 public class AuthenticationContext implements ResponseData
 {
+    public static final int TIME_TO_RESFRESH = 1500;
     private String accessToken;
+    private long parsingTime;
     private long expiresIn;
     private long refreshExpiresIn;
     private String refreshToken;
@@ -95,5 +97,23 @@ public class AuthenticationContext implements ResponseData
         httpMessage.addHeader(HttpHeaders.AUTHORIZATION, getAuthorizationTokenString());
     }
 
+    public long getParsingTime()
+    {
+        return parsingTime;
+    }
 
+    public void setParsingTime(final long parsingTime)
+    {
+        this.parsingTime = parsingTime;
+    }
+
+    public long getAccessTokenExpireTime()
+    {
+        return parsingTime + expiresIn * 1000 - TIME_TO_RESFRESH;
+    }
+
+    public long getRefreshTokenExpireTime()
+    {
+        return parsingTime + refreshExpiresIn * 1000 - TIME_TO_RESFRESH;
+    }
 }
