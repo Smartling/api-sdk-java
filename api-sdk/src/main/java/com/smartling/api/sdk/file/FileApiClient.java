@@ -90,8 +90,7 @@ public class FileApiClient extends BaseApiClient
     private ProxyConfiguration proxyConfiguration;
     private String baseFileApiUrl = "https://api.smartling.com";
 
-    public FileApiClient(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration,
-            final String baseFileApiUrl)
+    private FileApiClient(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseFileApiUrl)
     {
         this.httpUtils = new HttpUtils();
         this.tokenProvider = tokenProvider;
@@ -105,15 +104,14 @@ public class FileApiClient extends BaseApiClient
         this.tokenProvider = tokenProvider;
     }
 
-    public Response<UploadFileData> uploadFile(File fileToUpload, String charsetName, FileUploadParameterBuilder fileUploadParameterBuilder)
-            throws SmartlingApiException
+    public Response<UploadFileData> uploadFile(File fileToUpload, String charsetName, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileToUpload, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileToUpload.getName());
         return uploadFile(fileUploadParameterBuilder, fileBody);
     }
 
-    public Response<UploadFileData> uploadFile(InputStream inputStream, String fileName, String charsetName,
-            FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException
+    public Response<UploadFileData> uploadFile(InputStream inputStream, String fileName, String charsetName, FileUploadParameterBuilder fileUploadParameterBuilder)
+            throws SmartlingApiException
     {
         InputStreamBody inputStreamBody = new InputStreamBody(inputStream, createContentType(fileUploadParameterBuilder.getFileType(), Charset.forName(charsetName)), fileName);
         return uploadFile(fileUploadParameterBuilder, inputStreamBody);
@@ -151,8 +149,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    public Response<FileLastModified> getLastModified(FileLastModifiedParameterBuilder builder) throws
-                                                                                                                                                                      SmartlingApiException
+    public Response<FileLastModified> getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException
     {
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, baseFileApiUrl, projectId), buildParamsQuery(
                         builder.getNameValueList().toArray(new NameValuePair[builder.getNameValueList().size()])
@@ -233,8 +230,7 @@ public class FileApiClient extends BaseApiClient
         );
     }
 
-    public Response<FileImportSmartlingData> importTranslations(File fileToUpload, String locale, String charsetName,
-            FileImportParameterBuilder fileImportParameterBuilder)
+    public Response<FileImportSmartlingData> importTranslations(File fileToUpload, String locale, String charsetName, FileImportParameterBuilder fileImportParameterBuilder)
             throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileToUpload, createContentType(fileImportParameterBuilder.getFileType(), Charset.forName(charsetName)), fileToUpload.getName());
@@ -329,8 +325,7 @@ public class FileApiClient extends BaseApiClient
                 : ContentType.create(fileType.getMimeType());
     }
 
-    private Response<UploadFileData> uploadFile(FileUploadParameterBuilder fileUploadParameterBuilder,
-            ContentBody contentBody)
+    private Response<UploadFileData> uploadFile(FileUploadParameterBuilder fileUploadParameterBuilder, ContentBody contentBody)
             throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
