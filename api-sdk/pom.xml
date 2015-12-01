@@ -88,7 +88,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/SmartlingApiGatewayTest.java</exclude>
+                        <exclude>**/IntegrationTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -102,7 +102,7 @@
                         <exclude>none</exclude>
                     </excludes>
                     <includes>
-                        <include>**/SmartlingApiGatewayTest.java</include>
+                        <include>**/IntegrationTest.java</include>
                     </includes>
                 </configuration>
                 <executions>

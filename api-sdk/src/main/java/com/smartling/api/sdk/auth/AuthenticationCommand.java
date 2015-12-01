@@ -42,4 +42,12 @@ public class AuthenticationCommand
         result = 31 * result + (userSecret != null ? userSecret.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString()
+    {
+        return "AuthenticationCommand{" +
+                "userIdentifier='" + userIdentifier + '\'' +
+                ", userSecret='" + userSecret + '\'' +
+                '}';
+    }
 }

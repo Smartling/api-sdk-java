@@ -48,11 +48,11 @@ public class AuthApiClientTest
     @Before
     public void setup() throws SmartlingApiException
     {
-        authApiClient = new AuthApiClient();
         httpUtils = mock(HttpUtils.class);
-        authApiClient.setHttpUtils(httpUtils);
         response = mock(StringResponse.class);
         proxyConfiguration = mock(ProxyConfiguration.class);
+        authApiClient = new AuthApiClient(proxyConfiguration, "https://api.smartling.com");
+        authApiClient.setHttpUtils(httpUtils);
         when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
     }
 
@@ -60,7 +60,7 @@ public class AuthApiClientTest
     public void testAuthenticate() throws Exception
     {
         when(response.getContents()).thenReturn(AUTH_RESPONSE);
-        Response<AuthenticationContext> response = authApiClient.authenticate(new AuthenticationCommand(USER_ID, USER_SECRET), proxyConfiguration, BASE_PATH);
+        Response<AuthenticationContext> response = authApiClient.authenticate(new AuthenticationCommand(USER_ID, USER_SECRET));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/auth-api/v2/authenticate", request.getURI().toString());
@@ -73,7 +73,7 @@ public class AuthApiClientTest
     public void testRefresh() throws Exception
     {
         when(response.getContents()).thenReturn(AUTH_RESPONSE);
-        Response<AuthenticationContext> response = authApiClient.refresh("refreshToken", proxyConfiguration, BASE_PATH);
+        Response<AuthenticationContext> response = authApiClient.refresh("refreshToken");
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/auth-api/v2/authenticate/refresh", request.getURI().toString());

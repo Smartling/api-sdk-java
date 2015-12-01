@@ -3,6 +3,7 @@ package com.smartling.api.sdk;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
+import com.smartling.api.sdk.file.FileApiClient;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
@@ -25,13 +26,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class SmartlingApiGatewayTest
+public class IntegrationTest
 {
     private static final String FILE_URI = "/testfile.properties";
     private static final String FILE_URI_RENAMED = "/testfileRenamed.properties";
 
     private static final String CHARSET = "UTF-8";
-    private SmartlingApiGateway smartlingApiGateway;
+    private FileApiClient fileApiClient;
     private File fileToUpload;
     private File translatedFileToUpload;
     private static final String LOCALE = "en-US";
@@ -45,8 +46,11 @@ public class SmartlingApiGatewayTest
         final String projectId = System.getProperty("projectId");
 
         ProxyConfiguration proxyConfiguration = mock(ProxyConfiguration.class);
+        fileApiClient = new FileApiClient.Builder(projectId)
+                                                   .authWithUserIdAndSecret(userId, userSecret)
+                                                   .proxyConfiguration(proxyConfiguration)
+                                                   .build();
 
-        smartlingApiGateway = new SmartlingApiGatewayImpl(userId, userSecret, projectId, proxyConfiguration);
         fileToUpload = new File(getClass().getClassLoader().getResource("testfile.properties").getPath());
         translatedFileToUpload = new File(getClass().getClassLoader().getResource("testfileES.properties").getPath());
     }
@@ -54,46 +58,46 @@ public class SmartlingApiGatewayTest
     @Test
     public void testApi() throws Exception
     {
-        smartlingApiGateway.uploadFile(fileToUpload, CHARSET, new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI).localeIdsToAuthorize(Collections.singletonList("es")
+        fileApiClient.uploadFile(fileToUpload, CHARSET, new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI).localeIdsToAuthorize(Collections.singletonList("es")
                 ).overwriteAuthorizedLocales(true));
-        smartlingApiGateway.importTranslations(translatedFileToUpload, LOCALE_ES, CHARSET, new FileImportParameterBuilder(JAVA_PROPERTIES, FILE_URI).overwrite(true));
+        fileApiClient.importTranslations(translatedFileToUpload, LOCALE_ES, CHARSET, new FileImportParameterBuilder(JAVA_PROPERTIES, FILE_URI).overwrite(true));
 
-        StringResponse response = smartlingApiGateway.getFile(LOCALE_ES, new GetFileParameterBuilder(FILE_URI));
+        StringResponse response = fileApiClient.getFile(LOCALE_ES, new GetFileParameterBuilder(FILE_URI));
 
         // bug in FileAPi enable after fix and fix testFileES to proper Test de integración
         // assertEquals("UTF-16", response.getEncoding());
         assertEquals("test=Test de integracion", response.getContents());
 
-        assertEquals(1, smartlingApiGateway.getAuthorizedLocales(FILE_URI).getItems().size());
+        assertEquals(1, fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData().getItems().size());
 
-        smartlingApiGateway.unAuthorizeLocales(FILE_URI, LOCALE_ES);
+        fileApiClient.unAuthorizeLocales(FILE_URI, LOCALE_ES);
 
-        assertEquals(0, smartlingApiGateway.getAuthorizedLocales(FILE_URI).getItems().size());
+        assertEquals(0, fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData().getItems().size());
 
-        smartlingApiGateway.authorizeLocales(FILE_URI, LOCALE_ES);
+        fileApiClient.authorizeLocales(FILE_URI, LOCALE_ES);
 
-        final AuthorizedLocales authorizedLocales = smartlingApiGateway.getAuthorizedLocales(FILE_URI);
+        final AuthorizedLocales authorizedLocales = fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData();
         assertEquals(1, authorizedLocales.getItems().size());
         assertEquals("es", authorizedLocales.getItems().get(0));
 
-        FileStatus status = smartlingApiGateway.getFileStatus(FILE_URI);
+        FileStatus status = fileApiClient.getFileStatus(FILE_URI).retrieveData();
         assertEquals(FILE_URI, status.getFileUri());
         assertEquals("javaProperties", status.getFileType());
         assertEquals(1, status.getTotalStringCount());
         assertEquals(1, status.getTotalWordCount());
-        FileLocaleStatus localeStatus = smartlingApiGateway.getFileLocaleStatus(LOCALE, FILE_URI);
+        FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE).retrieveData();
         assertEquals(FILE_URI, localeStatus.getFileUri());
         assertEquals("javaProperties", localeStatus.getFileType());
         assertEquals(1, localeStatus.getTotalStringCount());
         assertEquals(1, localeStatus.getTotalWordCount());
 
-        StringResponse originalFile = smartlingApiGateway.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
+        StringResponse originalFile = fileApiClient.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
         assertEquals("test=integrationTest", originalFile.getContents());
 
-        smartlingApiGateway.renameFile(FILE_URI, FILE_URI_RENAMED);
+        fileApiClient.renameFile(FILE_URI, FILE_URI_RENAMED).retrieveData();
 
         boolean renamedFileFound = false;
-        FileList list = smartlingApiGateway.getFilesList(new FileListSearchParameterBuilder());
+        FileList list = fileApiClient.getFilesList(new FileListSearchParameterBuilder()).retrieveData();
         for(FileListItem item : list.getItems())
         {
             if (item.getFileUri().equals(FILE_URI_RENAMED))
@@ -103,18 +107,11 @@ public class SmartlingApiGatewayTest
         }
         assertTrue(renamedFileFound);
 
-        FileLastModified fileLastModified = smartlingApiGateway.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+        FileLastModified fileLastModified = fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI_RENAMED)).retrieveData();
         assertEquals(5, fileLastModified.getTotalCount());
-        ((SmartlingApiGatewayImpl)smartlingApiGateway).authenticationContext.setParsingTime(System.currentTimeMillis()-1000*3600);
 
-        status = smartlingApiGateway.getFileStatus(FILE_URI);
-        assertEquals(FILE_URI, status.getFileUri());
-        assertEquals("javaProperties", status.getFileType());
-        assertEquals(1, status.getTotalStringCount());
-        assertEquals(1, status.getTotalWordCount());
-
-        smartlingApiGateway.deleteFile(FILE_URI);
-
+        assertEquals("file.not.found", fileApiClient.deleteFile(FILE_URI).getErrors().get(0).getKey());
+        fileApiClient.deleteFile(FILE_URI_RENAMED);
     }
 
 }
