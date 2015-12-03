@@ -1,6 +1,7 @@
 package com.smartling.api.sdk.auth;
 
 import com.smartling.api.sdk.file.response.Response;
+import com.smartling.web.api.v2.ResponseCode;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;
@@ -23,6 +24,8 @@ public class OAuthTokenProviderTest
         context.setAccessToken("111");
         context.setRefreshToken("222");
         response.setData(context);
+        response.setCode(ResponseCode.SUCCESS);
+
         when(authApiClient.authenticate(any(AuthenticationCommand.class))).thenReturn(response);
         when(authApiClient.refresh(anyString())).thenReturn(response);
 
