@@ -472,7 +472,7 @@ public class FileApiClient extends BaseApiClient
             return new FileApiClient(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
         }
 
-        public void sanityCheck() throws SmartlingApiException
+        private void sanityCheck() throws SmartlingApiException
         {
             if (baseSmartlingApiUrl == null) throw new SmartlingApiException("Wrong Configuration. baseSmartlingApiUrl should not be null", null);
             if (tokenProvider == null) throw new SmartlingApiException("Wrong Configuration. tokenProvider should not be null", null);
