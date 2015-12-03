@@ -63,10 +63,8 @@ public class IntegrationTest
         fileApiClient.importTranslations(translatedFileToUpload, LOCALE_ES, CHARSET, new FileImportParameterBuilder(JAVA_PROPERTIES, FILE_URI).overwrite(true));
 
         StringResponse response = fileApiClient.getFile(LOCALE_ES, new GetFileParameterBuilder(FILE_URI));
-
-        // bug in FileAPi enable after fix and fix testFileES to proper Test de integración
-        // assertEquals("UTF-16", response.getEncoding());
-        assertEquals("test=Test de integracion", response.getContents());
+        
+        assertEquals("test=Test de integración", response.getContents());
 
         assertEquals(1, fileApiClient.getAuthorizedLocales(FILE_URI).getItems().size());
 
