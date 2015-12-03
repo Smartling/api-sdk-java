@@ -68,24 +68,24 @@ public class IntegrationTest
         // assertEquals("UTF-16", response.getEncoding());
         assertEquals("test=Test de integracion", response.getContents());
 
-        assertEquals(1, fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData().getItems().size());
+        assertEquals(1, fileApiClient.getAuthorizedLocales(FILE_URI).getItems().size());
 
         fileApiClient.unAuthorizeLocales(FILE_URI, LOCALE_ES);
 
-        assertEquals(0, fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData().getItems().size());
+        assertEquals(0, fileApiClient.getAuthorizedLocales(FILE_URI).getItems().size());
 
         fileApiClient.authorizeLocales(FILE_URI, LOCALE_ES);
 
-        final AuthorizedLocales authorizedLocales = fileApiClient.getAuthorizedLocales(FILE_URI).retrieveData();
+        final AuthorizedLocales authorizedLocales = fileApiClient.getAuthorizedLocales(FILE_URI);
         assertEquals(1, authorizedLocales.getItems().size());
         assertEquals("es", authorizedLocales.getItems().get(0));
 
-        FileStatus status = fileApiClient.getFileStatus(FILE_URI).retrieveData();
+        FileStatus status = fileApiClient.getFileStatus(FILE_URI);
         assertEquals(FILE_URI, status.getFileUri());
         assertEquals("javaProperties", status.getFileType());
         assertEquals(1, status.getTotalStringCount());
         assertEquals(1, status.getTotalWordCount());
-        FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE).retrieveData();
+        FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE);
         assertEquals(FILE_URI, localeStatus.getFileUri());
         assertEquals("javaProperties", localeStatus.getFileType());
         assertEquals(1, localeStatus.getTotalStringCount());
@@ -94,10 +94,10 @@ public class IntegrationTest
         StringResponse originalFile = fileApiClient.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
         assertEquals("test=integrationTest", originalFile.getContents());
 
-        fileApiClient.renameFile(FILE_URI, FILE_URI_RENAMED).retrieveData();
+        fileApiClient.renameFile(FILE_URI, FILE_URI_RENAMED);
 
         boolean renamedFileFound = false;
-        FileList list = fileApiClient.getFilesList(new FileListSearchParameterBuilder()).retrieveData();
+        FileList list = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
         for(FileListItem item : list.getItems())
         {
             if (item.getFileUri().equals(FILE_URI_RENAMED))
@@ -107,11 +107,18 @@ public class IntegrationTest
         }
         assertTrue(renamedFileFound);
 
-        FileLastModified fileLastModified = fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI_RENAMED)).retrieveData();
+        FileLastModified fileLastModified = fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI_RENAMED));
         assertEquals(5, fileLastModified.getTotalCount());
 
-        assertEquals("file.not.found", fileApiClient.deleteFile(FILE_URI).getErrors().get(0).getKey());
         fileApiClient.deleteFile(FILE_URI_RENAMED);
+        try
+        {
+            fileApiClient.deleteFile(FILE_URI);
+        }
+        catch (SmartlingApiException ex)
+        {
+            assertEquals("file.not.found", ex.getOriginalErrors().get(0).getKey());
+        }
     }
 
 }

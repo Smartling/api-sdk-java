@@ -45,11 +45,11 @@ public class Response<T extends ResponseData> {
 
     public T retrieveData() throws SmartlingApiException
     {
-        if (this.data == null && this.errors != null && !errors.isEmpty())
+        if (this.code != ResponseCode.SUCCESS && this.code != ResponseCode.ACCEPTED)
         {
             List<String> messages = new ArrayList<>(errors.size());
             for(Error error : errors) messages.add(error.toString());
-            throw new SmartlingApiException(code.toString()+ '\n' + StringUtils.join(messages, '\n'), errors, messages);
+            throw new SmartlingApiException(code.toString()+ '\n' + StringUtils.join(messages, '\n'), errors);
         }
         return this.data;
     }

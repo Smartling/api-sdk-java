@@ -1,5 +1,8 @@
 package com.smartling.api.sdk.auth;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class AuthenticationCommand
 {
     private final String userIdentifier;
@@ -30,17 +33,18 @@ public class AuthenticationCommand
 
         final AuthenticationCommand command = (AuthenticationCommand)o;
 
-        if (userIdentifier != null ? !userIdentifier.equals(command.userIdentifier) : command.userIdentifier != null)
-            return false;
-        return !(userSecret != null ? !userSecret.equals(command.userSecret) : command.userSecret != null);
-
-    }
+        return new EqualsBuilder()
+                .append(userIdentifier, command.getUserIdentifier())
+                .append(userSecret, command.getUserSecret())
+                .isEquals();
+     }
 
     @Override public int hashCode()
     {
-        int result = userIdentifier != null ? userIdentifier.hashCode() : 0;
-        result = 31 * result + (userSecret != null ? userSecret.hashCode() : 0);
-        return result;
+        return new HashCodeBuilder()
+                .append(userIdentifier)
+                .append(userSecret)
+                .hashCode();
     }
 
     @Override public String toString()

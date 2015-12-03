@@ -8,7 +8,7 @@ public class AuthenticationContext implements ResponseData
 {
     public static final int TIME_TO_RESFRESH = 1500;
     private String accessToken;
-    private long parsingTime;
+    private long parsingTime = System.currentTimeMillis();
     private long expiresIn;
     private long refreshExpiresIn;
     private String refreshToken;

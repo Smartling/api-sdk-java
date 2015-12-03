@@ -22,26 +22,34 @@ public class OAuthTokenProvider implements TokenProvider
         return new AuthenticationToken(authenticationContext.getTokenType(), authenticationContext.getAccessToken());
     }
 
-    void generateAuthenticationContext() throws SmartlingApiException
+    private void generateAuthenticationContext() throws SmartlingApiException
     {
-        if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime())
+        if (newAccessTokenNeeded())
         {
-            synchronized (this)
+            synchronized (authApiClient)
             {
-                if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime())
+                if (newAccessTokenNeeded())
                 {
-                    if (authenticationContext == null || System.currentTimeMillis() > authenticationContext.getRefreshTokenExpireTime())
+                    if (canUseRefreshToken())
                     {
-                        authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret)).retrieveData();
-                        authenticationContext.setParsingTime(System.currentTimeMillis());
+                        authenticationContext = authApiClient.refresh(authenticationContext.getRefreshToken()).retrieveData();
                     }
                     else
                     {
-                        authenticationContext = authApiClient.refresh(authenticationContext.getRefreshToken()).retrieveData();
-                        authenticationContext.setParsingTime(System.currentTimeMillis());
+                        authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret)).retrieveData();
                     }
                 }
             }
         }
+    }
+
+    private boolean canUseRefreshToken()
+    {
+        return authenticationContext != null && System.currentTimeMillis() <= authenticationContext.getRefreshTokenExpireTime();
+    }
+
+    private boolean newAccessTokenNeeded()
+    {
+        return authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime();
     }
 }

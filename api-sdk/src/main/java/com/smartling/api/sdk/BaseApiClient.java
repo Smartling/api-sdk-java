@@ -20,7 +20,7 @@ public abstract class BaseApiClient
 {
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
-    private HttpUtils httpUtils = new HttpUtils();
+    protected HttpUtils httpUtils = new HttpUtils();
 
     public HttpUtils getHttpUtils()
     {

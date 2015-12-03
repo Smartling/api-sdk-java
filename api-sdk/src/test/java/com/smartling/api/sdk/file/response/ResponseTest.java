@@ -41,4 +41,18 @@ public class ResponseTest
         response.retrieveData();
 
     }
+
+    @Test
+    public void testRetrieveDataFromFailedResponseWithNoMsg() throws Exception
+    {
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("VALIDATION_ERROR\n");
+
+        Response<FileStatus> response = new Response<>();
+        final LinkedList<Error> errors = new LinkedList<Error>();
+        response.setErrors(errors);
+        response.setCode(ResponseCode.VALIDATION_ERROR);
+        response.retrieveData();
+
+    }
 }
