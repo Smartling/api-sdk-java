@@ -4,14 +4,17 @@ import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Uploads a file for translation to the Smartling Translation API params
  */
 public class FileUploadParameterBuilder implements ParameterBuilder
 {
-    //Required
     private FileType fileType;
     private String fileUri;
     private Boolean approveContent;
@@ -20,6 +23,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     private List<String> localeIdsToAuthorize;
     private Boolean overwriteAuthorizedLocales;
     private Map<String, String> directives;
+    private String charset;
 
     public FileUploadParameterBuilder (FileType fileType, String fileUri)
     {
@@ -106,6 +110,17 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     {
         this.clientUid = ProjectPropertiesHolder.clientUid(name, version);
         return this;
+    }
+
+    public FileUploadParameterBuilder charset(final String charset)
+    {
+        this.charset = charset;
+        return this;
+    }
+
+    public String getCharset()
+    {
+        return charset;
     }
 
     public FileType getFileType()

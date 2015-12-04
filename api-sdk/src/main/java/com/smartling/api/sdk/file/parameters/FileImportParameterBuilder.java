@@ -4,6 +4,7 @@ import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +14,15 @@ public class FileImportParameterBuilder implements ParameterBuilder
     private String fileUri;
     private boolean overwrite;
     private String translationState;
+    private File file;
+    private String locale;
+    private String charset;
 
-    public FileImportParameterBuilder(FileType fileType, String fileUri)
+    public FileImportParameterBuilder(File file, String locale, String charset, FileType fileType, String fileUri)
     {
+        this.file = file;
+        this.locale = locale;
+        this.charset = charset;
         this.fileType = fileType;
         this.fileUri = fileUri;
     }
@@ -56,6 +63,21 @@ public class FileImportParameterBuilder implements ParameterBuilder
     public String getTranslationState()
     {
         return translationState;
+    }
+
+    public File getFile()
+    {
+        return file;
+    }
+
+    public String getLocale()
+    {
+        return locale;
+    }
+
+    public String getCharset()
+    {
+        return charset;
     }
 
     @Override

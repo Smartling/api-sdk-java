@@ -14,10 +14,12 @@ public class GetFileParameterBuilder implements ParameterBuilder
     private String fileUri;
     private RetrievalType retrievalType;
     private Boolean includeOriginalStrings;
+    private String locale;
 
-    public GetFileParameterBuilder(String fileUri)
+    public GetFileParameterBuilder(String fileUri, String locale)
     {
         this.fileUri = fileUri;
+        this.locale = locale;
     }
 
     public String getFileUri()
@@ -55,6 +57,11 @@ public class GetFileParameterBuilder implements ParameterBuilder
     {
         this.includeOriginalStrings = includeOriginalStrings;
         return this;
+    }
+
+    public String getLocale()
+    {
+        return locale;
     }
 
     @Override

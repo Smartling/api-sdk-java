@@ -4,6 +4,7 @@ import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.FileApiClient;
+import com.smartling.api.sdk.file.FileApiClientImpl;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
@@ -46,7 +47,7 @@ public class IntegrationTest
         final String projectId = System.getProperty("projectId");
 
         ProxyConfiguration proxyConfiguration = mock(ProxyConfiguration.class);
-        fileApiClient = new FileApiClient.Builder(projectId)
+        fileApiClient = new FileApiClientImpl.Builder(projectId)
                                                    .authWithUserIdAndSecret(userId, userSecret)
                                                    .proxyConfiguration(proxyConfiguration)
                                                    .build();
@@ -58,11 +59,11 @@ public class IntegrationTest
     @Test
     public void testApi() throws Exception
     {
-        fileApiClient.uploadFile(fileToUpload, CHARSET, new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI).localeIdsToAuthorize(Collections.singletonList("es")
+        fileApiClient.uploadFile(fileToUpload, new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI).charset(CHARSET).localeIdsToAuthorize(Collections.singletonList("es")
                 ).overwriteAuthorizedLocales(true));
-        fileApiClient.importTranslations(translatedFileToUpload, LOCALE_ES, CHARSET, new FileImportParameterBuilder(JAVA_PROPERTIES, FILE_URI).overwrite(true));
+        fileApiClient.importTranslations(new FileImportParameterBuilder(translatedFileToUpload, LOCALE_ES, CHARSET, JAVA_PROPERTIES, FILE_URI).overwrite(true));
 
-        StringResponse response = fileApiClient.getFile(LOCALE_ES, new GetFileParameterBuilder(FILE_URI));
+        StringResponse response = fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE_ES));
         
         assertEquals("test=Test de integración", response.getContents());
 
