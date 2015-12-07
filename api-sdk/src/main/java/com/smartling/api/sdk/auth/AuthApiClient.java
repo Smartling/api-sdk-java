@@ -5,6 +5,7 @@ import com.smartling.api.sdk.BaseApiClient;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
+import com.smartling.api.sdk.file.FileApiClient;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
 import org.apache.http.client.methods.HttpPost;
@@ -15,6 +16,24 @@ public class AuthApiClient extends BaseApiClient
     public static final String AUTH_API_V2_REFRESH = "/auth-api/v2/authenticate/refresh";
     private final ProxyConfiguration proxyConfiguration;
     private final String baseAuthApiUrl;
+
+    public AuthApiClient()
+    {
+        proxyConfiguration = null;
+        baseAuthApiUrl = FileApiClient.DEFAULT_API_GATEWAY_URL;
+    }
+
+    public AuthApiClient(final ProxyConfiguration proxyConfiguration)
+    {
+        this.proxyConfiguration = proxyConfiguration;
+        baseAuthApiUrl = FileApiClient.DEFAULT_API_GATEWAY_URL;
+    }
+
+    public AuthApiClient(final String baseAuthApiUrl)
+    {
+        this.proxyConfiguration = null;
+        this.baseAuthApiUrl = baseAuthApiUrl;
+    }
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseAuthApiUrl)
     {

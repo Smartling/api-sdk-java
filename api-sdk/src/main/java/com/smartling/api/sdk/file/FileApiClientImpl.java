@@ -87,7 +87,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
     private String projectId;
     private ProxyConfiguration proxyConfiguration;
-    private String baseSmartlingApiUrl = "https://api.smartling.com";
+    private String baseSmartlingApiUrl = DEFAULT_API_GATEWAY_URL;
 
     private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseSmartlingApiUrl)
     {

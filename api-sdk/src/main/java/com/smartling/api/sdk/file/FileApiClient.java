@@ -23,6 +23,8 @@ import java.io.InputStream;
 
 public interface FileApiClient
 {
+    static String DEFAULT_API_GATEWAY_URL = "https://api.smartling.com";
+
     void setTokenProvider(TokenProvider tokenProvider);
 
     UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException;
