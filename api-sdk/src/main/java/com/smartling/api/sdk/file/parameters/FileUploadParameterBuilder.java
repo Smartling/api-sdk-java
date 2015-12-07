@@ -150,6 +150,9 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
     private List<NameValuePair> convertLocalesBasedApproveParams(final String prefix, final List<String> values)
     {
+        if (values == null || values.isEmpty())
+            return Collections.emptyList();
+
         final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
         for (int index = 0; index < values.size(); index++) {

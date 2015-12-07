@@ -370,7 +370,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
     private void addAuthorizationHeader(final HttpMessage httpMessage) throws SmartlingApiException
     {
-        httpMessage.addHeader(HttpHeaders.AUTHORIZATION, tokenProvider.getValidToken().getAuthorizationTokenString());
+        httpMessage.addHeader(HttpHeaders.AUTHORIZATION, tokenProvider.getAuthenticationToken().getAuthorizationTokenString());
     }
 
     private String buildParamsQuery(NameValuePair... nameValuePairs)
@@ -396,15 +396,28 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
     private String buildFileListParams(FileListSearchParameterBuilder fileListSearchParameterBuilder)
     {
-        final List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+        final List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair(URI_MASK, fileListSearchParameterBuilder.getUriMask()));
         nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_AFTER, DateFormatter.format(fileListSearchParameterBuilder.getLastUploadedAfter())));
         nameValuePairs.add(new BasicNameValuePair(LAST_UPLOADED_BEFORE, DateFormatter.format(fileListSearchParameterBuilder.getLastUploadedBefore())));
         nameValuePairs.add(new BasicNameValuePair(OFFSET, null == fileListSearchParameterBuilder.getOffset() ? null : String.valueOf(fileListSearchParameterBuilder.getOffset())));
         nameValuePairs.add(new BasicNameValuePair(LIMIT, null == fileListSearchParameterBuilder.getLimit() ? null : String.valueOf(fileListSearchParameterBuilder.getLimit())));
-        nameValuePairs.addAll(getNameValuePairs(FILE_TYPES, fileListSearchParameterBuilder.getFileTypes()));
-
+        nameValuePairs.addAll(convertFileTypesParams(FILE_TYPES, fileListSearchParameterBuilder.getFileTypes()));
         return buildParamsQuery(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
+    }
+
+    private List<NameValuePair> convertFileTypesParams(final String prefix, final List<FileType> values)
+    {
+        if (values == null || values.isEmpty())
+            return Collections.emptyList();
+
+        final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+        for (int index = 0; index < values.size(); index++) {
+            nameValuePairs.add(new BasicNameValuePair(prefix + "[]", values.get(index).getIdentifier()));
+        }
+
+        return nameValuePairs;
     }
 
     private List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)

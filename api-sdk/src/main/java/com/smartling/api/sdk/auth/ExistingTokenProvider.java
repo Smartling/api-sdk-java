@@ -11,7 +11,7 @@ public class ExistingTokenProvider implements TokenProvider
         this.authenticationToken = authenticationToken;
     }
 
-    @Override public AuthenticationToken getValidToken() throws SmartlingApiException
+    @Override public AuthenticationToken getAuthenticationToken() throws SmartlingApiException
     {
         return authenticationToken;
     }

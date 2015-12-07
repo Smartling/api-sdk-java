@@ -15,6 +15,8 @@
  */
 package com.smartling.api.sdk.file.parameters;
 
+import com.smartling.api.sdk.file.FileType;
+
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import java.util.List;
 public class FileListSearchParameterBuilder
 {
     private String       uriMask;
-    private List<String> fileTypes;
+    private List<FileType> fileTypes;
     private Date lastUploadedAfter;
     private Date         lastUploadedBefore;
     private Integer      offset;
@@ -41,12 +43,12 @@ public class FileListSearchParameterBuilder
         return this;
     }
 
-    public List<String> getFileTypes()
+    public List<FileType> getFileTypes()
     {
         return fileTypes;
     }
 
-    public FileListSearchParameterBuilder withFileTypes(List<String> fileTypes)
+    public FileListSearchParameterBuilder withFileTypes(List<FileType> fileTypes)
     {
         this.fileTypes = fileTypes;
         return this;

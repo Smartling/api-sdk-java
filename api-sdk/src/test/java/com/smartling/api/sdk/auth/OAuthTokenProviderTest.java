@@ -29,10 +29,10 @@ public class OAuthTokenProviderTest
         when(authApiClient.authenticate(any(AuthenticationCommand.class))).thenReturn(response);
         when(authApiClient.refresh(anyString())).thenReturn(response);
 
-        oAuthTokenProvider.getValidToken();
+        oAuthTokenProvider.getAuthenticationToken();
         verify(authApiClient).authenticate(new AuthenticationCommand("userId","userSecret"));
         context.setRefreshExpiresIn(1000);
-        oAuthTokenProvider.getValidToken();
+        oAuthTokenProvider.getAuthenticationToken();
         verify(authApiClient).refresh("222");
         context.setRefreshExpiresIn(1);
         verify(authApiClient).authenticate(new AuthenticationCommand("userId","userSecret"));

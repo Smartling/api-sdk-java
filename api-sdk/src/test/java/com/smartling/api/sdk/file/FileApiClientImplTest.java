@@ -69,7 +69,7 @@ public class FileApiClientImplTest
         response = mock(StringResponse.class);
         TokenProvider tokenProvider = mock(TokenProvider.class);
         fileApiClientImpl.setTokenProvider(tokenProvider);
-        when(tokenProvider.getValidToken()).thenReturn(new AuthenticationToken("userSecret", "BEARER"));
+        when(tokenProvider.getAuthenticationToken()).thenReturn(new AuthenticationToken("userSecret", "BEARER"));
         when(response.isSuccess()).thenReturn(true);
         when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
     }

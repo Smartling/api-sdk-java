@@ -16,7 +16,7 @@ public class OAuthTokenProvider implements TokenProvider
         this.authApiClient = authApiClient;
     }
 
-    @Override public AuthenticationToken getValidToken() throws SmartlingApiException
+    @Override public AuthenticationToken getAuthenticationToken() throws SmartlingApiException
     {
         generateAuthenticationContext();
         return new AuthenticationToken(authenticationContext.getTokenType(), authenticationContext.getAccessToken());
