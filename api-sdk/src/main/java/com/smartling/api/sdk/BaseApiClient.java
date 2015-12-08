@@ -18,6 +18,8 @@ import java.util.Date;
 
 public abstract class BaseApiClient
 {
+    public static final String DEFAULT_API_GATEWAY_URL = "https://api.smartling.com";
+
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
     protected HttpUtils httpUtils = new HttpUtils();

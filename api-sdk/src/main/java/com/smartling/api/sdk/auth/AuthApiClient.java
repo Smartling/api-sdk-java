@@ -5,7 +5,6 @@ import com.smartling.api.sdk.BaseApiClient;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
-import com.smartling.api.sdk.file.FileApiClient;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
 import org.apache.http.client.methods.HttpPost;
@@ -19,20 +18,17 @@ public class AuthApiClient extends BaseApiClient
 
     public AuthApiClient()
     {
-        proxyConfiguration = null;
-        baseAuthApiUrl = FileApiClient.DEFAULT_API_GATEWAY_URL;
+        this(null, DEFAULT_API_GATEWAY_URL);
     }
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration)
     {
-        this.proxyConfiguration = proxyConfiguration;
-        baseAuthApiUrl = FileApiClient.DEFAULT_API_GATEWAY_URL;
+        this(proxyConfiguration, DEFAULT_API_GATEWAY_URL);
     }
 
     public AuthApiClient(final String baseAuthApiUrl)
     {
-        this.proxyConfiguration = null;
-        this.baseAuthApiUrl = baseAuthApiUrl;
+        this(null, baseAuthApiUrl);
     }
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseAuthApiUrl)

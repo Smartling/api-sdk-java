@@ -493,10 +493,10 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
             return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
         }
 
-        private void sanityCheck() throws SmartlingApiException
+        private void sanityCheck()
         {
-            if (baseSmartlingApiUrl == null) throw new SmartlingApiException("Wrong Configuration. baseSmartlingApiUrl should not be null", null);
-            if (tokenProvider == null) throw new SmartlingApiException("Wrong Configuration. tokenProvider should not be null", null);
+            if (baseSmartlingApiUrl == null) throw new IllegalArgumentException("Wrong Configuration. baseSmartlingApiUrl should not be null");
+            if (tokenProvider == null) throw new IllegalArgumentException("Wrong Configuration. tokenProvider should not be null");
         }
     }
 }
