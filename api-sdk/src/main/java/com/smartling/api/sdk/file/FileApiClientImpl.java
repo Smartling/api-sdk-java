@@ -487,7 +487,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
             return this;
         }
 
-        public FileApiClientImpl build() throws SmartlingApiException
+        public FileApiClientImpl build()
         {
             sanityCheck();
             return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
