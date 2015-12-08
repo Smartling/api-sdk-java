@@ -17,7 +17,7 @@ package com.smartling.api.sdk.util;
 
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
-import com.smartling.api.sdk.exceptions.ApiException;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -65,9 +65,9 @@ public class HttpUtils
      * @param httpRequest request for execute
      * @param proxyConfiguration proxy configuration, if it is set to {@code NULL} proxy settings will be setup from system properties. Otherwise switched off.
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
-     * @throws ApiException if an exception has occurred or non success is returned from the Smartling Translation API.
+     * @throws com.smartling.api.sdk.exceptions.SmartlingApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    public StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws ApiException
+    public StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws SmartlingApiException
     {
         CloseableHttpClient httpClient = null;
         try
@@ -90,7 +90,7 @@ public class HttpUtils
         catch (final IOException ioe)
         {
             logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
-            throw new ApiException(ioe);
+            throw new SmartlingApiException(ioe);
         }
         finally
         {

@@ -1,11 +1,14 @@
 package com.smartling.api.sdk.file.parameters;
 
-import com.smartling.api.sdk.file.FileApiParams;
 import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Uploads a file for translation to the Smartling Translation API params
@@ -17,9 +20,16 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     private Boolean approveContent;
     private String callbackUrl;
     private String clientUid;
-    private List<String> localesToApprove;
-    private Boolean overwriteApprovedLocales;
+    private List<String> localeIdsToAuthorize;
+    private Boolean overwriteAuthorizedLocales;
     private Map<String, String> directives;
+    private String charset;
+
+    public FileUploadParameterBuilder (FileType fileType, String fileUri)
+    {
+        this.fileType = fileType;
+        this.fileUri = fileUri;
+    }
 
     /**
      * Directives a Map of smartling directives. Can be null
@@ -36,12 +46,12 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * TRUE by default, it means that all locales in list will be approved everything
      * else excluded. If set to FALSE - no locales will be excluded, only existing and
      * locales which in the list will be approved. Can be null
-     * @param overwriteApprovedLocales
+     * @param overwriteAuthorizedLocales
      * @return
      */
-    public FileUploadParameterBuilder overwriteApprovedLocales(final Boolean overwriteApprovedLocales)
+    public FileUploadParameterBuilder overwriteAuthorizedLocales(final Boolean overwriteAuthorizedLocales)
     {
-        this.overwriteApprovedLocales = overwriteApprovedLocales;
+        this.overwriteAuthorizedLocales = overwriteAuthorizedLocales;
         return this;
     }
 
@@ -50,15 +60,15 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * @param localesToApprove
      * @return
      */
-    public FileUploadParameterBuilder localesToApprove(final List<String> localesToApprove)
+    public FileUploadParameterBuilder localeIdsToAuthorize(final List<String> localesToApprove)
     {
-        this.localesToApprove = localesToApprove;
+        this.localeIdsToAuthorize = localesToApprove;
         return this;
     }
 
-    public List<String> getLocalesToApprove()
+    public List<String> getLocaleIdsToAuthorize()
     {
-        return null != localesToApprove ? localesToApprove : new ArrayList<String>();
+        return null != localeIdsToAuthorize ? localeIdsToAuthorize : new ArrayList<String>();
     }
 
     /**
@@ -84,31 +94,9 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return this;
     }
 
-    /**
-     * the identifier of the file
-     * @param fileUri
-     * @return
-     */
-    public FileUploadParameterBuilder fileUri(final String fileUri)
-    {
-        this.fileUri = fileUri;
-        return this;
-    }
-
     public String getFileUri()
     {
         return fileUri;
-    }
-
-    /**
-     * the type of file to upload
-     * @param fileType
-     * @return
-     */
-    public FileUploadParameterBuilder fileType(final FileType fileType)
-    {
-        this.fileType = fileType;
-        return this;
     }
 
     /**
@@ -124,6 +112,17 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return this;
     }
 
+    public FileUploadParameterBuilder charset(final String charset)
+    {
+        this.charset = charset;
+        return this;
+    }
+
+    public String getCharset()
+    {
+        return charset;
+    }
+
     public FileType getFileType()
     {
         return fileType;
@@ -134,15 +133,15 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     {
         final List<NameValuePair> paramsList = new LinkedList<NameValuePair>();
 
-        paramsList.add(new BasicNameValuePair(FileApiParams.FILE_URI, fileUri));
-        paramsList.add(new BasicNameValuePair(FileApiParams.FILE_TYPE, fileType.getIdentifier()));
-        paramsList.add(new BasicNameValuePair(FileApiParams.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
-        paramsList.add(new BasicNameValuePair(FileApiParams.CALLBACK_URL, callbackUrl));
-        if (localesToApprove != null && !localesToApprove.isEmpty())
-            paramsList.addAll(convertLocalesBasedApproveParams(FileApiParams.LOCALES_TO_APPROVE, localesToApprove));
-        if (overwriteApprovedLocales != null)
-            paramsList.add(new BasicNameValuePair(FileApiParams.OVERWRITE_APPROVED_LOCALES, overwriteApprovedLocales.toString()));
-        paramsList.add(new BasicNameValuePair(FileApiParams.CLIENT_LIB_ID, clientUid != null ? clientUid : ProjectPropertiesHolder.defaultClientUid()));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_URI, fileUri));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_TYPE, fileType.getIdentifier()));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.CALLBACK_URL, callbackUrl));
+        if (localeIdsToAuthorize != null && !localeIdsToAuthorize.isEmpty())
+            paramsList.addAll(convertLocalesBasedApproveParams(FileApiParameter.LOCALES_ID_TO_AUTHORIZE, localeIdsToAuthorize));
+        if (overwriteAuthorizedLocales != null)
+            paramsList.add(new BasicNameValuePair(FileApiParameter.OVERWRITE_AUTHORIZED_LOCALES, overwriteAuthorizedLocales.toString()));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.CLIENT_LIB_ID, clientUid != null ? clientUid : ProjectPropertiesHolder.defaultClientUid()));
 
         paramsList.addAll(convertMapParams(directives));
 
@@ -151,10 +150,13 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
     private List<NameValuePair> convertLocalesBasedApproveParams(final String prefix, final List<String> values)
     {
+        if (values == null || values.isEmpty())
+            return Collections.emptyList();
+
         final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
         for (int index = 0; index < values.size(); index++) {
-            nameValuePairs.add(new BasicNameValuePair(prefix + "[" + index + "]", values.get(index)));
+            nameValuePairs.add(new BasicNameValuePair(prefix + "[]", values.get(index)));
         }
 
         return nameValuePairs;
