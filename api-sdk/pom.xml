@@ -10,7 +10,7 @@
 
     <groupId>com.smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <scm>
@@ -138,7 +138,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
