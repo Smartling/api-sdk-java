@@ -172,4 +172,16 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
+    public static final String FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE = "{\n"
+            + "  \"response\": {\n"
+            + "    \"code\": \"SUCCESS\",\n"
+            + "    \"data\": {\n"
+            + "      \"someNewField\": someNewValue,\n"
+            + "      \"items\": [\n"
+            + "        \"it-IT\",\n"
+            + "        \"es\"\n"
+            + "      ]\n"
+            + "    }\n"
+            + "  }\n"
+            + "}";
 }

@@ -137,7 +137,7 @@ public class FileApiClientImplTest
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpGet.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/last_modified?fileUri=fileUri", request.getURI().toString());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/last-modified?fileUri=fileUri", request.getURI().toString());
         assertEquals(5, apiResponse.getItems().size());
         assertEquals(5, apiResponse.getTotalCount());
         assertEquals("be-BY", apiResponse.getItems().get(0).getLocaleId());
@@ -235,10 +235,24 @@ public class FileApiClientImplTest
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpGet.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales?fileUri=fileUri", request.getURI().toString());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri", request.getURI().toString());
         assertEquals(2, apiResponse.getItems().size());
         assertEquals("it-IT", apiResponse.getItems().get(0));
     }
+
+    @Test
+    public void testGetAuthorizedLocalesWithExtraFields() throws Exception
+    {
+        when(response.getContents()).thenReturn(ResponseExamples.FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE);
+        AuthorizedLocales apiResponse = fileApiClientImpl.getAuthorizedLocales(FILE_URI);
+        HttpRequestBase request = requestCaptor.getValue();
+        assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
+        assertEquals(HttpGet.class, request.getClass());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri", request.getURI().toString());
+        assertEquals(2, apiResponse.getItems().size());
+        assertEquals("it-IT", apiResponse.getItems().get(0));
+    }
+
 
     @Test
     public void testAuthorizeLocales() throws Exception
@@ -248,7 +262,7 @@ public class FileApiClientImplTest
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpPost.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales", request.getURI().toString());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales", request.getURI().toString());
         assertEquals(EmptyResponse.class, apiResponse.getClass());
     }
 
@@ -260,7 +274,7 @@ public class FileApiClientImplTest
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(HttpDelete.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized_locales?fileUri=fileUri&localeIds%5B%5D=en-US", request.getURI().toString());
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri&localeIds%5B%5D=en-US", request.getURI().toString());
         assertEquals(EmptyResponse.class, apiResponse.getClass());
     }
 

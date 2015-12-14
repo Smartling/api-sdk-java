@@ -68,7 +68,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 {
     public static final String FILES_API_V2_FILE_DELETE = "/files-api/v2/projects/%s/file/delete";
     public static final String FILES_API_V2_FILE_RENAME = "/files-api/v2/projects/%s/file/rename";
-    public static final String FILES_API_V2_FILE_LAST_MODIFIED = "/files-api/v2/projects/%s/file/last_modified";
+    public static final String FILES_API_V2_FILE_LAST_MODIFIED = "/files-api/v2/projects/%s/file/last-modified";
     public static final String FILES_API_V2_GET_FILE = "/files-api/v2/projects/%s/locales/%s/file";
     public static final String FILES_API_V2_GET_ORIGINAL_FILE = "/files-api/v2/projects/%s/file";
     public static final String FILES_API_V2_FILES_LIST = "/files-api/v2/projects/%s/files/list";
@@ -76,7 +76,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     public static final String FILES_API_V2_FILE_STATUS = "/files-api/v2/projects/%s/file/status";
     public static final String FILES_API_V2_FILE_UPLOAD = "/files-api/v2/projects/%s/file";
     public static final String FILES_API_V2_FILE_IMPORT = "/files-api/v2/projects/%s/locales/%s/file/import";
-    public static final String FILES_API_V2_AUTHORIZED_LOCALES = "/files-api/v2/projects/%s/file/authorized_locales";
+    public static final String FILES_API_V2_AUTHORIZED_LOCALES = "/files-api/v2/projects/%s/file/authorized-locales";
 
     private static final String LOCALE_IDS_PARAM = "localeIds[]";
 
