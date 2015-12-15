@@ -13,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.smartling.api.sdk.file.*;
+
+import com.smartling.api.sdk.dto.file.FileLastModified;
+import com.smartling.api.sdk.dto.file.StringResponse;
+import com.smartling.api.sdk.dto.file.UploadFileData;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
+import com.smartling.api.sdk.file.FileApiClient;
+import com.smartling.api.sdk.file.FileApiClientImpl;
+import com.smartling.api.sdk.file.FileType;
+import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
+import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
-import com.smartling.api.sdk.file.response.*;
+import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
+import com.smartling.api.sdk.file.parameters.RetrievalType;
+import com.smartling.api.sdk.file.response.EmptyResponse;
+import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileStatus;
+
 import java.io.File;
-import org.apache.commons.io.FilenameUtils;
 
 public class SmartlingApiExample
 {
-    private static final String   API_KEY       = "YOUR-API-KEY";
+    private static final String   USER_ID       = "YOUR-USER-ID";
+    private static final String   USER_SECRET   = "YOUR-USER-SECRET";
     private static final String   PROJECT_ID    = "YOUR-PROJECT-ID";
     private static final String   LOCALE        = "YOUR-LOCALE";
 
@@ -30,46 +44,43 @@ public class SmartlingApiExample
     private static final FileType FILE_TYPE     = FileType.JAVA_PROPERTIES;
     private static final String   CALLBACK_URL  = null;
 
-    public static void main(String args[]) throws FileApiException
+    public static void main(String args[]) throws SmartlingApiException
     {
-        FileApiClientAdapter smartlingFAPI = new FileApiClientAdapterImpl(true, API_KEY, PROJECT_ID);
+        FileApiClient smartlingFAPI = new FileApiClientImpl.Builder(PROJECT_ID).authWithUserIdAndSecret(USER_ID, USER_SECRET).build();
 
         // upload the file
-        File file = new File(FilenameUtils.separatorsToSystem(PATH_TO_FILE));
-        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder();
+        File file = new File(PATH_TO_FILE);
+        FileUploadParameterBuilder fileUploadParameterBuilder = new FileUploadParameterBuilder(FILE_TYPE, getFileUri(file));
         fileUploadParameterBuilder
-                .fileType(FILE_TYPE)
-                .fileUri(getFileUri(file))
+                .charset(FILE_ENCODING)
                 .approveContent(false)
                 .callbackUrl(CALLBACK_URL);
-        ApiResponse<UploadData> uploadFileResponse = smartlingFAPI.uploadFile(file, FILE_ENCODING, fileUploadParameterBuilder);
+        UploadFileData uploadFileResponse = smartlingFAPI.uploadFile(file, fileUploadParameterBuilder);
         System.out.println(uploadFileResponse);
 
         // get last modified date
-        ApiResponse<FileLastModified> lastModifiedResponse = smartlingFAPI.getLastModified(getFileUri(file), null, LOCALE);
+        FileLastModified lastModifiedResponse = smartlingFAPI.getLastModified(new FileLastModifiedParameterBuilder(getFileUri(file)).locale(LOCALE));
         System.out.println(lastModifiedResponse);
 
         // rename the file
         final String fileIdentifier = "myTestFileIdentifier";
-        ApiResponse<EmptyResponse> renameFileResponse = smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);
+        EmptyResponse renameFileResponse = smartlingFAPI.renameFile(getFileUri(file), fileIdentifier);
         System.out.println(renameFileResponse);
 
         // run a search for files
-        FileListSearchParams fileListSearchParams = new FileListSearchParams();
-        fileListSearchParams.setUriMask(fileIdentifier);
-        ApiResponse<FileList> filesListResponse = smartlingFAPI.getFilesList(fileListSearchParams);
+        FileList filesListResponse = smartlingFAPI.getFilesList(new FileListSearchParameterBuilder().withUriMask(fileIdentifier));
         System.out.println(filesListResponse);
 
         // check the file status
-        ApiResponse<FileStatus> fileStatusResponse = smartlingFAPI.getFileStatus(fileIdentifier, LOCALE);
+        FileStatus fileStatusResponse = smartlingFAPI.getFileStatus(fileIdentifier);
         System.out.println(fileStatusResponse);
 
         // get the file back, including any translations that have been published.
-        StringResponse translatedContent = smartlingFAPI.getFile(fileIdentifier, LOCALE, RetrievalType.PUBLISHED);
+        StringResponse translatedContent = smartlingFAPI.getFile(new GetFileParameterBuilder(fileIdentifier, LOCALE).retrievalType(RetrievalType.PUBLISHED));
         System.out.println(translatedContent.getContents());
 
         // delete the file
-        ApiResponse<EmptyResponse> deleteFileResponse = smartlingFAPI.deleteFile(fileIdentifier);
+        EmptyResponse deleteFileResponse = smartlingFAPI.deleteFile(fileIdentifier);
         System.out.println(deleteFileResponse);
     }
 

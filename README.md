@@ -18,7 +18,7 @@ Clone the repo, `git clone git@github.com:Smartling/api-sdk-java.git`.
 
 Note: Integration tests will fail without a valid Smartling account, however as of 3.0.0 this will not block the build.  With a Smartling Account you can run the integration tests:
 
-`> mvn verify -DapiKey=<smartling public apiKey> -DprojectId=<smartling project id> -DtestLocale=<smartling project locale> -DtestMode=true`
+`> mvn verify -DuserId=<smartling user id> -DuserSecret=<smartling user secret> -DprojectId=<smartling project locale> -DtestMode=true`
 
 See https://docs.smartling.com/display/docs/Files+API for more details.
 
