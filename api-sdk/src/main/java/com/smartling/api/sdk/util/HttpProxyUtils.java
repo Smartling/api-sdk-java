@@ -58,13 +58,9 @@ public class HttpProxyUtils
      */
     public CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
     {
-        HttpClientBuilder httpClientBuilder = null;
+        HttpClientBuilder httpClientBuilder;
 
-        if (!hasActiveProxyConfiguration(proxyConfiguration))
-        {
-            httpClientBuilder = getHttpClientBuilder();
-        }
-        else
+        if (hasActiveProxyConfiguration(proxyConfiguration))
         {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
@@ -72,6 +68,10 @@ public class HttpProxyUtils
                 new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
 
             httpClientBuilder = getHttpClientBuilder().setDefaultCredentialsProvider(credentialsProvider);
+        }
+        else
+        {
+            httpClientBuilder = getHttpClientBuilder();
         }
 
         return httpClientBuilder.build();
