@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -58,20 +59,16 @@ public class HttpProxyUtils
      */
     public CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
     {
-        HttpClientBuilder httpClientBuilder;
+        HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
 
-        if (hasActiveProxyConfiguration(proxyConfiguration))
+        if (proxyAuthenticationRequired(proxyConfiguration))
         {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
                 new AuthScope(proxyConfiguration.getHost(), proxyConfiguration.getPort()),
                 new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
 
-            httpClientBuilder = getHttpClientBuilder().setDefaultCredentialsProvider(credentialsProvider);
-        }
-        else
-        {
-            httpClientBuilder = getHttpClientBuilder();
+            httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
 
         return httpClientBuilder.build();
@@ -82,8 +79,15 @@ public class HttpProxyUtils
         return HttpClientBuilder.create();
     }
 
-    private boolean hasActiveProxyConfiguration(final ProxyConfiguration proxyConfiguration)
+    private static boolean hasActiveProxyConfiguration(final ProxyConfiguration proxyConfiguration)
     {
         return proxyConfiguration != null && proxyConfiguration.getHost() != null && proxyConfiguration.getPort() != 0;
+    }
+
+    private static boolean proxyAuthenticationRequired(final ProxyConfiguration proxyConfiguration)
+    {
+        return hasActiveProxyConfiguration(proxyConfiguration)
+                && StringUtils.isNotEmpty(proxyConfiguration.getUsername())
+                && StringUtils.isNotEmpty(proxyConfiguration.getPassword());
     }
 }
