@@ -49,7 +49,7 @@ public class RetrieveFile
      * 4) path to the property file to download (used to look up the fileUri).
      * 5) the locale to download the file for. Can be null if the original file is desired.
      * 6) path to store the file.
-     * <pre>
+     * </pre>
      * @throws IOException if an exception occurs in the course of downloading the specified file.
      * @throws ApiException if an exception occurs while writing translated contents into file
      */

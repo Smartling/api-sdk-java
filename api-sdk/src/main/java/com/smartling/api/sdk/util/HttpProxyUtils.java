@@ -37,8 +37,8 @@ public class HttpProxyUtils
 
     /**
      * Get a request config given the applicable request and proxy config if any
-     * @param httpRequest
-     * @param proxyConfiguration
+     * @param httpRequest request
+     * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.client.config.RequestConfig
      */
     public RequestConfig getProxyRequestConfig(HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration)
@@ -52,8 +52,8 @@ public class HttpProxyUtils
     }
 
     /**
-     * Get an httpclient given a proxy config if any
-     * @param proxyConfiguration
+     * Get an HttpClient given a proxy config if any
+     * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.impl.client.CloseableHttpClient
      */
     public CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)

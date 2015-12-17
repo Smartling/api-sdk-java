@@ -41,8 +41,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * fileUri the identifier of the file
-     * @param fileUri
-     * @return
+     * @param fileUri file URI
+     * @return this builder
      */
     public GetFileParameterBuilder fileUri(String fileUri)
     {
@@ -52,8 +52,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * locale the locale to retrieve the translation for, or null to request the original file.
-     * @param locale
-     * @return
+     * @param locale locale code
+     * @return this builder
      */
     public GetFileParameterBuilder locale(String locale)
     {
@@ -63,8 +63,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * retrievalType flag indicating the type of file retrieval being requested. Can be null.
-     * @param retrievalType
-     * @return
+     * @param retrievalType retrieval type
+     * @return this builder
      */
     public GetFileParameterBuilder retrievalType(RetrievalType retrievalType)
     {
@@ -74,8 +74,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * include original strings
-     * @param includeOriginalStrings
-     * @return
+     * @param includeOriginalStrings whether to include original string in file
+     * @return this builder
      */
     public GetFileParameterBuilder includeOriginalStrings(Boolean includeOriginalStrings)
     {

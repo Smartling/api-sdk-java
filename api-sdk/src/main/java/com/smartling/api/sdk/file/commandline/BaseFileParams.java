@@ -25,8 +25,7 @@ public class BaseFileParams
     private String projectId;
 
     /**
-     * True if the API should use production mode, false if the sandbox should be used.
-     * @return
+     * @return true if the API should use production mode, false if the sandbox should be used.
      */
     public boolean isProductionMode()
     {
