@@ -39,8 +39,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * retrievalType flag indicating the type of file retrieval being requested. Can be null.
-     * @param retrievalType
-     * @return
+     * @param retrievalType retrieval type
+     * @return this builder
      */
     public GetFileParameterBuilder retrievalType(RetrievalType retrievalType)
     {
@@ -50,8 +50,8 @@ public class GetFileParameterBuilder implements ParameterBuilder
 
     /**
      * include original strings
-     * @param includeOriginalStrings
-     * @return
+     * @param includeOriginalStrings whether to include original string in file
+     * @return this builder
      */
     public GetFileParameterBuilder includeOriginalStrings(Boolean includeOriginalStrings)
     {

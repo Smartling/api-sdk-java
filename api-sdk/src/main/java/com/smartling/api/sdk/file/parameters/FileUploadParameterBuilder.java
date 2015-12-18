@@ -32,9 +32,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     }
 
     /**
-     * Directives a Map of smartling directives. Can be null
-     * @param directives
-     * @return
+     * @param directives Directives a Map of smartling directives. Can be null
+     * @return the current instance of a builder
      */
     public FileUploadParameterBuilder directives(final Map<String, String> directives)
     {
@@ -46,8 +45,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      * TRUE by default, it means that all locales in list will be approved everything
      * else excluded. If set to FALSE - no locales will be excluded, only existing and
      * locales which in the list will be approved. Can be null
-     * @param overwriteAuthorizedLocales
-     * @return
+     * @param   overwriteAuthorizedLocales whether to overwrite locales
+     * @return  the current instance of a builder
      */
     public FileUploadParameterBuilder overwriteAuthorizedLocales(final Boolean overwriteAuthorizedLocales)
     {
@@ -57,8 +56,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
     /**
      * List of locales to be approved after uploading the file. Can be null
-     * @param localesToApprove
-     * @return
+     * @param localesToApprove list of locales to approve
+     * @return the current instance of a builder
      */
     public FileUploadParameterBuilder localeIdsToAuthorize(final List<String> localesToApprove)
     {
@@ -73,8 +72,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
     /**
      * Callback url. Can be null
-     * @param callbackUrl
-     * @return
+     * @param callbackUrl callback URL
+     * @return the current instance of a builder
      */
     public FileUploadParameterBuilder callbackUrl(final String callbackUrl)
     {
@@ -85,8 +84,8 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     /**
      * TRUE if the file contents should be approved after uploading the file. Can be NULL.
      * NULL uses fileApi default of FALSE.
-     * @param approveContent
-     * @return
+     * @param approveContent whether to approve content
+     * @return the current instance of a builder
      */
     public FileUploadParameterBuilder approveContent(final Boolean approveContent)
     {
@@ -100,11 +99,11 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     }
 
     /**
-     * library UID that uses sdk for sending files
+     * Library UID that uses sdk for sending files
      * if UID is not provided default UID that is equal to sdk library UID is set
-     * @param name
-     * @param version
-     * @return
+     * @param name      name of the client
+     * @param version   version of the client
+     * @return          the current instance of a builder
      */
     public FileUploadParameterBuilder clientUid(final String name, final String version)
     {

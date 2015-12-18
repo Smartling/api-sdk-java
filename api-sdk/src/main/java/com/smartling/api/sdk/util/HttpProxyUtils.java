@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -37,8 +38,8 @@ public class HttpProxyUtils
 
     /**
      * Get a request config given the applicable request and proxy config if any
-     * @param httpRequest
-     * @param proxyConfiguration
+     * @param httpRequest request
+     * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.client.config.RequestConfig
      */
     public RequestConfig getProxyRequestConfig(HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration)
@@ -52,26 +53,22 @@ public class HttpProxyUtils
     }
 
     /**
-     * Get an httpclient given a proxy config if any
-     * @param proxyConfiguration
+     * Get an HttpClient given a proxy config if any
+     * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.impl.client.CloseableHttpClient
      */
     public CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
     {
-        HttpClientBuilder httpClientBuilder = null;
+        HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
 
-        if (!hasActiveProxyConfiguration(proxyConfiguration))
-        {
-            httpClientBuilder = getHttpClientBuilder();
-        }
-        else
+        if (proxyAuthenticationRequired(proxyConfiguration))
         {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
                 new AuthScope(proxyConfiguration.getHost(), proxyConfiguration.getPort()),
                 new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
 
-            httpClientBuilder = getHttpClientBuilder().setDefaultCredentialsProvider(credentialsProvider);
+            httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
 
         return httpClientBuilder.build();
@@ -82,8 +79,15 @@ public class HttpProxyUtils
         return HttpClientBuilder.create();
     }
 
-    private boolean hasActiveProxyConfiguration(final ProxyConfiguration proxyConfiguration)
+    private static boolean hasActiveProxyConfiguration(final ProxyConfiguration proxyConfiguration)
     {
         return proxyConfiguration != null && proxyConfiguration.getHost() != null && proxyConfiguration.getPort() != 0;
+    }
+
+    private static boolean proxyAuthenticationRequired(final ProxyConfiguration proxyConfiguration)
+    {
+        return hasActiveProxyConfiguration(proxyConfiguration)
+                && StringUtils.isNotEmpty(proxyConfiguration.getUsername())
+                && StringUtils.isNotEmpty(proxyConfiguration.getPassword());
     }
 }

@@ -34,7 +34,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.RETURNS_MOCKS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
@@ -59,6 +62,8 @@ public class HttpProxyUtilsTest
         httpRequest = mock(HttpRequestBase.class);
         httpClientBuilder = PowerMockito.mock(HttpClientBuilder.class);
         when(httpProxyUtils.getHttpClientBuilder()).thenReturn(httpClientBuilder);
+
+        PowerMockito.when(httpClientBuilder.build()).then(RETURNS_MOCKS);
     }
 
     @After
@@ -116,24 +121,50 @@ public class HttpProxyUtilsTest
     @Test
     public void testGetHttpClientWithProxyConfig() throws Exception
     {
-        CloseableHttpClient closeableHttpClient = mock(CloseableHttpClient.class);
-        PowerMockito.when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
-        
         ArgumentCaptor<CredentialsProvider> credentialsProviderCaptor = ArgumentCaptor.forClass(CredentialsProvider.class);
         PowerMockito.when(httpClientBuilder.setDefaultCredentialsProvider(credentialsProviderCaptor.capture())).thenReturn(httpClientBuilder);
 
-        ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
-        proxyConfiguration.setHost(HOST);
-        proxyConfiguration.setPort(PORT);
-        proxyConfiguration.setUsername(USERNAME);
-        proxyConfiguration.setPassword(PASSWORD);
-
-        assertNotNull(httpProxyUtils.getHttpClient(proxyConfiguration));
+        assertNotNull(httpProxyUtils.getHttpClient(fillProxyConfiguration()));
         Credentials credentials = credentialsProviderCaptor.getValue().getCredentials(new AuthScope(HOST, PORT));
         
         assertEquals(USERNAME, credentials.getUserPrincipal().getName());
         assertEquals(PASSWORD, credentials.getPassword());
 
         verify(httpClientBuilder).build();
+    }
+
+    @Test
+    public void shouldNotConfigureAuthenticationIfUsernameIsMissing() throws Exception
+    {
+        ProxyConfiguration proxyConfiguration = fillProxyConfiguration();
+        proxyConfiguration.setUsername(null);
+
+        CloseableHttpClient httpClient = httpProxyUtils.getHttpClient(proxyConfiguration);
+
+        assertNotNull(httpClient);
+        verify(httpClientBuilder, never()).setDefaultCredentialsProvider(any(CredentialsProvider.class));
+    }
+
+    @Test
+    public void shouldNotConfigureAuthenticationIfPasswordIsMissing() throws Exception
+    {
+        ProxyConfiguration proxyConfiguration = fillProxyConfiguration();
+        proxyConfiguration.setPassword(null);
+
+        CloseableHttpClient httpClient = httpProxyUtils.getHttpClient(proxyConfiguration);
+
+        assertNotNull(httpClient);
+        verify(httpClientBuilder, never()).setDefaultCredentialsProvider(any(CredentialsProvider.class));
+    }
+
+    private static ProxyConfiguration fillProxyConfiguration()
+    {
+        ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
+        proxyConfiguration.setHost(HOST);
+        proxyConfiguration.setPort(PORT);
+        proxyConfiguration.setUsername(USERNAME);
+        proxyConfiguration.setPassword(PASSWORD);
+
+        return proxyConfiguration;
     }
 }
