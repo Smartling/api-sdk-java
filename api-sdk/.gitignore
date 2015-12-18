@@ -3,5 +3,5 @@
 /target
 
 # Intellij Idea project files
-#.idea
-#*.iml
+.idea
+*.iml
