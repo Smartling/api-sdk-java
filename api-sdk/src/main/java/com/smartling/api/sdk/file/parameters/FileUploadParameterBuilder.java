@@ -17,7 +17,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 {
     private FileType fileType;
     private String fileUri;
-    private Boolean approveContent;
+    private Boolean authorize;
     private String callbackUrl;
     private String clientUid;
     private List<String> localeIdsToAuthorize;
@@ -89,7 +89,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
      */
     public FileUploadParameterBuilder approveContent(final Boolean approveContent)
     {
-        this.approveContent = approveContent;
+        this.authorize = approveContent;
         return this;
     }
 
@@ -134,7 +134,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
         paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_URI, fileUri));
         paramsList.add(new BasicNameValuePair(FileApiParameter.FILE_TYPE, fileType.getIdentifier()));
-        paramsList.add(new BasicNameValuePair(FileApiParameter.APPROVED, null == approveContent ? null : Boolean.toString(approveContent)));
+        paramsList.add(new BasicNameValuePair(FileApiParameter.AUTHORIZE, null == authorize ? null : Boolean.toString(authorize)));
         paramsList.add(new BasicNameValuePair(FileApiParameter.CALLBACK_URL, callbackUrl));
         if (localeIdsToAuthorize != null && !localeIdsToAuthorize.isEmpty())
             paramsList.addAll(convertLocalesBasedApproveParams(FileApiParameter.LOCALES_ID_TO_AUTHORIZE, localeIdsToAuthorize));

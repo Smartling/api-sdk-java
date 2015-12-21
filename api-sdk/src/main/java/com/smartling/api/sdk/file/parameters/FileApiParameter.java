@@ -23,7 +23,7 @@ public class FileApiParameter
     public static final String LOCALE                       = "locale";
     public static final String FILE_URI                     = "fileUri";
     public static final String FILE_TYPE                    = "fileType";
-    public static final String APPROVED                     = "approved";
+    public static final String AUTHORIZE                    = "authorize";
     public static final String URI_MASK                     = "uriMask";
     public static final String LAST_UPLOADED_AFTER          = "lastUploadedAfter";
     public static final String LAST_UPLOADED_BEFORE         = "lastUploadedBefore";
