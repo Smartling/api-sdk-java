@@ -95,7 +95,7 @@ public class AuthenticationContext implements ResponseData
         this.parsingTime = parsingTime;
     }
 
-    public long getAccessTokenExpireTime()
+    public long calculateAccessTokenExpireTime()
     {
         return parsingTime + expiresIn * 1000 - TIME_TO_RESFRESH;
     }

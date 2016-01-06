@@ -13,7 +13,7 @@ public class AuthenticationContextTest
         AuthenticationContext context = new AuthenticationContext();
         context.setParsingTime(100000);
         context.setExpiresIn(1);
-        assertEquals(99500, context.getAccessTokenExpireTime());
+        assertEquals(99500, context.calculateAccessTokenExpireTime());
     }
 
     @Test

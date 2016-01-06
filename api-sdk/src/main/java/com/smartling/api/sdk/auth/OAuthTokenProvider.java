@@ -24,11 +24,11 @@ public class OAuthTokenProvider implements TokenProvider
 
     private void generateAuthenticationContext() throws SmartlingApiException
     {
-        if (accessTokenIsValid())
+        if (accessTokenIsNotValid())
         {
             synchronized (authApiClient)
             {
-                if (accessTokenIsValid())
+                if (accessTokenIsNotValid())
                 {
                     if (refreshTokenIsValid())
                     {
@@ -48,8 +48,8 @@ public class OAuthTokenProvider implements TokenProvider
         return authenticationContext != null && System.currentTimeMillis() <= authenticationContext.getRefreshTokenExpireTime();
     }
 
-    private boolean accessTokenIsValid()
+    private boolean accessTokenIsNotValid()
     {
-        return authenticationContext == null || System.currentTimeMillis() > authenticationContext.getAccessTokenExpireTime();
+        return authenticationContext == null || System.currentTimeMillis() > authenticationContext.calculateAccessTokenExpireTime();
     }
 }
