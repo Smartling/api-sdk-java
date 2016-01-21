@@ -15,8 +15,8 @@
  */
 package com.smartling.api.sdk.exceptions;
 
-
 import com.smartling.api.sdk.file.response.Error;
+import com.smartling.api.sdk.util.HttpUtils;
 
 import java.util.List;
 public class SmartlingApiException extends Exception
@@ -25,19 +25,34 @@ public class SmartlingApiException extends Exception
 
     private List<Error> originalErrors;
 
+    private String requestId;
+
     public SmartlingApiException(final String contents, List<Error> originalErrors)
     {
         super(contents);
         this.originalErrors = originalErrors;
+        setRequestId();
     }
 
     public SmartlingApiException(final Exception e)
     {
         super(e);
+        setRequestId();
     }
 
     public List<Error> getOriginalErrors()
     {
         return originalErrors;
     }
+
+    public String getRequestId()
+    {
+        return requestId;
+    }
+
+    private void setRequestId()
+    {
+        this.requestId = HttpUtils.requestId.get() == null ? "not available" : HttpUtils.requestId.get();
+    }
+
 }

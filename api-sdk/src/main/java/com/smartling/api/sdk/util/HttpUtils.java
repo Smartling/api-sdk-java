@@ -23,6 +23,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -47,6 +48,9 @@ public class HttpUtils
     static final String PROPERTY_SUFFIX_PROXY_PORT = ".proxyPort";
     static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
     static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
+    public static final String X_SL_REQUEST_ID = "X-SL-RequestId";
+
+    public static final ThreadLocal<String> requestId = new ThreadLocal<>();
 
     private HttpProxyUtils httpProxyUtils;
 
@@ -84,7 +88,12 @@ public class HttpUtils
 
             final String charset = EntityUtils.getContentCharSet(response.getEntity());
             int statusCode = response.getStatusLine().getStatusCode();
+            Header header = response.getFirstHeader(X_SL_REQUEST_ID);
 
+            if (header == null)
+                requestId.set("not available");
+            else
+                requestId.set(header.getValue());
             return inputStreamToString(response.getEntity().getContent(), charset, statusCode);
         }
         catch (final IOException ioe)
