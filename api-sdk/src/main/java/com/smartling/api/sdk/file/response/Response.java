@@ -1,6 +1,7 @@
 package com.smartling.api.sdk.file.response;
 
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
+import com.smartling.api.sdk.util.HttpUtils;
 import com.smartling.web.api.v2.ResponseCode;
 import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.StringUtils;

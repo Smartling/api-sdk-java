@@ -31,13 +31,13 @@ public class SmartlingApiException extends Exception
     {
         super(contents);
         this.originalErrors = originalErrors;
-        setRequestId();
+        generateRequestId();
     }
 
     public SmartlingApiException(final Exception e)
     {
         super(e);
-        setRequestId();
+        generateRequestId();
     }
 
     public List<Error> getOriginalErrors()
@@ -50,9 +50,9 @@ public class SmartlingApiException extends Exception
         return requestId;
     }
 
-    private void setRequestId()
+    private void generateRequestId()
     {
-        this.requestId = HttpUtils.requestId.get() == null ? "not available" : HttpUtils.requestId.get();
+        this.requestId = HttpUtils.getRequestId().get() == null ? "N/A" : HttpUtils.getRequestId().get();
     }
 
 }

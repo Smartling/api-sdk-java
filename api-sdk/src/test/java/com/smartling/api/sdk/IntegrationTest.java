@@ -121,14 +121,15 @@ public class IntegrationTest
         catch (SmartlingApiException ex)
         {
             assertEquals("file.not.found", ex.getOriginalErrors().get(0).getKey());
-            assertNotEquals("not available", ex.getRequestId().length());
+            assertNotEquals("N/A", ex.getRequestId().length());
         }
     }
 
     @Test
     public void testRefreshToken() throws SmartlingApiException
     {
-        String refreshToken = authApiClient.authenticate(new AuthenticationCommand(System.getProperty("userId"), System.getProperty("userSecter"))).getData().getRefreshToken();
+        authApiClient = new AuthApiClient();
+        String refreshToken = authApiClient.authenticate(new AuthenticationCommand(System.getProperty("userId"), System.getProperty("userSecret"))).getData().getRefreshToken();
         assertTrue(authApiClient.refresh(refreshToken).getData().getAccessToken().length() > 10);
     }
 }

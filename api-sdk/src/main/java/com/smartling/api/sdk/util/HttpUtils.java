@@ -50,7 +50,7 @@ public class HttpUtils
     static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
     public static final String X_SL_REQUEST_ID = "X-SL-RequestId";
 
-    public static final ThreadLocal<String> requestId = new ThreadLocal<>();
+    private static final ThreadLocal<String> requestId = new ThreadLocal<>();
 
     private HttpProxyUtils httpProxyUtils;
 
@@ -62,6 +62,11 @@ public class HttpUtils
     public HttpUtils()
     {
         this.httpProxyUtils = new HttpProxyUtils();
+    }
+
+    public static ThreadLocal<String> getRequestId()
+    {
+        return requestId;
     }
 
     /**
@@ -76,6 +81,7 @@ public class HttpUtils
         CloseableHttpClient httpClient = null;
         try
         {
+            requestId.remove();
             ProxyConfiguration newProxyConfiguration = mergeSystemProxyConfiguration(proxyConfiguration);
             httpClient = httpProxyUtils.getHttpClient(newProxyConfiguration);
 
@@ -90,9 +96,7 @@ public class HttpUtils
             int statusCode = response.getStatusLine().getStatusCode();
             Header header = response.getFirstHeader(X_SL_REQUEST_ID);
 
-            if (header == null)
-                requestId.set("not available");
-            else
+            if (header != null)
                 requestId.set(header.getValue());
             return inputStreamToString(response.getEntity().getContent(), charset, statusCode);
         }
