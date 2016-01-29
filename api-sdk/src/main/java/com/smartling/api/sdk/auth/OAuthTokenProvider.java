@@ -6,8 +6,9 @@ public class OAuthTokenProvider implements TokenProvider
 {
     private final String userId;
     private final String userSecret;
-    private volatile AuthenticationContext authenticationContext;
     private final AuthApiClient authApiClient;
+
+    private volatile AuthenticationContext authenticationContext;
 
     public OAuthTokenProvider(final String userId, final String userSecret, final AuthApiClient authApiClient)
     {
