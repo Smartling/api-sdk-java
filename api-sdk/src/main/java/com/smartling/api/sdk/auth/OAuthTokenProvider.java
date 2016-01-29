@@ -1,7 +1,6 @@
 package com.smartling.api.sdk.auth;
 
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
-
 public class OAuthTokenProvider implements TokenProvider
 {
     private final String userId;
@@ -14,6 +13,11 @@ public class OAuthTokenProvider implements TokenProvider
         this.userId = userId;
         this.userSecret = userSecret;
         this.authApiClient = authApiClient;
+    }
+
+    @Override public void resetState()
+    {
+        authenticationContext = null;
     }
 
     @Override public AuthenticationToken getAuthenticationToken() throws SmartlingApiException

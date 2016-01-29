@@ -16,4 +16,9 @@ public class ExistingTokenProvider implements TokenProvider
         return authenticationToken;
     }
 
+    @Override public void resetState()
+    {
+
+    }
+
 }

@@ -5,4 +5,5 @@ import com.smartling.api.sdk.exceptions.SmartlingApiException;
 public interface TokenProvider
 {
     AuthenticationToken getAuthenticationToken() throws SmartlingApiException;
+    void resetState();
 }

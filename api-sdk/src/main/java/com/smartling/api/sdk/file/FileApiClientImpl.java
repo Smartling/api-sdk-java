@@ -34,6 +34,8 @@ import com.smartling.api.sdk.util.HttpUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpMessage;
 import org.apache.http.NameValuePair;
@@ -88,6 +90,8 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     private String projectId;
     private ProxyConfiguration proxyConfiguration;
     private String baseSmartlingApiUrl = DEFAULT_API_GATEWAY_URL;
+
+    private static final Log LOGGER = LogFactory.getLog(OAuthTokenProvider.class);
 
     private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseSmartlingApiUrl)
     {
@@ -159,10 +163,19 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
         final StringResponse response = httpUtils.executeHttpCall(httpGet, proxyConfiguration);
 
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileLastModified>>()
-                {
-                }
-        ).retrieveData();
+        try
+        {
+            return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileLastModified>>()
+                    {
+                    }
+            ).retrieveData();
+        }catch (SmartlingApiException ex)
+        {
+            tokenProvider.resetState();
+            LOGGER.info("tokenProvider state reseted");
+            throw ex;
+        }
+
     }
 
     @Override public StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
