@@ -6,7 +6,8 @@ import org.apache.http.HttpMessage;
 
 public class AuthenticationContext implements ResponseData
 {
-    public static final int TIME_TO_RESFRESH = 1500;
+    public static final int TIME_TO_REFRESH = 1500;
+
     private String accessToken;
     private long parsingTime = System.currentTimeMillis();
     private long expiresIn;
@@ -97,11 +98,11 @@ public class AuthenticationContext implements ResponseData
 
     public long calculateAccessTokenExpireTime()
     {
-        return parsingTime + expiresIn * 1000 - TIME_TO_RESFRESH;
+        return parsingTime + expiresIn * 1000 - TIME_TO_REFRESH;
     }
 
-    public long getRefreshTokenExpireTime()
+    public long calculateRefreshTokenExpireTime()
     {
-        return parsingTime + refreshExpiresIn * 1000 - TIME_TO_RESFRESH;
+        return parsingTime + refreshExpiresIn * 1000 - TIME_TO_REFRESH;
     }
 }

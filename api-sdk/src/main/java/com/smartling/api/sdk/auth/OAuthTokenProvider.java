@@ -45,7 +45,7 @@ public class OAuthTokenProvider implements TokenProvider
 
     private boolean refreshTokenIsValid()
     {
-        return authenticationContext != null && System.currentTimeMillis() <= authenticationContext.getRefreshTokenExpireTime();
+        return authenticationContext != null && System.currentTimeMillis() <= authenticationContext.calculateRefreshTokenExpireTime();
     }
 
     private boolean accessTokenIsNotValid()

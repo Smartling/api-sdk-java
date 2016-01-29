@@ -22,6 +22,6 @@ public class AuthenticationContextTest
         AuthenticationContext context = new AuthenticationContext();
         context.setParsingTime(100000);
         context.setRefreshExpiresIn(10);
-        assertEquals(108500, context.getRefreshTokenExpireTime());
+        assertEquals(108500, context.calculateRefreshTokenExpireTime());
     }
 }
