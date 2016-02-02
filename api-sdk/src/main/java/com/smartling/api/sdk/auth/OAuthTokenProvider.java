@@ -59,6 +59,7 @@ public class OAuthTokenProvider implements TokenProvider
                             {
                                 LOGGER.warn("Can't parse refresh token");
                             }
+                            throw ex;
                         }
                     }
                     else
