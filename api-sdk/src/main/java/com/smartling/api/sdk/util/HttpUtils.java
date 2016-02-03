@@ -82,22 +82,28 @@ public class HttpUtils
         try
         {
             requestId.remove();
+
             ProxyConfiguration newProxyConfiguration = mergeSystemProxyConfiguration(proxyConfiguration);
             httpClient = httpProxyUtils.getHttpClient(newProxyConfiguration);
 
             RequestConfig proxyRequestConfig = httpProxyUtils.getProxyRequestConfig(httpRequest, newProxyConfiguration);
 
             if (proxyRequestConfig != null)
+            {
                 httpRequest.setConfig(proxyRequestConfig);
+            }
 
             final HttpResponse response = httpClient.execute(httpRequest);
 
             final String charset = EntityUtils.getContentCharSet(response.getEntity());
             int statusCode = response.getStatusLine().getStatusCode();
-            Header header = response.getFirstHeader(X_SL_REQUEST_ID);
 
+            Header header = response.getFirstHeader(X_SL_REQUEST_ID);
             if (header != null)
+            {
                 requestId.set(header.getValue());
+            }
+
             return inputStreamToString(response.getEntity().getContent(), charset, statusCode);
         }
         catch (final IOException ioe)
