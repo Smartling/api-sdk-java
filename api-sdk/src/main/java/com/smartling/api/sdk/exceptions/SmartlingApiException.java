@@ -18,32 +18,37 @@ package com.smartling.api.sdk.exceptions;
 import com.smartling.api.sdk.file.response.Error;
 import com.smartling.api.sdk.util.HttpUtils;
 
+import java.util.Collections;
 import java.util.List;
+
 public class SmartlingApiException extends Exception
 {
     private static final long serialVersionUID = -397098626101615761L;
 
-    private List<Error> originalErrors;
+    private final List<Error> originalErrors;
 
-    private String requestId;
+    private final String requestId;
 
-    public SmartlingApiException(final String contents, List<Error> originalErrors)
+    public SmartlingApiException(String message, Throwable cause, List<Error> originalErrors)
     {
-        super(contents);
+        super(message, cause);
         this.originalErrors = originalErrors;
-        generateRequestId();
+        this.requestId = HttpUtils.getRequestId().get() == null ? "N/A" : HttpUtils.getRequestId().get();
+    }
+
+    public SmartlingApiException(String message, List<Error> originalErrors)
+    {
+        this(message, null, originalErrors);
     }
 
     public SmartlingApiException(final Exception e)
     {
-        super(e);
-        generateRequestId();
+        this("", e, Collections.<Error>emptyList());
     }
 
     public SmartlingApiException(final String message)
     {
-        super(message);
-        generateRequestId();
+        this(message, null, Collections.<Error>emptyList());
     }
 
     public List<Error> getOriginalErrors()
@@ -54,11 +59,6 @@ public class SmartlingApiException extends Exception
     public String getRequestId()
     {
         return requestId;
-    }
-
-    private void generateRequestId()
-    {
-        this.requestId = HttpUtils.getRequestId().get() == null ? "N/A" : HttpUtils.getRequestId().get();
     }
 
 }
