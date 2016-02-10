@@ -45,19 +45,19 @@ public abstract class BaseApiClient
         final Gson gson = builder.create();
         final ApiV2ResponseWrapper<T> responseWrapper = gson.fromJson(fixedResponse, responseType.getType());
 
-        if (isInvalidResponse(responseWrapper))
-        {
-            throw new SmartlingApiException(String.format("Response hasn't been parsed correctly [response='%s']", response));
-        }
-        else
+        if (isValidResponse(responseWrapper))
         {
             return responseWrapper.getResponse();
         }
+        else
+        {
+            throw new SmartlingApiException(String.format("Response hasn't been parsed correctly [response='%s']", response));
+        }
     }
 
-    private static <T extends ResponseData> boolean isInvalidResponse(ApiV2ResponseWrapper<T> responseWrapper)
+    private static <T extends ResponseData> boolean isValidResponse(ApiV2ResponseWrapper<T> responseWrapper)
     {
-        return responseWrapper == null || responseWrapper.getResponse().getCode() == null;
+        return responseWrapper != null && responseWrapper.getResponse().getCode() != null;
     }
 
     protected HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
