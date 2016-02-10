@@ -19,6 +19,18 @@ public class ResponseExamples
             + "\n"
             + "}\n"
             + "}";
+    public static final String NOT_EXISTING_CODE_RESPONSE = "{\n"
+            + "  \"response\": {\n"
+            + "      \"code\": \"NOT_EXISTING_CODE\",\n"
+            + "      \"errors\": [\n"
+            + "         {"
+            + "          \"message\": \"Invalid token\",\n"
+            + "          \"key\": \"invalid_token\",\n"
+            + "          \"details\": {}\n"
+            + "         }"
+            + "     ]\n"
+            + "}\n"
+            + "}";
     public static final String LAST_MODIFICATION_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"

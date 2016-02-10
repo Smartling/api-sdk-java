@@ -27,7 +27,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 
 import java.io.File;
@@ -36,7 +38,9 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +53,9 @@ public class FileApiClientImplTest
     private static final String FILE_URI2 = "fileUri2";
     private static final String CHARSET = "UTF-8";
     private static final String USER_TOKEN = "userSecret BEARER";
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
 
     private FileApiClientImpl fileApiClientImpl;
     private HttpUtils httpUtils;
@@ -142,6 +149,28 @@ public class FileApiClientImplTest
         assertEquals(5, apiResponse.getTotalCount());
         assertEquals("be-BY", apiResponse.getItems().get(0).getLocaleId());
         assertEquals(DateFormatter.parse("2015-09-15T21:24:42+0000").getTime(), apiResponse.getItems().get(0).getLastModified().getTime());
+    }
+
+    @Test
+    public void testGetLastModifiedWhenGetWrongResponse() throws Exception
+    {
+        when(response.getContents()).thenReturn(ResponseExamples.NOT_EXISTING_CODE_RESPONSE);
+
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("Response hasn't been parsed correctly [response=");
+
+        fileApiClientImpl.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+    }
+
+    @Test
+    public void testGetLastModifiedShouldThrowSmartlingApiExceptionWhenEmptyContent() throws Exception
+    {
+        when(this.response.getContents()).thenReturn("");
+
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("Response hasn't been parsed correctly [response=");
+
+        fileApiClientImpl.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
     }
 
     @Test

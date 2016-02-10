@@ -40,6 +40,12 @@ public class SmartlingApiException extends Exception
         generateRequestId();
     }
 
+    public SmartlingApiException(final String message)
+    {
+        super(message);
+        generateRequestId();
+    }
+
     public List<Error> getOriginalErrors()
     {
         return originalErrors;

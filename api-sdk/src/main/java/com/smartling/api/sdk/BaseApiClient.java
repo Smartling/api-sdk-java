@@ -34,7 +34,7 @@ public abstract class BaseApiClient
         this.httpUtils = httpUtils;
     }
 
-    protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType)
+    protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType) throws SmartlingApiException
     {
         //Replace of empty data response to make Gson work properly
         String fixedResponse = response.replaceAll("\"data\"\\:\"\"", "\"data\":null");
@@ -45,7 +45,19 @@ public abstract class BaseApiClient
         final Gson gson = builder.create();
         final ApiV2ResponseWrapper<T> responseWrapper = gson.fromJson(fixedResponse, responseType.getType());
 
-        return responseWrapper.getResponse();
+        if (isInvalidResponse(responseWrapper))
+        {
+            throw new SmartlingApiException(String.format("Response hasn't been parsed correctly [response='%s']", response));
+        }
+        else
+        {
+            return responseWrapper.getResponse();
+        }
+    }
+
+    private static <T extends ResponseData> boolean isInvalidResponse(ApiV2ResponseWrapper<T> responseWrapper)
+    {
+        return responseWrapper == null || responseWrapper.getResponse().getCode() == null;
     }
 
     protected HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
