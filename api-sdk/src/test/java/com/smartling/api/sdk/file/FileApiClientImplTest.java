@@ -192,6 +192,29 @@ public class FileApiClientImplTest
     }
 
     @Test
+    public void testShouldThrowSmartlingApiExceptionIfResponseIsNotSuccessfulWhenGetFile() throws Exception
+    {
+        when(response.isSuccess()).thenReturn(false);
+
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("Failed to get file content");
+
+        fileApiClientImpl.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
+    }
+
+    @Test
+    public void testShouldThrowSmartlingApiExceptionIfResponseIsNotSuccessfulWhenGetOriginalFile() throws Exception
+    {
+        when(response.isSuccess()).thenReturn(false);
+
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("Failed to get file content");
+
+        fileApiClientImpl.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
+
+    }
+
+    @Test
     public void testGetFilesList() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LIST_RESPONSE);

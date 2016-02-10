@@ -173,7 +173,15 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILE, getFileParameterBuilder.getLocale(), baseSmartlingApiUrl, projectId), params));
         addAuthorizationHeader(httpGet);
 
-        return httpUtils.executeHttpCall(httpGet, proxyConfiguration);
+        StringResponse response = httpUtils.executeHttpCall(httpGet, proxyConfiguration);
+        if (response.isSuccess())
+        {
+            return response;
+        }
+        else
+        {
+            throw new SmartlingApiException("Failed to get file content");
+        }
     }
 
     @Override public StringResponse getOriginalFile(GetOriginalFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
@@ -184,7 +192,16 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_ORIGINAL_FILE, baseSmartlingApiUrl, projectId), params));
         addAuthorizationHeader(httpGet);
 
-        return httpUtils.executeHttpCall(httpGet, proxyConfiguration);
+        StringResponse response = httpUtils.executeHttpCall(httpGet, proxyConfiguration);
+        if (response.isSuccess())
+        {
+            return response;
+        }
+        else
+        {
+            throw new SmartlingApiException("Failed to get file content");
+        }
+
     }
 
     @Override public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
