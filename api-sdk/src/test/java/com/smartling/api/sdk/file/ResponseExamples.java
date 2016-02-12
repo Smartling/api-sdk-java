@@ -31,6 +31,18 @@ public class ResponseExamples
             + "     ]\n"
             + "}\n"
             + "}";
+    public static final String ERROR_RESPONSE = "{\n"
+            + "  \"response\": {\n"
+            + "      \"code\": \"MAINTENANCE_MODE_ERROR\",\n"
+            + "      \"errors\": [\n"
+            + "         {"
+            + "          \"message\": \"Some error\",\n"
+            + "          \"key\": \"some_error\",\n"
+            + "          \"details\": {}\n"
+            + "         }"
+            + "     ]\n"
+            + "}\n"
+            + "}";
     public static final String LAST_MODIFICATION_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"

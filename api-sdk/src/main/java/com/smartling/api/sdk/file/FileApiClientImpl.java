@@ -180,6 +180,12 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         }
         else
         {
+            // Trying to get Smartling API exception from a json response
+            getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<EmptyResponse>>()
+                    {
+                    }
+            ).retrieveData();
+            // Throw exception if no Exception has been thrown in previously
             throw new SmartlingApiException("Failed to get file content");
         }
     }
@@ -199,6 +205,12 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         }
         else
         {
+            // Trying to get Smartling API exception from a json response
+            getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<EmptyResponse>>()
+                    {
+                    }
+            ).retrieveData();
+            // Throw exception if no Exception has been thrown in previously
             throw new SmartlingApiException("Failed to get file content");
         }
 

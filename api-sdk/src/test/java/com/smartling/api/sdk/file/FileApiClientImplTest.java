@@ -38,9 +38,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -192,26 +190,29 @@ public class FileApiClientImplTest
     }
 
     @Test
-    public void testShouldThrowSmartlingApiExceptionIfResponseIsNotSuccessfulWhenGetFile() throws Exception
+    public void testShouldThrowSmartlingApiExceptionWithCodeAndDetailsIfCodeIsNotAcceptedOrSuccessWhenGetFile() throws Exception
     {
         when(response.isSuccess()).thenReturn(false);
+        when(response.getContents()).thenReturn(ResponseExamples.ERROR_RESPONSE);
 
         expectedEx.expect(SmartlingApiException.class);
-        expectedEx.expectMessage("Failed to get file content");
+        expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
+                "Error{key='some_error', message='Some error', details=ErrorDetails{field='null', errorId='null'}}");
 
         fileApiClientImpl.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
     }
 
     @Test
-    public void testShouldThrowSmartlingApiExceptionIfResponseIsNotSuccessfulWhenGetOriginalFile() throws Exception
+    public void testShouldThrowSmartlingApiExceptionWithCodeAndDetailsIfCodeIsNotAcceptedOrSuccessWhenGetOriginalFile() throws Exception
     {
         when(response.isSuccess()).thenReturn(false);
+        when(response.getContents()).thenReturn(ResponseExamples.ERROR_RESPONSE);
 
         expectedEx.expect(SmartlingApiException.class);
-        expectedEx.expectMessage("Failed to get file content");
+        expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
+                "Error{key='some_error', message='Some error', details=ErrorDetails{field='null', errorId='null'}}");
 
         fileApiClientImpl.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
-
     }
 
     @Test
