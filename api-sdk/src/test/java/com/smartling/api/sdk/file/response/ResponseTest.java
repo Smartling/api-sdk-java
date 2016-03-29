@@ -40,7 +40,7 @@ public class ResponseTest
     }
 
     @Test
-    public void testRetrieveDataFromFailedResponseWithNoMsg() throws Exception
+    public void testRetrieveDataFromFailedResponseWithNoErrors() throws Exception
     {
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("VALIDATION_ERROR");
@@ -48,6 +48,19 @@ public class ResponseTest
         Response<FileStatus> response = new Response<>();
         response.setErrors(Collections.<Error>emptyList());
         response.setCode(ResponseCode.VALIDATION_ERROR);
+
+        response.retrieveData();
+    }
+
+    @Test
+    public void testRetrieveDataFromFailedResponseWithNullErrors() throws Exception
+    {
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("VALIDATION_ERROR");
+
+        Response<FileStatus> response = new Response<>();
+        response.setCode(ResponseCode.VALIDATION_ERROR);
+        response.setErrors(null);
 
         response.retrieveData();
     }

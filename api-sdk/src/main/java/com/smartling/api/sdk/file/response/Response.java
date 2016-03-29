@@ -6,6 +6,7 @@ import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Response<T extends ResponseData> {
@@ -46,8 +47,14 @@ public class Response<T extends ResponseData> {
     public T retrieveData() throws SmartlingApiException
     {
         if (this.code != null && this.code != ResponseCode.SUCCESS && this.code != ResponseCode.ACCEPTED) {
+            List<Error> errors = this.errors != null ? this.errors : Collections.<Error>emptyList();
+
             List<String> messages = new ArrayList<>(errors.size());
-            for(Error error : errors) messages.add(error.toString());
+            for(Error error : errors)
+            {
+                messages.add(error.toString());
+            }
+
             throw new SmartlingApiException(code.toString()+ '\n' + StringUtils.join(messages, '\n'), errors);
         }
         return this.data;
