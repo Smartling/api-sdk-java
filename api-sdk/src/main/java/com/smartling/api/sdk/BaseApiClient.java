@@ -22,6 +22,10 @@ public abstract class BaseApiClient
 
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
+    private String clientLibName;
+
+    private String clientLibVersion;
+
     protected HttpUtils httpUtils = new HttpUtils();
 
     public HttpUtils getHttpUtils()
@@ -32,6 +36,22 @@ public abstract class BaseApiClient
     public void setHttpUtils(final HttpUtils httpUtils)
     {
         this.httpUtils = httpUtils;
+    }
+
+    public String getClientLibName() {
+        return clientLibName;
+    }
+
+    public void setClientLibName(String clientLibName) {
+        this.clientLibName = clientLibName;
+    }
+
+    public String getClientLibVersion() {
+        return clientLibVersion;
+    }
+
+    public void setClientLibVersion(String clientLibVersion) {
+        this.clientLibVersion = clientLibVersion;
     }
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType) throws SmartlingApiException

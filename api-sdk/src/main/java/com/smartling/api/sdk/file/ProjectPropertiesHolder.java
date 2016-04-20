@@ -1,4 +1,4 @@
-package com.smartling.api.sdk.file.parameters;
+package com.smartling.api.sdk.file;
 
 
 import com.google.gson.JsonObject;
@@ -10,7 +10,6 @@ import java.util.Properties;
 
 class ProjectPropertiesHolder
 {
-
     private static final Log LOGGER = LogFactory.getLog(ProjectPropertiesHolder.class);
 
     private static final String PROJECT_PROPERTIES_FILE = "sdk-project.properties";
@@ -20,9 +19,19 @@ class ProjectPropertiesHolder
     private static final String CLIENT_KEY = "client";
     private static final String VERSION_KEY = "version";
 
+    static String defaultClientLibName()
+    {
+        return Holder.PROPERTIES.getProperty(PROJECT_ARTIFACT_ID);
+    }
+
+    static String defaultClientLibVersion()
+    {
+        return Holder.PROPERTIES.getProperty(PROJECT_VERSION);
+    }
+
     static String defaultClientUid()
     {
-        return clientUid(Holder.PROPERTIES.getProperty(PROJECT_ARTIFACT_ID), Holder.PROPERTIES.getProperty(PROJECT_VERSION));
+        return clientUid(defaultClientLibName(), defaultClientLibVersion());
     }
 
     static String clientUid(String name, String version)
@@ -43,7 +52,8 @@ class ProjectPropertiesHolder
             try
             {
                 PROPERTIES.load(Holder.class.getClassLoader().getResourceAsStream(PROJECT_PROPERTIES_FILE));
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 LOGGER.error(String.format("Could not read properties file=%s", PROJECT_PROPERTIES_FILE));
                 throw new RuntimeException(e);

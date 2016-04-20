@@ -25,6 +25,10 @@ public interface FileApiClient
 {
     void setTokenProvider(TokenProvider tokenProvider);
 
+    void setClientLibName(String clientLibName);
+
+    void setClientLibVersion(String clientLibVersion);
+
     UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException;
 
     UploadFileData uploadFile(InputStream inputStream, String fileName, FileUploadParameterBuilder fileUploadParameterBuilder)

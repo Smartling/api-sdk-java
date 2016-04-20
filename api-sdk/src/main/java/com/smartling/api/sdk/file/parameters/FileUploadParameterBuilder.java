@@ -19,7 +19,6 @@ public class FileUploadParameterBuilder implements ParameterBuilder
     private String fileUri;
     private Boolean authorize;
     private String callbackUrl;
-    private String clientUid;
     private List<String> localeIdsToAuthorize;
     private Boolean overwriteAuthorizedLocales;
     private Map<String, String> directives;
@@ -98,18 +97,6 @@ public class FileUploadParameterBuilder implements ParameterBuilder
         return fileUri;
     }
 
-    /**
-     * Library UID that uses sdk for sending files
-     * if UID is not provided default UID that is equal to sdk library UID is set
-     * @param name      name of the client
-     * @param version   version of the client
-     * @return          the current instance of a builder
-     */
-    public FileUploadParameterBuilder clientUid(final String name, final String version)
-    {
-        this.clientUid = ProjectPropertiesHolder.clientUid(name, version);
-        return this;
-    }
 
     public FileUploadParameterBuilder charset(final String charset)
     {
@@ -140,7 +127,6 @@ public class FileUploadParameterBuilder implements ParameterBuilder
             paramsList.addAll(convertLocalesBasedApproveParams(FileApiParameter.LOCALES_ID_TO_AUTHORIZE, localeIdsToAuthorize));
         if (overwriteAuthorizedLocales != null)
             paramsList.add(new BasicNameValuePair(FileApiParameter.OVERWRITE_AUTHORIZED_LOCALES, overwriteAuthorizedLocales.toString()));
-        paramsList.add(new BasicNameValuePair(FileApiParameter.CLIENT_LIB_ID, clientUid != null ? clientUid : ProjectPropertiesHolder.defaultClientUid()));
 
         paramsList.addAll(convertMapParams(directives));
 
