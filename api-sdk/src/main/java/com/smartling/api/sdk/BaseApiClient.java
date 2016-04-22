@@ -88,7 +88,7 @@ public abstract class BaseApiClient
         return httpUtils.executeHttpCall(request, proxyConfiguration);
     }
 
-    private void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
+    protected void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
     {
         String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
         httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
