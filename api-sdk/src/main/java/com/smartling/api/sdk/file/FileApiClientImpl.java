@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.BaseApiClient;
 import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.ProxyConfiguration;
+import com.smartling.api.sdk.TokenProviderAwareClient;
 import com.smartling.api.sdk.auth.AuthApiClient;
 import com.smartling.api.sdk.auth.AuthenticationToken;
 import com.smartling.api.sdk.auth.ExistingTokenProvider;
@@ -62,7 +63,7 @@ import static com.smartling.api.sdk.file.parameters.FileApiParameter.LIMIT;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.OFFSET;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.URI_MASK;
 
-public class FileApiClientImpl extends BaseApiClient implements FileApiClient
+public class FileApiClientImpl extends TokenProviderAwareClient implements FileApiClient
 {
     public static final String FILES_API_V2_FILE_DELETE = "/files-api/v2/projects/%s/file/delete";
     public static final String FILES_API_V2_FILE_RENAME = "/files-api/v2/projects/%s/file/rename";
@@ -83,12 +84,12 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
     private String projectId;
 
-    private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseSmartlingApiUrl)
+    private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
         this.tokenProvider = tokenProvider;
         this.projectId = projectId;
         this.proxyConfiguration = proxyConfiguration;
-        this.baseSmartlingApiUrl = baseSmartlingApiUrl;
+        this.baseUrl = baseUrl;
     }
 
     @Override public UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException
@@ -107,7 +108,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public EmptyResponse deleteFile(String fileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_FILE_DELETE, baseSmartlingApiUrl, projectId),
+                getApiUrl(FILES_API_V2_FILE_DELETE, baseUrl, projectId),
                 new FileDeletePayload(fileUri)
         );
         final StringResponse response = executeRequest(httpPost);
@@ -121,7 +122,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public EmptyResponse renameFile(String fileUri, String newFileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_FILE_RENAME, baseSmartlingApiUrl, projectId),
+                getApiUrl(FILES_API_V2_FILE_RENAME, baseUrl, projectId),
                 new FileRenamePayload(fileUri, newFileUri)
         );
         final StringResponse response = executeRequest(httpPost);
@@ -134,7 +135,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
     @Override public FileLastModified getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException
     {
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, baseSmartlingApiUrl, projectId), buildParamsQuery(
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, baseUrl, projectId), buildParamsQuery(
                         builder.getNameValueList().toArray(new NameValuePair[builder.getNameValueList().size()])
                 )
         )
@@ -152,7 +153,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
 
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILE, getFileParameterBuilder.getLocale(), baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILE, getFileParameterBuilder.getLocale(), baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
         if (response.isSuccess())
@@ -176,7 +177,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
 
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_ORIGINAL_FILE, baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_ORIGINAL_FILE, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
         if (response.isSuccess())
@@ -199,7 +200,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
     {
         final String params = buildFileListParams(fileListSearchParameterBuilder);
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -212,7 +213,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale, baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -225,7 +226,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public FileStatus getFileStatus(String fileUri) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS, baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -261,7 +262,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
             }
         }
 
-        final HttpPost httpPost = new HttpPost(baseSmartlingApiUrl + String.format(FILES_API_V2_FILE_IMPORT, projectId, fileImportParameterBuilder.getLocale()));
+        final HttpPost httpPost = new HttpPost(baseUrl + String.format(FILES_API_V2_FILE_IMPORT, projectId, fileImportParameterBuilder.getLocale()));
         httpPost.setEntity(multipartEntityBuilder.build());
 
         final StringResponse response = executeRequest(httpPost);
@@ -275,7 +276,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public AuthorizedLocales getAuthorizedLocales(String fileUri) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseSmartlingApiUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -288,7 +289,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
     @Override public EmptyResponse authorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseSmartlingApiUrl, projectId),
+                getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId),
                 new AuthorizeLocalesPayload(fileUri, localeIds)
         );
 
@@ -310,7 +311,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
                 nameValuePairs.add(new BasicNameValuePair(LOCALE_IDS_PARAM, localeId));
         }
         final String params = buildParamsQuery(nameValuePairs.toArray(new NameValuePair[0]));
-        final HttpDelete httpDelete = new HttpDelete(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseSmartlingApiUrl, projectId), params));
+        final HttpDelete httpDelete = new HttpDelete(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId), params));
 
         final StringResponse response = executeRequest(httpDelete);
 
@@ -360,7 +361,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
             }
         }
 
-        final HttpPost httpPost = new HttpPost(baseSmartlingApiUrl + String.format(FILES_API_V2_FILE_UPLOAD, projectId));
+        final HttpPost httpPost = new HttpPost(baseUrl + String.format(FILES_API_V2_FILE_UPLOAD, projectId));
         httpPost.setEntity(multipartEntityBuilder.build());
 
         final StringResponse response = executeRequest(httpPost);
@@ -456,7 +457,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
         public Builder(String projectId)
         {
             this.projectId = projectId;
-            baseSmartlingApiUrl = DEFAULT_API_GATEWAY_URL;
+            baseSmartlingApiUrl = DEFAULT_BASE_URL;
             proxyConfiguration = null;
         }
 
@@ -498,7 +499,7 @@ public class FileApiClientImpl extends BaseApiClient implements FileApiClient
 
         private void sanityCheck()
         {
-            if (baseSmartlingApiUrl == null) throw new IllegalArgumentException("Wrong Configuration. baseSmartlingApiUrl should not be null");
+            if (baseSmartlingApiUrl == null) throw new IllegalArgumentException("Wrong Configuration. baseUrl should not be null");
             if (tokenProvider == null) throw new IllegalArgumentException("Wrong Configuration. tokenProvider should not be null");
         }
     }

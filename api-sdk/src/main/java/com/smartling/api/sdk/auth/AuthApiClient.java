@@ -14,34 +14,33 @@ public class AuthApiClient extends BaseApiClient
     public static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
     public static final String AUTH_API_V2_REFRESH = "/auth-api/v2/authenticate/refresh";
     private final ProxyConfiguration proxyConfiguration;
-    private final String baseAuthApiUrl;
 
     public AuthApiClient()
     {
-        this(null, DEFAULT_API_GATEWAY_URL);
+        this(null, DEFAULT_BASE_URL);
     }
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration)
     {
-        this(proxyConfiguration, DEFAULT_API_GATEWAY_URL);
+        this(proxyConfiguration, DEFAULT_BASE_URL);
     }
 
-    public AuthApiClient(final String baseAuthApiUrl)
+    public AuthApiClient(final String baseUrl)
     {
-        this(null, baseAuthApiUrl);
+        this(null, baseUrl);
     }
 
-    public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseAuthApiUrl)
+    public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
         this.proxyConfiguration = proxyConfiguration;
-        this.baseAuthApiUrl = baseAuthApiUrl;
+        this.baseUrl = baseUrl;
     }
 
     public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand)
             throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(AUTH_API_V2_AUTHENTICATE, baseAuthApiUrl),
+                getApiUrl(AUTH_API_V2_AUTHENTICATE, baseUrl),
                 authenticationCommand
         );
 
@@ -55,7 +54,7 @@ public class AuthApiClient extends BaseApiClient
             throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(AUTH_API_V2_REFRESH, baseAuthApiUrl),
+                getApiUrl(AUTH_API_V2_REFRESH, baseUrl),
                 refreshKey
         );
 

@@ -3,8 +3,6 @@ package com.smartling.api.sdk;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.smartling.api.sdk.auth.TokenProvider;
-import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
@@ -15,7 +13,6 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
@@ -23,15 +20,13 @@ import java.util.Date;
 
 public abstract class BaseApiClient
 {
-    public static final String DEFAULT_API_GATEWAY_URL = "https://api.smartling.com";
+    public static final String DEFAULT_BASE_URL = "https://api.smartling.com";
 
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
-    protected TokenProvider tokenProvider;
-
     protected ProxyConfiguration proxyConfiguration;
 
-    protected String baseSmartlingApiUrl = DEFAULT_API_GATEWAY_URL;
+    protected String baseUrl = DEFAULT_BASE_URL;
 
     protected HttpUtils httpUtils = new HttpUtils();
 
@@ -81,21 +76,10 @@ public abstract class BaseApiClient
         return httpPost;
     }
 
-    protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
-    {
-        addAuthorizationHeader(request);
-        addUserAgentHeader(request);
-        return httpUtils.executeHttpCall(request, proxyConfiguration);
-    }
-
     protected void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
     {
         String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
         httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
     }
 
-    private void addAuthorizationHeader(final HttpMessage httpMessage) throws SmartlingApiException
-    {
-        httpMessage.addHeader(HttpHeaders.AUTHORIZATION, tokenProvider.getAuthenticationToken().getAuthorizationTokenString());
-    }
 }
