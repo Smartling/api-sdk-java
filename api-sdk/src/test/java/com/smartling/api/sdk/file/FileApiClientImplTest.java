@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 
+import static mockit.Deencapsulation.setField;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
@@ -56,7 +57,7 @@ public class FileApiClientImplTest
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
-    private FileApiClientImpl fileApiClientImpl;
+    private FileApiClient fileApiClient;
     private HttpUtils httpUtils;
     private StringResponse response;
     private ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
@@ -65,16 +66,16 @@ public class FileApiClientImplTest
     @Before
     public void setup() throws SmartlingApiException
     {
+        TokenProvider tokenProvider = mock(TokenProvider.class);
         proxyConfiguration = mock(ProxyConfiguration.class);
-        fileApiClientImpl = new FileApiClientImpl.Builder(PROJECT_ID)
+        fileApiClient = new FileApiClientImpl.Builder(PROJECT_ID)
                 .authWithUserIdAndSecret("userId", "userSecret")
                 .proxyConfiguration(proxyConfiguration)
+                .withCustomTokenProvider(tokenProvider)
                 .build();
         httpUtils = mock(HttpUtils.class);
-        fileApiClientImpl.setHttpUtils(httpUtils);
+        setField(fileApiClient, "httpUtils", httpUtils);
         response = mock(StringResponse.class);
-        TokenProvider tokenProvider = mock(TokenProvider.class);
-        fileApiClientImpl.setTokenProvider(tokenProvider);
         when(tokenProvider.getAuthenticationToken()).thenReturn(new AuthenticationToken("userSecret", "BEARER"));
         when(response.isSuccess()).thenReturn(true);
         when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
@@ -86,7 +87,7 @@ public class FileApiClientImplTest
         FileUploadParameterBuilder fileUploadParameterBuilder = getFileUploadParameterBuilder().charset(CHARSET);
         File fileToUpload = mock(File.class);
         when(response.getContents()).thenReturn(ResponseExamples.UPLOAD_RESPONSE);
-        UploadFileData uploadFileDataResponse = fileApiClientImpl.uploadFile(fileToUpload, fileUploadParameterBuilder);
+        UploadFileData uploadFileDataResponse = fileApiClient.uploadFile(fileToUpload, fileUploadParameterBuilder);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -104,7 +105,7 @@ public class FileApiClientImplTest
         FileUploadParameterBuilder fileUploadParameterBuilder = getFileUploadParameterBuilder().charset(CHARSET);
         InputStream inputStream = mock(InputStream.class);
         when(response.getContents()).thenReturn(ResponseExamples.UPLOAD_RESPONSE);
-        fileApiClientImpl.uploadFile(inputStream, FILE_URI, fileUploadParameterBuilder);
+        fileApiClient.uploadFile(inputStream, FILE_URI, fileUploadParameterBuilder);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -117,7 +118,7 @@ public class FileApiClientImplTest
     public void testDeleteFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClientImpl.deleteFile(FILE_URI);
+        EmptyResponse apiResponse = fileApiClient.deleteFile(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -130,7 +131,7 @@ public class FileApiClientImplTest
     public void testRenameFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClientImpl.renameFile(FILE_URI, FILE_URI2);
+        EmptyResponse apiResponse = fileApiClient.renameFile(FILE_URI, FILE_URI2);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -143,7 +144,7 @@ public class FileApiClientImplTest
     public void testGetLastModified() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.LAST_MODIFICATION_RESPONSE);
-        FileLastModified apiResponse = fileApiClientImpl.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+        FileLastModified apiResponse = fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -163,7 +164,7 @@ public class FileApiClientImplTest
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("Response hasn't been parsed correctly [response=");
 
-        fileApiClientImpl.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+        fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
     }
 
     @Test
@@ -174,14 +175,14 @@ public class FileApiClientImplTest
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("Response hasn't been parsed correctly [response=");
 
-        fileApiClientImpl.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+        fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
     }
 
     @Test
     public void testGetFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
-        fileApiClientImpl.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
+        fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/" + LOCALE + "/file?fileUri=fileUri", request.getURI().toString());
@@ -191,7 +192,7 @@ public class FileApiClientImplTest
     public void testGetOriginalFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
-        fileApiClientImpl.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
+        fileApiClient.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file?fileUri=fileUri", request.getURI().toString());
@@ -207,7 +208,7 @@ public class FileApiClientImplTest
         expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
                 "Error{key='some_error', message='Some error', details=ErrorDetails{field='null', errorId='null'}}");
 
-        fileApiClientImpl.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
+        fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
     }
 
     @Test
@@ -220,14 +221,14 @@ public class FileApiClientImplTest
         expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
                 "Error{key='some_error', message='Some error', details=ErrorDetails{field='null', errorId='null'}}");
 
-        fileApiClientImpl.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
+        fileApiClient.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
     }
 
     @Test
     public void testGetFilesList() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LIST_RESPONSE);
-        FileList apiResponse = fileApiClientImpl.getFilesList(new FileListSearchParameterBuilder());
+        FileList apiResponse = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -242,7 +243,7 @@ public class FileApiClientImplTest
     public void testGetFileLocaleStatus() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LOCALES_STATUS_RESPONSE);
-        FileLocaleStatus apiResponse = fileApiClientImpl.getFileLocaleStatus(FILE_URI, LOCALE);
+        FileLocaleStatus apiResponse = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -259,7 +260,7 @@ public class FileApiClientImplTest
     public void testGetFileStatus() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_STATUS_RESPONSE);
-        FileStatus apiResponse = fileApiClientImpl.getFileStatus(FILE_URI);
+        FileStatus apiResponse = fileApiClient.getFileStatus(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -281,7 +282,7 @@ public class FileApiClientImplTest
     {
         when(response.getContents()).thenReturn(ResponseExamples.IMPORT_TRANSLATIONS_RESPONSE);
         File fileToImport = mock(File.class);
-        FileImportSmartlingData apiResponse = fileApiClientImpl
+        FileImportSmartlingData apiResponse = fileApiClient
                 .importTranslations(new FileImportParameterBuilder(fileToImport, LOCALE, CHARSET, FileType.CSV, FILE_URI));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -296,7 +297,7 @@ public class FileApiClientImplTest
     public void testGetAuthorizedLocales() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_AUTHORIZED_LOCALES_RESPONSE);
-        AuthorizedLocales apiResponse = fileApiClientImpl.getAuthorizedLocales(FILE_URI);
+        AuthorizedLocales apiResponse = fileApiClient.getAuthorizedLocales(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -310,7 +311,7 @@ public class FileApiClientImplTest
     public void testGetAuthorizedLocalesWithExtraFields() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE);
-        AuthorizedLocales apiResponse = fileApiClientImpl.getAuthorizedLocales(FILE_URI);
+        AuthorizedLocales apiResponse = fileApiClient.getAuthorizedLocales(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -325,7 +326,7 @@ public class FileApiClientImplTest
     public void testAuthorizeLocales() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClientImpl.authorizeLocales(FILE_URI, LOCALE);
+        EmptyResponse apiResponse = fileApiClient.authorizeLocales(FILE_URI, LOCALE);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());
@@ -338,7 +339,7 @@ public class FileApiClientImplTest
     public void testUnAuthorizeLocales() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClientImpl.unAuthorizeLocales(FILE_URI, LOCALE);
+        EmptyResponse apiResponse = fileApiClient.unAuthorizeLocales(FILE_URI, LOCALE);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
         assertEquals(USER_AGENT, request.getFirstHeader(HttpHeaders.USER_AGENT).getValue());

@@ -45,7 +45,7 @@ public class AuthApiClient extends BaseApiClient
                 authenticationCommand
         );
 
-        final StringResponse response = getHttpUtils().executeHttpCall(httpPost, proxyConfiguration);
+        final StringResponse response = httpUtils.executeHttpCall(httpPost, proxyConfiguration);
 
         return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<AuthenticationContext>>() {});
     }
@@ -58,7 +58,7 @@ public class AuthApiClient extends BaseApiClient
                 refreshKey
         );
 
-        final StringResponse response = getHttpUtils().executeHttpCall(httpPost, proxyConfiguration);
+        final StringResponse response = httpUtils.executeHttpCall(httpPost, proxyConfiguration);
 
         return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<AuthenticationContext>>() {});
     }

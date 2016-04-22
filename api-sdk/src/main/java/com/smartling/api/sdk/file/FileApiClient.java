@@ -1,6 +1,5 @@
 package com.smartling.api.sdk.file;
 
-import com.smartling.api.sdk.auth.TokenProvider;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
@@ -23,12 +22,6 @@ import java.io.InputStream;
 
 public interface FileApiClient
 {
-    void setTokenProvider(TokenProvider tokenProvider);
-
-    void setClientLibName(String clientLibName);
-
-    void setClientLibVersion(String clientLibVersion);
-
     UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException;
 
     UploadFileData uploadFile(InputStream inputStream, String fileName, FileUploadParameterBuilder fileUploadParameterBuilder)

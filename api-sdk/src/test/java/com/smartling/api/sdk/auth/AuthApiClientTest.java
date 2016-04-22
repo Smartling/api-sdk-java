@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import static mockit.Deencapsulation.setField;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -52,7 +53,7 @@ public class AuthApiClientTest
         response = mock(StringResponse.class);
         proxyConfiguration = mock(ProxyConfiguration.class);
         authApiClient = new AuthApiClient(proxyConfiguration, "https://api.smartling.com");
-        authApiClient.setHttpUtils(httpUtils);
+        setField(authApiClient, "httpUtils", httpUtils);
         when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
     }
 
