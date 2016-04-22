@@ -1,5 +1,6 @@
 package com.smartling.api.sdk.file.parameters;
 
+import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -127,7 +128,7 @@ public class FileUploadParameterBuilder implements ParameterBuilder
             paramsList.addAll(convertLocalesBasedApproveParams(FileApiParameter.LOCALES_ID_TO_AUTHORIZE, localeIdsToAuthorize));
         if (overwriteAuthorizedLocales != null)
             paramsList.add(new BasicNameValuePair(FileApiParameter.OVERWRITE_AUTHORIZED_LOCALES, overwriteAuthorizedLocales.toString()));
-
+        paramsList.add(new BasicNameValuePair(FileApiParameter.CLIENT_LIB_ID, getClientUidDirective()));
         paramsList.addAll(convertMapParams(directives));
 
         return paramsList;
@@ -158,5 +159,10 @@ public class FileUploadParameterBuilder implements ParameterBuilder
             return nameValuePairs;
         }
         return Collections.emptyList();
+    }
+
+    private String getClientUidDirective()
+    {
+        return ClientUidFactory.clientUid(LibNameVersionHolder.getClientLibName(), LibNameVersionHolder.getClientLibVersion());
     }
 }

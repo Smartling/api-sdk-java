@@ -1,4 +1,4 @@
-package com.smartling.api.sdk.file;
+package com.smartling.api.sdk.file.parameters;
 
 import com.google.gson.JsonObject;
 

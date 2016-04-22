@@ -339,7 +339,6 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
             throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = fileUploadParameterBuilder.getNameValueList();
-        paramsList.add(new BasicNameValuePair(FileApiParameter.CLIENT_LIB_ID, getClientUidDirective()));
 
         final MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create()
                                                                                     .addPart(FileApiParameter.FILE, contentBody);
@@ -370,11 +369,6 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
                 {
                 }
         ).retrieveData();
-    }
-
-    private String getClientUidDirective()
-    {
-        return ClientUidFactory.clientUid(LibNameVersionHolder.getClientLibName(), LibNameVersionHolder.getClientLibVersion());
     }
 
     private String buildParamsQuery(NameValuePair... nameValuePairs)
