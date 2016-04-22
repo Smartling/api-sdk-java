@@ -31,7 +31,7 @@ public abstract class BaseApiClient
 
     protected ProxyConfiguration proxyConfiguration;
 
-    protected String baseSmartlingApiUrl;
+    protected String baseSmartlingApiUrl = DEFAULT_API_GATEWAY_URL;
 
     protected HttpUtils httpUtils = new HttpUtils();
 
