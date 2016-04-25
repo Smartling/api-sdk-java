@@ -10,8 +10,6 @@ import com.smartling.api.sdk.util.DateTypeAdapter;
 import com.smartling.api.sdk.util.HttpUtils;
 import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
@@ -74,12 +72,6 @@ public abstract class BaseApiClient
         }
 
         return httpPost;
-    }
-
-    protected void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
-    {
-        String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
-        httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
     }
 
 }

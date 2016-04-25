@@ -19,6 +19,7 @@ import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -60,6 +61,7 @@ public class HttpUtilsTest
     private static final String PASSWORD = "password";
     private static final String PORT = "5000";
     private static final String USERNAME = "username";
+    private static final String USER_AGENT = "test-artifact-id/1.0.0";
 
     @Before
     public void setUp() throws IllegalStateException, IOException
@@ -88,10 +90,11 @@ public class HttpUtilsTest
         when(httpProxyUtils.getHttpClient(proxyConfiguration)).thenReturn(httpClient);
         when(httpProxyUtils.getProxyRequestConfig(httpRequest, proxyConfiguration)).thenReturn(null);
         when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
-        
+
         StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
 
         assertEquals(TEST_RESPONSE, response.getContents());
+        verify(httpRequest).addHeader(HttpHeaders.USER_AGENT, USER_AGENT);
         verify(httpRequest, never()).setConfig(any(RequestConfig.class));
     }
 

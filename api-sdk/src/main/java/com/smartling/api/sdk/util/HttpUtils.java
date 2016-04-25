@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
@@ -24,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -92,7 +95,7 @@ public class HttpUtils
             {
                 httpRequest.setConfig(proxyRequestConfig);
             }
-
+            addUserAgentHeader(httpRequest);
             final HttpResponse response = httpClient.execute(httpRequest);
 
             final String charset = EntityUtils.getContentCharSet(response.getEntity());
@@ -159,5 +162,11 @@ public class HttpUtils
             return SCHEME_HTTP;
 
         return null;
+    }
+
+    protected void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
+    {
+        String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
+        httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
     }
 }

@@ -14,7 +14,6 @@ public class TokenProviderAwareClient extends BaseApiClient
     protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
     {
         addAuthorizationHeader(request);
-        addUserAgentHeader(request);
         return httpUtils.executeHttpCall(request, proxyConfiguration);
     }
 
