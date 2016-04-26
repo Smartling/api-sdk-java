@@ -164,7 +164,7 @@ public class HttpUtils
         return null;
     }
 
-    protected void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
+    private void addUserAgentHeader(final HttpMessage httpMessage) throws SmartlingApiException
     {
         String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
         httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
