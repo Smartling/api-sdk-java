@@ -1,5 +1,6 @@
 package com.smartling.api.sdk.file.parameters;
 
+import com.google.gson.JsonObject;
 import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.file.FileType;
 import org.apache.http.NameValuePair;
@@ -16,6 +17,9 @@ import java.util.Map;
  */
 public class FileUploadParameterBuilder implements ParameterBuilder
 {
+    private static final String CLIENT_KEY = "client";
+    private static final String VERSION_KEY = "version";
+
     private FileType fileType;
     private String fileUri;
     private Boolean authorize;
@@ -163,6 +167,9 @@ public class FileUploadParameterBuilder implements ParameterBuilder
 
     private String getClientUidDirective()
     {
-        return ClientUidFactory.clientUid(LibNameVersionHolder.getClientLibName(), LibNameVersionHolder.getClientLibVersion());
+        JsonObject object = new JsonObject();
+        object.addProperty(CLIENT_KEY, LibNameVersionHolder.getClientLibName());
+        object.addProperty(VERSION_KEY, LibNameVersionHolder.getClientLibVersion());
+        return object.toString();
     }
 }
