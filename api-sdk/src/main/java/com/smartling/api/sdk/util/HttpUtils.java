@@ -87,6 +87,9 @@ public class HttpUtils
             requestId.remove();
 
             ProxyConfiguration newProxyConfiguration = mergeSystemProxyConfiguration(proxyConfiguration);
+
+            logProxyConfiguration(newProxyConfiguration);
+
             httpClient = httpProxyUtils.getHttpClient(newProxyConfiguration);
 
             RequestConfig proxyRequestConfig = httpProxyUtils.getProxyRequestConfig(httpRequest, newProxyConfiguration);
@@ -125,6 +128,18 @@ public class HttpUtils
             {
                 logger.warn(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
             }
+        }
+    }
+
+    private void logProxyConfiguration(ProxyConfiguration proxyConfiguration)
+    {
+        if (proxyConfiguration != null)
+        {
+            logger.info(String.format("Using proxy configuration for executing http call: '%s'", proxyConfiguration));
+        }
+        else
+        {
+            logger.info("Proxy is not setup");
         }
     }
 

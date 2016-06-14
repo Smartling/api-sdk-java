@@ -64,4 +64,14 @@ public class ProxyConfiguration
     {
         this.password = password;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ProxyConfiguration{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }
