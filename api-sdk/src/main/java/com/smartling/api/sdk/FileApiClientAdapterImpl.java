@@ -335,9 +335,7 @@ public class FileApiClientAdapterImpl extends BaseApiClientAdapter implements Fi
 
     private ContentType createContentType(final FileType fileType, final Charset charset)
     {
-        return fileType.isTextFormat()
-                ? ContentType.create(fileType.getMimeType(), charset)
-                : ContentType.create(fileType.getMimeType());
+        return ContentType.create(fileType.getMimeType());
     }
 
 }
