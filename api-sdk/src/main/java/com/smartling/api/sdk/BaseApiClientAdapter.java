@@ -150,20 +150,18 @@ public abstract class BaseApiClientAdapter
 
     protected String buildUrl(final String apiServerUrl, final String apiParameters)
     {
-        final StringBuilder urlWithParameters = new StringBuilder(String.format(apiServerUrl, baseApiUrl));
-        urlWithParameters.append(apiParameters);
-        return urlWithParameters.toString();
+        return String.format(apiServerUrl, baseApiUrl) + apiParameters;
     }
 
     protected String buildParamsQuery(final NameValuePair... nameValuePairs)
     {
-        final List<NameValuePair> qparams = getRequiredParams();
+        final List<NameValuePair> params = getRequiredParams();
 
         for (final NameValuePair nameValuePair : nameValuePairs)
             if (nameValuePair.getValue() != null)
-                qparams.add(nameValuePair);
+                params.add(nameValuePair);
 
-        return URLEncodedUtils.format(qparams, CharEncoding.UTF_8);
+        return URLEncodedUtils.format(params, CharEncoding.UTF_8);
     }
 
     protected List<NameValuePair> getRequiredParams()
