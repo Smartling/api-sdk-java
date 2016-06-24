@@ -10,7 +10,6 @@ import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
-import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
@@ -45,10 +44,4 @@ public interface FileApiClient
 
     FileImportSmartlingData importTranslations(FileImportParameterBuilder fileImportParameterBuilder)
                     throws SmartlingApiException;
-
-    AuthorizedLocales getAuthorizedLocales(String fileUri) throws SmartlingApiException;
-
-    EmptyResponse authorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException;
-
-    EmptyResponse unAuthorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException;
 }

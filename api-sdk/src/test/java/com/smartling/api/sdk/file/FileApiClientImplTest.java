@@ -13,7 +13,6 @@ import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
-import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
@@ -22,7 +21,6 @@ import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.util.DateFormatter;
 import com.smartling.api.sdk.util.HttpUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -279,57 +277,6 @@ public class FileApiClientImplTest
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/en-US/file/import", request.getURI().toString());
         assertEquals(0, apiResponse.getStringCount());
         assertEquals(0, apiResponse.getTranslationImportErrors().size());
-    }
-
-    @Test
-    public void testGetAuthorizedLocales() throws Exception
-    {
-        when(response.getContents()).thenReturn(ResponseExamples.FILE_AUTHORIZED_LOCALES_RESPONSE);
-        AuthorizedLocales apiResponse = fileApiClient.getAuthorizedLocales(FILE_URI);
-        HttpRequestBase request = requestCaptor.getValue();
-        assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
-        assertEquals(HttpGet.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri", request.getURI().toString());
-        assertEquals(2, apiResponse.getItems().size());
-        assertEquals("it-IT", apiResponse.getItems().get(0));
-    }
-
-    @Test
-    public void testGetAuthorizedLocalesWithExtraFields() throws Exception
-    {
-        when(response.getContents()).thenReturn(ResponseExamples.FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE);
-        AuthorizedLocales apiResponse = fileApiClient.getAuthorizedLocales(FILE_URI);
-        HttpRequestBase request = requestCaptor.getValue();
-        assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
-        assertEquals(HttpGet.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri", request.getURI().toString());
-        assertEquals(2, apiResponse.getItems().size());
-        assertEquals("it-IT", apiResponse.getItems().get(0));
-    }
-
-
-    @Test
-    public void testAuthorizeLocales() throws Exception
-    {
-        when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClient.authorizeLocales(FILE_URI, LOCALE);
-        HttpRequestBase request = requestCaptor.getValue();
-        assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
-        assertEquals(HttpPost.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales", request.getURI().toString());
-        assertEquals(EmptyResponse.class, apiResponse.getClass());
-    }
-
-    @Test
-    public void testUnAuthorizeLocales() throws Exception
-    {
-        when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
-        EmptyResponse apiResponse = fileApiClient.unAuthorizeLocales(FILE_URI, LOCALE);
-        HttpRequestBase request = requestCaptor.getValue();
-        assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
-        assertEquals(HttpDelete.class, request.getClass());
-        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/authorized-locales?fileUri=fileUri&localeIds%5B%5D=en-US", request.getURI().toString());
-        assertEquals(EmptyResponse.class, apiResponse.getClass());
     }
 
     private FileUploadParameterBuilder getFileUploadParameterBuilder()

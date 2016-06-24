@@ -13,7 +13,6 @@ import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
-import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
@@ -70,18 +69,6 @@ public class IntegrationTest
         StringResponse response = fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE_ES));
         
         assertEquals("test=Test de integración", response.getContents());
-
-        assertEquals(1, fileApiClient.getAuthorizedLocales(FILE_URI).getItems().size());
-
-        fileApiClient.unAuthorizeLocales(FILE_URI, LOCALE_ES);
-
-        assertEquals(0, fileApiClient.getAuthorizedLocales(FILE_URI).getItems().size());
-
-        fileApiClient.authorizeLocales(FILE_URI, LOCALE_ES);
-
-        final AuthorizedLocales authorizedLocales = fileApiClient.getAuthorizedLocales(FILE_URI);
-        assertEquals(1, authorizedLocales.getItems().size());
-        assertEquals("es", authorizedLocales.getItems().get(0));
 
         FileStatus status = fileApiClient.getFileStatus(FILE_URI);
         assertEquals(FILE_URI, status.getFileUri());

@@ -1,8 +1,6 @@
 package com.smartling.api.sdk.file;
 
 import com.google.gson.reflect.TypeToken;
-import com.smartling.api.sdk.BaseApiClient;
-import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.TokenProviderAwareClient;
 import com.smartling.api.sdk.auth.AuthApiClient;
@@ -14,7 +12,6 @@ import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.dto.file.UploadFileData;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
-import com.smartling.api.sdk.file.parameters.AuthorizeLocalesPayload;
 import com.smartling.api.sdk.file.parameters.FileApiParameter;
 import com.smartling.api.sdk.file.parameters.FileDeletePayload;
 import com.smartling.api.sdk.file.parameters.FileImportParameterBuilder;
@@ -25,7 +22,6 @@ import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
-import com.smartling.api.sdk.file.response.AuthorizedLocales;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
@@ -36,7 +32,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -75,9 +70,7 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
     public static final String FILES_API_V2_FILE_STATUS = "/files-api/v2/projects/%s/file/status";
     public static final String FILES_API_V2_FILE_UPLOAD = "/files-api/v2/projects/%s/file";
     public static final String FILES_API_V2_FILE_IMPORT = "/files-api/v2/projects/%s/locales/%s/file/import";
-    public static final String FILES_API_V2_AUTHORIZED_LOCALES = "/files-api/v2/projects/%s/file/authorized-locales";
 
-    private static final String LOCALE_IDS_PARAM = "localeIds[]";
 
     private static final String REQUEST_PARAMS_SEPARATOR = "?";
     private static final String TEXT_PLAIN_TYPE = "text/plain";
@@ -268,54 +261,6 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         final StringResponse response = executeRequest(httpPost);
 
         return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileImportSmartlingData>>()
-                {
-                }
-        ).retrieveData();
-    }
-
-    @Override public AuthorizedLocales getAuthorizedLocales(String fileUri) throws SmartlingApiException
-    {
-        final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId), params));
-
-        final StringResponse response = executeRequest(httpGet);
-
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<AuthorizedLocales>>()
-                {
-                }
-        ).retrieveData();
-    }
-
-    @Override public EmptyResponse authorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException
-    {
-        final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId),
-                new AuthorizeLocalesPayload(fileUri, localeIds)
-        );
-
-        final StringResponse response = executeRequest(httpPost);
-
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<EmptyResponse>>()
-                {
-                }
-        ).retrieveData();
-    }
-
-    @Override public EmptyResponse unAuthorizeLocales(String fileUri, String... localeIds) throws SmartlingApiException
-    {
-        final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair(FILE_URI, fileUri));
-        if (localeIds != null)
-        {
-            for (String localeId : localeIds)
-                nameValuePairs.add(new BasicNameValuePair(LOCALE_IDS_PARAM, localeId));
-        }
-        final String params = buildParamsQuery(nameValuePairs.toArray(new NameValuePair[0]));
-        final HttpDelete httpDelete = new HttpDelete(buildUrl(getApiUrl(FILES_API_V2_AUTHORIZED_LOCALES, baseUrl, projectId), params));
-
-        final StringResponse response = executeRequest(httpDelete);
-
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<EmptyResponse>>()
                 {
                 }
         ).retrieveData();
