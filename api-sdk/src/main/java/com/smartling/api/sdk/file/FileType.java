@@ -41,7 +41,8 @@ public enum FileType
     PLAIN_TEXT("text/plain", true),                 // plain text (.txt files)
     PPT("application/octet-stream", false),         // PPT binary file format
     PRES("text/plain", true),                       // Pres resources
-    STRINGSDICT("application/xml", true);           // iOS/OSX resources in dictionary format
+    STRINGSDICT("application/xml", true),           // iOS/OSX resources in dictionary format
+    MADCAP("application/octet-stream", false);      // MADCAP file
 
     private final String identifier;
     private final String mimeType;
