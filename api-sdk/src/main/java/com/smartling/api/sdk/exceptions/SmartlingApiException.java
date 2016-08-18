@@ -17,9 +17,12 @@ package com.smartling.api.sdk.exceptions;
 
 import com.smartling.api.sdk.file.response.Error;
 import com.smartling.api.sdk.util.HttpUtils;
+import org.apache.http.Header;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SmartlingApiException extends Exception
 {
@@ -28,17 +31,47 @@ public class SmartlingApiException extends Exception
     private final List<Error> originalErrors;
 
     private final String requestId;
+    private final int statusCode;
+    private final Map<String, String> responseHeaders;
 
     public SmartlingApiException(String message, Throwable cause, List<Error> originalErrors)
     {
         super(message, cause);
         this.originalErrors = originalErrors;
         this.requestId = HttpUtils.getRequestId().get() == null ? "N/A" : HttpUtils.getRequestId().get();
+
+        HttpUtils.ResponseDetails responseDetails = HttpUtils.getResponseDetails().get();
+        if (responseDetails != null)
+        {
+            this.statusCode = responseDetails.getStatusCode();
+            this.responseHeaders = Collections.unmodifiableMap(convertHeadersToMap(responseDetails));
+        }
+        else
+        {
+            this.statusCode = 0;
+            this.responseHeaders = Collections.emptyMap();
+        }
+    }
+
+    private Map<String, String> convertHeadersToMap(final HttpUtils.ResponseDetails responseDetails)
+    {
+        Header[] headers = responseDetails.getHeaders();
+        Map<String, String> headersMap = new HashMap<>(headers.length);
+        for(Header header : headers)
+        {
+            headersMap.put(header.getName(), header.getValue());
+        }
+        return headersMap;
     }
 
     public SmartlingApiException(String message, List<Error> originalErrors)
     {
         this(message, null, originalErrors);
+    }
+
+    public SmartlingApiException(String message, Throwable cause)
+    {
+        this(message, cause, Collections.<Error>emptyList());
     }
 
     public SmartlingApiException(final Exception e)
@@ -61,4 +94,13 @@ public class SmartlingApiException extends Exception
         return requestId;
     }
 
+    public int getStatusCode()
+    {
+        return statusCode;
+    }
+
+    public Map<String, String> getResponseHeaders()
+    {
+        return responseHeaders;
+    }
 }

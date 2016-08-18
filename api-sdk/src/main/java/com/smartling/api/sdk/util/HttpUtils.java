@@ -54,6 +54,7 @@ public class HttpUtils
     public static final String X_SL_REQUEST_ID = "X-SL-RequestId";
 
     private static final ThreadLocal<String> requestId = new ThreadLocal<>();
+    private static final ThreadLocal<ResponseDetails> responseDetails = new ThreadLocal<>();
 
     private HttpProxyUtils httpProxyUtils;
 
@@ -70,6 +71,11 @@ public class HttpUtils
     public static ThreadLocal<String> getRequestId()
     {
         return requestId;
+    }
+
+    public static ThreadLocal<ResponseDetails> getResponseDetails()
+    {
+        return responseDetails;
     }
 
     /**
@@ -109,6 +115,9 @@ public class HttpUtils
             {
                 requestId.set(header.getValue());
             }
+
+            ResponseDetails details = new ResponseDetails(statusCode, response.getAllHeaders());
+            responseDetails.set(details);
 
             return inputStreamToString(response.getEntity().getContent(), charset, statusCode);
         }
@@ -183,5 +192,26 @@ public class HttpUtils
     {
         String userAgentHeaderValue = LibNameVersionHolder.getClientLibName() + "/" + LibNameVersionHolder.getClientLibVersion();
         httpMessage.addHeader(HttpHeaders.USER_AGENT, userAgentHeaderValue);
+    }
+
+    public static class ResponseDetails {
+        private int statusCode;
+        private Header[] headers;
+
+        private ResponseDetails(int statusCode, Header[] headers)
+        {
+            this.statusCode = statusCode;
+            this.headers = headers;
+        }
+
+        public int getStatusCode()
+        {
+            return statusCode;
+        }
+
+        public Header[] getHeaders()
+        {
+            return headers != null ? headers : new Header[0];
+        }
     }
 }

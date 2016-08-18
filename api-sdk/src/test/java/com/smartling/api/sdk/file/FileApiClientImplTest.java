@@ -171,6 +171,17 @@ public class FileApiClientImplTest
     }
 
     @Test
+    public void testGetLastModifiedShouldThrowSmartlingApiExceptionWhenInvalidJson() throws Exception
+    {
+        when(this.response.getContents()).thenReturn("<b>This is not JSON</b>");
+
+        expectedEx.expect(SmartlingApiException.class);
+        expectedEx.expectMessage("Can't parse response as JSON [response=");
+
+        fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
+    }
+
+    @Test
     public void testGetFile() throws Exception
     {
         when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);

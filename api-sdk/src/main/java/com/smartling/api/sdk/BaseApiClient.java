@@ -2,6 +2,7 @@ package com.smartling.api.sdk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
@@ -33,19 +34,24 @@ public abstract class BaseApiClient
         //Replace of empty data response to make Gson work properly
         String fixedResponse = response.replaceAll("\"data\"\\:\"\"", "\"data\":null");
 
-        final GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
-
-        final Gson gson = builder.create();
-        final ApiV2ResponseWrapper<T> responseWrapper = gson.fromJson(fixedResponse, responseType.getType());
-
-        if (isValidResponse(responseWrapper))
+        try
         {
+            final GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(Date.class, new DateTypeAdapter());
+
+            final Gson gson = builder.create();
+            final ApiV2ResponseWrapper<T> responseWrapper = gson.fromJson(fixedResponse, responseType.getType());
+
+            if (!isValidResponse(responseWrapper))
+            {
+                throw new SmartlingApiException(String.format("Response hasn't been parsed correctly [response='%s']", response));
+            }
+
             return responseWrapper.getResponse();
         }
-        else
+        catch (JsonParseException e)
         {
-            throw new SmartlingApiException(String.format("Response hasn't been parsed correctly [response='%s']", response));
+            throw new SmartlingApiException(String.format("Can't parse response as JSON [response='%s']", response), e);
         }
     }
 

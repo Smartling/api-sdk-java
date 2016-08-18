@@ -17,6 +17,7 @@ import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -108,7 +109,9 @@ public class IntegrationTest
         catch (SmartlingApiException ex)
         {
             assertEquals("file.not.found", ex.getOriginalErrors().get(0).getKey());
-            assertNotEquals("N/A", ex.getRequestId().length());
+            assertNotEquals("N/A", ex.getRequestId());
+            assertNotEquals(HttpStatus.SC_OK, ex.getStatusCode());
+            assertNotEquals(0, ex.getResponseHeaders().size());
         }
     }
 
