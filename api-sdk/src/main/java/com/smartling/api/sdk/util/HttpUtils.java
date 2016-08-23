@@ -91,6 +91,7 @@ public class HttpUtils
         try
         {
             requestId.remove();
+            responseDetails.remove();
 
             ProxyConfiguration newProxyConfiguration = mergeSystemProxyConfiguration(proxyConfiguration);
 
