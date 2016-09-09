@@ -145,11 +145,11 @@ public class HttpUtils
     {
         if (proxyConfiguration != null)
         {
-            logger.debug(String.format("Using proxy configuration for executing http call: '%s'", proxyConfiguration));
+            logger.trace(String.format("Using proxy configuration for executing http call: '%s'", proxyConfiguration));
         }
         else
         {
-            logger.debug("Proxy is not setup");
+            logger.trace("Proxy is not setup");
         }
     }
 
