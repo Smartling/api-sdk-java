@@ -1,4 +1,4 @@
-/*
+package com.smartling.api.stests.fileusecases.test123;/*
  * Copyright 2012 Smartling, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +21,11 @@ import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.FileApiClient;
 import com.smartling.api.sdk.file.FileApiClientImpl;
 import com.smartling.api.sdk.file.FileType;
-import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
-import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
-import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
-import com.smartling.api.sdk.file.parameters.RetrievalType;
+import com.smartling.api.sdk.file.parameters.*;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileList;
 import com.smartling.api.sdk.file.response.FileStatus;
+import com.smartling.qa.commons.junit.Assert;
 
 import java.io.File;
 
@@ -39,8 +36,8 @@ public class SmartlingApiExample
     private static final String   PROJECT_ID    = "YOUR-PROJECT-ID";
     private static final String   LOCALE        = "YOUR-LOCALE";
 
-    private static final String   PATH_TO_FILE  = "resources/test.properties";
-    private static final String   FILE_ENCODING = "UTF-8";
+    private static final String   PATH_TO_FILE  = "resources/testUTF16.properties";
+    private static final String   FILE_ENCODING = "UTF-16";
     private static final FileType FILE_TYPE     = FileType.JAVA_PROPERTIES;
     private static final String   CALLBACK_URL  = null;
 
@@ -55,8 +52,17 @@ public class SmartlingApiExample
                 .charset(FILE_ENCODING)
                 .approveContent(false)
                 .callbackUrl(CALLBACK_URL);
+
         UploadFileData uploadFileResponse = smartlingFAPI.uploadFile(file, fileUploadParameterBuilder);
         System.out.println(uploadFileResponse);
+
+        Assert.assertFalse(uploadFileResponse.isOverwritten());
+
+
+        UploadFileData uploadFileResponse2 = smartlingFAPI.uploadFile(file, fileUploadParameterBuilder);
+        System.out.println(uploadFileResponse2);
+
+        Assert.assertTrue(uploadFileResponse.isOverwritten());
 
         // get last modified date
         FileLastModified lastModifiedResponse = smartlingFAPI.getLastModified(new FileLastModifiedParameterBuilder(getFileUri(file)).locale(LOCALE));
@@ -76,8 +82,15 @@ public class SmartlingApiExample
         System.out.println(fileStatusResponse);
 
         // get the file back, including any translations that have been published.
-        StringResponse translatedContent = smartlingFAPI.getFile(new GetFileParameterBuilder(fileIdentifier, LOCALE).retrievalType(RetrievalType.PUBLISHED));
-        System.out.println(translatedContent.getContents());
+        StringResponse translatedContent1 = smartlingFAPI.getOriginalFile(new GetOriginalFileParameterBuilder(fileIdentifier));
+        System.out.println(translatedContent1.getContents());
+
+
+        // get the file back, including any translations that have been published.
+        StringResponse originalContent = smartlingFAPI.getFile(new GetFileParameterBuilder(fileIdentifier, LOCALE).retrievalType(RetrievalType.PUBLISHED));
+        System.out.println(originalContent.getContents());
+
+        Assert.assertEquals(originalContent.getEncoding(), FILE_ENCODING);
 
         // delete the file
         EmptyResponse deleteFileResponse = smartlingFAPI.deleteFile(fileIdentifier);
