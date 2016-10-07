@@ -22,6 +22,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <integration.tests.location>**/IntegrationTest.java</integration.tests.location>
     </properties>
 
     <build>
@@ -97,7 +99,7 @@
                 <version>2.18.1</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/IntegrationTest.java</exclude>
+                        <exclude>${integration.tests.location}</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -110,7 +112,7 @@
                         <exclude>none</exclude>
                     </excludes>
                     <includes>
-                        <include>**/IntegrationTest.java</include>
+                        <include>${integration.tests.location}</include>
                     </includes>
                 </configuration>
                 <executions>
