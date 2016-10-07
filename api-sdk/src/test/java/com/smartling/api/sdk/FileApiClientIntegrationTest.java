@@ -1,7 +1,5 @@
 package com.smartling.api.sdk;
 
-import com.smartling.api.sdk.auth.AuthApiClient;
-import com.smartling.api.sdk.auth.AuthenticationCommand;
 import com.smartling.api.sdk.dto.file.FileLastModified;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
@@ -30,7 +28,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class IntegrationTest
+public class FileApiClientIntegrationTest
 {
     private static final String FILE_URI = "/testfile.properties";
     private static final String FILE_URI_RENAMED = "/testfileRenamed.properties";
@@ -41,7 +39,6 @@ public class IntegrationTest
     private File translatedFileToUpload;
     private static final String LOCALE = "en-US";
     private static final String LOCALE_ES = "es";
-    private AuthApiClient authApiClient;
 
     @Before
     public void setup() throws SmartlingApiException
@@ -115,13 +112,5 @@ public class IntegrationTest
             assertNotEquals(HttpStatus.SC_OK, ex.getStatusCode());
             assertNotEquals(0, ex.getResponseHeaders().size());
         }
-    }
-
-    @Test
-    public void testRefreshToken() throws SmartlingApiException
-    {
-        authApiClient = new AuthApiClient();
-        String refreshToken = authApiClient.authenticate(new AuthenticationCommand(System.getProperty("userId"), System.getProperty("userSecret"))).getData().getRefreshToken();
-        assertTrue(authApiClient.refresh(refreshToken).getData().getAccessToken().length() > 10);
     }
 }

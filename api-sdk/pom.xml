@@ -23,7 +23,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <integration.tests.location>**/IntegrationTest.java</integration.tests.location>
+        <integration.tests.location>**/*IntegrationTest.java</integration.tests.location>
     </properties>
 
     <build>
