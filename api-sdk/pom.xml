@@ -11,12 +11,18 @@
     <artifactId>smartling-api-sdk</artifactId>
     <version>4.0.16-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>smartling-api-sdk</name>
+    <url>http://smartling.com</url>
 
     <scm>
         <connection>scm:git:git://github.com/Smartling/api-sdk-java.git</connection>
         <developerConnection>scm:git:git://github.com/Smartling/api-sdk-java.git</developerConnection>
         <url>https://github.com/Smartling/api-sdk-java</url>
     </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <build>
         <filters>
@@ -122,13 +128,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <name>smartling-api-sdk</name>
-    <url>http://smartling.com</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <profiles>
         <profile>
