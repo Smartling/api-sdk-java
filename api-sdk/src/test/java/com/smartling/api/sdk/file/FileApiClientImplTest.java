@@ -90,7 +90,7 @@ public class FileApiClientImplTest
         assertEquals(HttpPost.class, request.getClass());
         assertNotNull(((HttpPost)request).getEntity());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file", request.getURI().toString());
-        assertEquals(false, uploadFileDataResponse.isOverwritten());
+        assertEquals(false, uploadFileDataResponse.isOverWritten());
         assertEquals(1, uploadFileDataResponse.getStringCount());
         assertEquals(2, uploadFileDataResponse.getWordCount());
     }
