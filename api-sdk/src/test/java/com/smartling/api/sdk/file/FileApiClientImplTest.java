@@ -83,7 +83,7 @@ public class FileApiClientImplTest
     {
         FileUploadParameterBuilder fileUploadParameterBuilder = getFileUploadParameterBuilder().charset(CHARSET);
         File fileToUpload = mock(File.class);
-        when(response.getContents()).thenReturn(ResponseExamples.UPLOAD_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.UPLOAD_RESPONSE);
         UploadFileData uploadFileDataResponse = fileApiClient.uploadFile(fileToUpload, fileUploadParameterBuilder);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -100,7 +100,7 @@ public class FileApiClientImplTest
     {
         FileUploadParameterBuilder fileUploadParameterBuilder = getFileUploadParameterBuilder().charset(CHARSET);
         InputStream inputStream = mock(InputStream.class);
-        when(response.getContents()).thenReturn(ResponseExamples.UPLOAD_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.UPLOAD_RESPONSE);
         fileApiClient.uploadFile(inputStream, FILE_URI, fileUploadParameterBuilder);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -112,7 +112,7 @@ public class FileApiClientImplTest
     @Test
     public void testDeleteFile() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.EMPTY_RESPONSE);
         EmptyResponse apiResponse = fileApiClient.deleteFile(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -124,7 +124,7 @@ public class FileApiClientImplTest
     @Test
     public void testRenameFile() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.EMPTY_RESPONSE);
         EmptyResponse apiResponse = fileApiClient.renameFile(FILE_URI, FILE_URI2);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -136,7 +136,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetLastModified() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.LAST_MODIFICATION_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.LAST_MODIFICATION_RESPONSE);
         FileLastModified apiResponse = fileApiClient.getLastModified(new FileLastModifiedParameterBuilder(FILE_URI));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -151,7 +151,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetLastModifiedWhenGetWrongResponse() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.NOT_EXISTING_CODE_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.NOT_EXISTING_CODE_RESPONSE);
 
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("Response hasn't been parsed correctly [response=");
@@ -184,7 +184,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetFile() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.GET_FILE_RESPONSE);
         fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/" + LOCALE + "/file?fileUri=fileUri", request.getURI().toString());
@@ -193,7 +193,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetOriginalFile() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.GET_FILE_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.GET_FILE_RESPONSE);
         fileApiClient.getOriginalFile(new GetOriginalFileParameterBuilder(FILE_URI));
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file?fileUri=fileUri", request.getURI().toString());
@@ -203,7 +203,7 @@ public class FileApiClientImplTest
     public void testShouldThrowSmartlingApiExceptionWithCodeAndDetailsIfCodeIsNotAcceptedOrSuccessWhenGetFile() throws Exception
     {
         when(response.isSuccess()).thenReturn(false);
-        when(response.getContents()).thenReturn(ResponseExamples.ERROR_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.ERROR_RESPONSE);
 
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
@@ -216,7 +216,7 @@ public class FileApiClientImplTest
     public void testShouldThrowSmartlingApiExceptionWithCodeAndDetailsIfCodeIsNotAcceptedOrSuccessWhenGetOriginalFile() throws Exception
     {
         when(response.isSuccess()).thenReturn(false);
-        when(response.getContents()).thenReturn(ResponseExamples.ERROR_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.ERROR_RESPONSE);
 
         expectedEx.expect(SmartlingApiException.class);
         expectedEx.expectMessage("MAINTENANCE_MODE_ERROR\n" +
@@ -228,7 +228,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetFilesList() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.FILE_LIST_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.FILE_LIST_RESPONSE);
         FileList apiResponse = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -242,7 +242,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetFileLocaleStatus() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.FILE_LOCALES_STATUS_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.FILE_LOCALES_STATUS_RESPONSE);
         FileLocaleStatus apiResponse = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -258,7 +258,7 @@ public class FileApiClientImplTest
     @Test
     public void testGetFileStatus() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.FILE_STATUS_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.FILE_STATUS_RESPONSE);
         FileStatus apiResponse = fileApiClient.getFileStatus(FILE_URI);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(USER_TOKEN, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
@@ -278,7 +278,7 @@ public class FileApiClientImplTest
     @Test
     public void testImportTranslations() throws Exception
     {
-        when(response.getContents()).thenReturn(ResponseExamples.IMPORT_TRANSLATIONS_RESPONSE);
+        when(response.getContents()).thenReturn(FileResponseExamples.IMPORT_TRANSLATIONS_RESPONSE);
         File fileToImport = mock(File.class);
         FileImportSmartlingData apiResponse = fileApiClient
                 .importTranslations(new FileImportParameterBuilder(fileToImport, LOCALE, CHARSET, FileType.CSV, FILE_URI));

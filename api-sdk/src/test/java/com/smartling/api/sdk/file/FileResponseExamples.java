@@ -1,6 +1,6 @@
 package com.smartling.api.sdk.file;
 
-public class ResponseExamples
+public class FileResponseExamples
 {
     public static final String UPLOAD_RESPONSE = "{\n"
             + "  \"response\": {\n"
