@@ -42,7 +42,7 @@ import java.io.InputStream;
  */
 public class HttpUtils
 {
-    private static final Log logger = LogFactory.getLog(HttpUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(HttpUtils.class);
 
     private static final String LOG_MESSAGE_ERROR_TEMPLATE = "GENERAL ERROR: %s";
     static final String SCHEME_HTTPS = "https";
@@ -124,7 +124,7 @@ public class HttpUtils
         }
         catch (final IOException ioe)
         {
-            logger.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
+            LOGGER.error(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
             throw new SmartlingApiException(ioe);
         }
         finally
@@ -136,7 +136,7 @@ public class HttpUtils
             }
             catch (final IOException ioe)
             {
-                logger.warn(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
+                LOGGER.warn(String.format(LOG_MESSAGE_ERROR_TEMPLATE, ioe.getMessage()));
             }
         }
     }
@@ -145,11 +145,11 @@ public class HttpUtils
     {
         if (proxyConfiguration != null)
         {
-            logger.trace(String.format("Using proxy configuration for executing http call: '%s'", proxyConfiguration));
+            LOGGER.trace(String.format("Using proxy configuration for executing http call: '%s'", proxyConfiguration));
         }
         else
         {
-            logger.trace("Proxy is not setup");
+            LOGGER.trace("Proxy is not set");
         }
     }
 
