@@ -6,7 +6,7 @@ import org.apache.http.HttpMessage;
 
 public class AuthenticationContext implements ResponseData
 {
-    public static final int TIME_TO_REFRESH = 1500;
+    private static final int TIME_TO_REFRESH = 1500;
 
     private String accessToken;
     private long parsingTime = System.currentTimeMillis();

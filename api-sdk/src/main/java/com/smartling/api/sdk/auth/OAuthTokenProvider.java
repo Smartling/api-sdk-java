@@ -9,10 +9,11 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 public class OAuthTokenProvider implements TokenProvider
 {
+    private static final Log LOGGER = LogFactory.getLog(OAuthTokenProvider.class);
+
     private final String userId;
     private final String userSecret;
     private final AuthApiClient authApiClient;
-    private static final Log LOGGER = LogFactory.getLog(OAuthTokenProvider.class);
 
     private volatile AuthenticationContext authenticationContext;
 
@@ -45,20 +46,7 @@ public class OAuthTokenProvider implements TokenProvider
                             authenticationContext = authApiClient.refresh(refreshToken).retrieveData();
                         } catch (SmartlingApiException ex){
                             authenticationContext = null;
-                            LOGGER.warn("Reset refresh token after fail");
-                            JwtConsumer consumer = new JwtConsumerBuilder()
-                                    .setSkipAllDefaultValidators()
-                                    .setRequireExpirationTime()
-                                    .setSkipSignatureVerification()
-                                    .build();
-                            try
-                            {
-                                LOGGER.warn("Failed token info: " + consumer.process(refreshToken).getJwtClaims().getRawJson());
-                            }
-                            catch (InvalidJwtException e)
-                            {
-                                LOGGER.warn("Can't parse refresh token");
-                            }
+                            logRefreshTokenDetails(refreshToken);
                             throw ex;
                         }
                     }
@@ -66,6 +54,8 @@ public class OAuthTokenProvider implements TokenProvider
                     {
                         authenticationContext = authApiClient.authenticate(new AuthenticationCommand(userId, userSecret)).retrieveData();
                     }
+
+                    LOGGER.debug("Got a new access token which will expire at " + authenticationContext.calculateAccessTokenExpireTime());
                 }
             }
         }
@@ -79,5 +69,22 @@ public class OAuthTokenProvider implements TokenProvider
     private boolean accessTokenIsNotValid()
     {
         return authenticationContext == null || System.currentTimeMillis() > authenticationContext.calculateAccessTokenExpireTime();
+    }
+
+    private static void logRefreshTokenDetails(final String refreshToken)
+    {
+        JwtConsumer consumer = new JwtConsumerBuilder()
+                .setSkipAllDefaultValidators()
+                .setRequireExpirationTime()
+                .setSkipSignatureVerification()
+                .build();
+        try
+        {
+            LOGGER.warn("Failed token info: " + consumer.process(refreshToken).getJwtClaims().getRawJson());
+        }
+        catch (InvalidJwtException e)
+        {
+            LOGGER.warn("Failed to parse refresh token:", e);
+        }
     }
 }
