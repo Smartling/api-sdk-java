@@ -61,7 +61,7 @@ public abstract class DateFormatter
         return getDateFormat().parse(date);
     }
 
-    public static DateFormat getDateFormat()
+    private static DateFormat getDateFormat()
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat(API_DATE_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

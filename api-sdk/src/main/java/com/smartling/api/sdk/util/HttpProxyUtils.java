@@ -28,10 +28,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.smartling.api.sdk.ProxyConfiguration;
 
-public class HttpProxyUtils
+class HttpProxyUtils
 {
 
-    public HttpProxyUtils()
+    HttpProxyUtils()
     {
 
     }
@@ -42,7 +42,7 @@ public class HttpProxyUtils
      * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.client.config.RequestConfig
      */
-    public RequestConfig getProxyRequestConfig(HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration)
+    RequestConfig getProxyRequestConfig(HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration)
     {
         if (hasActiveProxyConfiguration(proxyConfiguration))
         {
@@ -57,7 +57,7 @@ public class HttpProxyUtils
      * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.impl.client.CloseableHttpClient
      */
-    public CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
+    CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
     {
         HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
 
