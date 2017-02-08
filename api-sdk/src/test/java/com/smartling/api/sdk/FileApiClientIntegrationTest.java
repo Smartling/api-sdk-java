@@ -31,9 +31,8 @@ public class FileApiClientIntegrationTest
 {
     private static final String FILE_URI = "/testfile.properties";
     private static final String FILE_URI_RENAMED = "/testfileRenamed.properties";
+    private static final String TEST_LOCALE_CODE = "es";
 
-    private static final String LOCALE = "en-US";
-    private static final String LOCALE_ES = "es";
     private static final String CHARSET = "UTF-8";
 
     private FileApiClient fileApiClient;
@@ -63,9 +62,9 @@ public class FileApiClientIntegrationTest
                 ).overwriteAuthorizedLocales(true));
         //File api locks resource after fileUpload for some time
         Thread.sleep(5000);
-        fileApiClient.importTranslations(new FileImportParameterBuilder(translatedFileToUpload, LOCALE_ES, CHARSET, JAVA_PROPERTIES, FILE_URI).overwrite(true));
+        fileApiClient.importTranslations(new FileImportParameterBuilder(translatedFileToUpload, TEST_LOCALE_CODE, CHARSET, JAVA_PROPERTIES, FILE_URI).overwrite(true));
 
-        StringResponse response = fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, LOCALE_ES));
+        StringResponse response = fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, TEST_LOCALE_CODE));
         
         assertEquals("test=Test de integración", response.getContents());
 
@@ -74,7 +73,7 @@ public class FileApiClientIntegrationTest
         assertEquals("javaProperties", status.getFileType());
         assertEquals(1, status.getTotalStringCount());
         assertEquals(1, status.getTotalWordCount());
-        FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, LOCALE);
+        FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, TEST_LOCALE_CODE);
         assertEquals(FILE_URI, localeStatus.getFileUri());
         assertEquals("javaProperties", localeStatus.getFileType());
         assertEquals(1, localeStatus.getTotalStringCount());
