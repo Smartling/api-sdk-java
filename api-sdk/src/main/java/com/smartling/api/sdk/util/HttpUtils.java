@@ -45,20 +45,21 @@ public class HttpUtils
     private static final Log LOGGER = LogFactory.getLog(HttpUtils.class);
 
     private static final String LOG_MESSAGE_ERROR_TEMPLATE = "GENERAL ERROR: %s";
+    private static final String X_SL_REQUEST_ID            = "X-SL-RequestId";
+
     static final String SCHEME_HTTPS = "https";
     static final String SCHEME_HTTP = "http";
     static final String PROPERTY_SUFFIX_PROXY_HOST = ".proxyHost";
     static final String PROPERTY_SUFFIX_PROXY_PORT = ".proxyPort";
     static final String PROPERTY_SUFFIX_PROXY_USERNAME = ".proxyUsername";
     static final String PROPERTY_SUFFIX_PROXY_PASSWORD = ".proxyPassword";
-    public static final String X_SL_REQUEST_ID = "X-SL-RequestId";
 
     private static final ThreadLocal<String> requestId = new ThreadLocal<>();
     private static final ThreadLocal<ResponseDetails> responseDetails = new ThreadLocal<>();
 
     private HttpProxyUtils httpProxyUtils;
 
-    public void setHttpProxyUtils(HttpProxyUtils httpProxyUtils)
+    void setHttpProxyUtils(HttpProxyUtils httpProxyUtils)
     {
         this.httpProxyUtils = httpProxyUtils;
     }

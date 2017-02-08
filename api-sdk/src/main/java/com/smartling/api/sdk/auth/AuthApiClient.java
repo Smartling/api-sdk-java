@@ -11,8 +11,9 @@ import org.apache.http.client.methods.HttpPost;
 
 public class AuthApiClient extends BaseApiClient
 {
-    public static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
-    public static final String AUTH_API_V2_REFRESH = "/auth-api/v2/authenticate/refresh";
+    private static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
+    private static final String AUTH_API_V2_REFRESH      = "/auth-api/v2/authenticate/refresh";
+
     private final ProxyConfiguration proxyConfiguration;
 
     public AuthApiClient()

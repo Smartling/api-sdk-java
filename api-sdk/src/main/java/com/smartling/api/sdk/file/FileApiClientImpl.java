@@ -60,16 +60,16 @@ import static com.smartling.api.sdk.file.parameters.FileApiParameter.URI_MASK;
 
 public class FileApiClientImpl extends TokenProviderAwareClient implements FileApiClient
 {
-    public static final String FILES_API_V2_FILE_DELETE = "/files-api/v2/projects/%s/file/delete";
-    public static final String FILES_API_V2_FILE_RENAME = "/files-api/v2/projects/%s/file/rename";
-    public static final String FILES_API_V2_FILE_LAST_MODIFIED = "/files-api/v2/projects/%s/file/last-modified";
-    public static final String FILES_API_V2_GET_FILE = "/files-api/v2/projects/%s/locales/%s/file";
-    public static final String FILES_API_V2_GET_ORIGINAL_FILE = "/files-api/v2/projects/%s/file";
-    public static final String FILES_API_V2_FILES_LIST = "/files-api/v2/projects/%s/files/list";
-    public static final String FILES_API_V2_FILE_LOCALE_STATUS = "/files-api/v2/projects/%s/locales/%s/file/status";
-    public static final String FILES_API_V2_FILE_STATUS = "/files-api/v2/projects/%s/file/status";
-    public static final String FILES_API_V2_FILE_UPLOAD = "/files-api/v2/projects/%s/file";
-    public static final String FILES_API_V2_FILE_IMPORT = "/files-api/v2/projects/%s/locales/%s/file/import";
+    private static final String FILES_API_V2_FILE_DELETE        = "/files-api/v2/projects/%s/file/delete";
+    private static final String FILES_API_V2_FILE_RENAME        = "/files-api/v2/projects/%s/file/rename";
+    private static final String FILES_API_V2_FILE_LAST_MODIFIED = "/files-api/v2/projects/%s/file/last-modified";
+    private static final String FILES_API_V2_GET_FILE           = "/files-api/v2/projects/%s/locales/%s/file";
+    private static final String FILES_API_V2_GET_ORIGINAL_FILE  = "/files-api/v2/projects/%s/file";
+    private static final String FILES_API_V2_FILES_LIST         = "/files-api/v2/projects/%s/files/list";
+    private static final String FILES_API_V2_FILE_LOCALE_STATUS = "/files-api/v2/projects/%s/locales/%s/file/status";
+    private static final String FILES_API_V2_FILE_STATUS        = "/files-api/v2/projects/%s/file/status";
+    private static final String FILES_API_V2_FILE_UPLOAD        = "/files-api/v2/projects/%s/file";
+    private static final String FILES_API_V2_FILE_IMPORT        = "/files-api/v2/projects/%s/locales/%s/file/import";
 
 
     private static final String REQUEST_PARAMS_SEPARATOR = "?";
@@ -85,20 +85,23 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         this.baseUrl = baseUrl;
     }
 
-    @Override public UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException
+    @Override
+    public UploadFileData uploadFile(File fileToUpload, FileUploadParameterBuilder fileUploadParameterBuilder) throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileToUpload, createContentType(fileUploadParameterBuilder.getFileType(), getCharset(fileUploadParameterBuilder)), fileToUpload.getName());
         return uploadFile(fileUploadParameterBuilder, fileBody);
     }
 
-    @Override public UploadFileData uploadFile(InputStream inputStream, String fileName, FileUploadParameterBuilder fileUploadParameterBuilder)
+    @Override
+    public UploadFileData uploadFile(InputStream inputStream, String fileName, FileUploadParameterBuilder fileUploadParameterBuilder)
             throws SmartlingApiException
     {
         InputStreamBody inputStreamBody = new InputStreamBody(inputStream, createContentType(fileUploadParameterBuilder.getFileType(), getCharset(fileUploadParameterBuilder)), fileName);
         return uploadFile(fileUploadParameterBuilder, inputStreamBody);
     }
 
-    @Override public EmptyResponse deleteFile(String fileUri) throws SmartlingApiException
+    @Override
+    public EmptyResponse deleteFile(String fileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_DELETE, baseUrl, projectId),
@@ -112,7 +115,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public EmptyResponse renameFile(String fileUri, String newFileUri) throws SmartlingApiException
+    @Override
+    public EmptyResponse renameFile(String fileUri, String newFileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(FILES_API_V2_FILE_RENAME, baseUrl, projectId),
@@ -126,7 +130,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public FileLastModified getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException
+    @Override
+    public FileLastModified getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException
     {
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, baseUrl, projectId), buildParamsQuery(
                         builder.getNameValueList().toArray(new NameValuePair[builder.getNameValueList().size()])
@@ -141,7 +146,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
+    @Override
+    public StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
@@ -165,7 +171,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         }
     }
 
-    @Override public StringResponse getOriginalFile(GetOriginalFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
+    @Override
+    public StringResponse getOriginalFile(GetOriginalFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException
     {
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
@@ -190,7 +197,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
 
     }
 
-    @Override public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
+    @Override
+    public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
     {
         final String params = buildFileListParams(fileListSearchParameterBuilder);
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, baseUrl, projectId), params));
@@ -203,7 +211,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException
+    @Override
+    public FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale, baseUrl, projectId), params));
@@ -216,7 +225,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public FileStatus getFileStatus(String fileUri) throws SmartlingApiException
+    @Override
+    public FileStatus getFileStatus(String fileUri) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS, baseUrl, projectId), params));
@@ -229,7 +239,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
         ).retrieveData();
     }
 
-    @Override public FileImportSmartlingData importTranslations(FileImportParameterBuilder fileImportParameterBuilder)
+    @Override
+    public FileImportSmartlingData importTranslations(FileImportParameterBuilder fileImportParameterBuilder)
             throws SmartlingApiException
     {
         FileBody fileBody = new FileBody(fileImportParameterBuilder.getFile(), createContentType(fileImportParameterBuilder.getFileType(), Charset.forName(fileImportParameterBuilder.getCharset())), fileImportParameterBuilder.getFile().getName());
@@ -331,10 +342,7 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
 
     private String buildUrl(String apiServerUrl, String apiParameters)
     {
-        final StringBuilder urlWithParameters = new StringBuilder(apiServerUrl);
-        urlWithParameters.append(REQUEST_PARAMS_SEPARATOR);
-        urlWithParameters.append(apiParameters);
-        return urlWithParameters.toString();
+        return apiServerUrl + REQUEST_PARAMS_SEPARATOR + apiParameters;
     }
 
     private String buildFileListParams(FileListSearchParameterBuilder fileListSearchParameterBuilder)
@@ -352,25 +360,15 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
     private List<NameValuePair> convertFileTypesParams(final String prefix, final List<FileType> values)
     {
         if (values == null || values.isEmpty())
+        {
             return Collections.emptyList();
-
-        final List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
-        for (int index = 0; index < values.size(); index++) {
-            nameValuePairs.add(new BasicNameValuePair(prefix + "[]", values.get(index).getIdentifier()));
         }
 
-        return nameValuePairs;
-    }
-
-    private List<BasicNameValuePair> getNameValuePairs(String name, List<String> values)
-    {
-        if (values == null || values.isEmpty())
-            return Collections.emptyList();
-
-        final List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
-        for (final String value : values)
-            nameValuePairs.add(new BasicNameValuePair(name, value));
+        final List<NameValuePair> nameValuePairs = new ArrayList<>();
+        for (FileType value : values)
+        {
+            nameValuePairs.add(new BasicNameValuePair(prefix + "[]", value.getIdentifier()));
+        }
 
         return nameValuePairs;
     }
