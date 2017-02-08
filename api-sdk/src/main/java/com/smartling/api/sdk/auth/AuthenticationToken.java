@@ -18,5 +18,4 @@ public class AuthenticationToken
     {
         return rawTokenString;
     }
-
 }

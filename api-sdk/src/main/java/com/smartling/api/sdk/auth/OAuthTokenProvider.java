@@ -7,6 +7,8 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
+import java.util.Objects;
+
 public class OAuthTokenProvider implements TokenProvider
 {
     private static final Log LOGGER = LogFactory.getLog(OAuthTokenProvider.class);
@@ -19,12 +21,13 @@ public class OAuthTokenProvider implements TokenProvider
 
     public OAuthTokenProvider(final String userId, final String userSecret, final AuthApiClient authApiClient)
     {
-        this.userId = userId;
-        this.userSecret = userSecret;
-        this.authApiClient = authApiClient;
+        this.userId = Objects.requireNonNull(userId, "User ID can not be null");
+        this.userSecret = Objects.requireNonNull(userSecret, "User Secret can not be null");
+        this.authApiClient = Objects.requireNonNull(authApiClient, "Auth. API client can not be null");
     }
 
-    @Override public AuthenticationToken getAuthenticationToken() throws SmartlingApiException
+    @Override
+    public AuthenticationToken getAuthenticationToken() throws SmartlingApiException
     {
         generateAuthenticationContext();
         return new AuthenticationToken(authenticationContext.getTokenType(), authenticationContext.getAccessToken());
