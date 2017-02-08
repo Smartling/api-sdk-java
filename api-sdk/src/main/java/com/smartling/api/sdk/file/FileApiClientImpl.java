@@ -387,6 +387,8 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
 
         private String baseSmartlingApiUrl = DEFAULT_BASE_URL;
         private TokenProvider tokenProvider;
+        private String userId;
+        private String userSecret;
         private ProxyConfiguration proxyConfiguration;
 
         public Builder(String projectId)
@@ -408,7 +410,9 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
 
         public Builder authWithUserIdAndSecret(String userId, String userSecret)
         {
-            tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, baseSmartlingApiUrl));
+            this.userId = userId;
+            this.userSecret = userSecret;
+            this.tokenProvider = null;
             return this;
         }
 
@@ -426,6 +430,11 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
 
         public FileApiClient build()
         {
+            TokenProvider tokenProvider = this.tokenProvider;
+            if (tokenProvider == null && userId != null && userSecret != null) {
+                tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, baseSmartlingApiUrl));
+            }
+
             return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
         }
     }
