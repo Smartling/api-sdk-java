@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.Response;
@@ -12,6 +13,7 @@ import com.smartling.api.sdk.util.HttpUtils;
 import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
@@ -24,10 +26,10 @@ public abstract class BaseApiClient
 
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
-    protected final ProxyConfiguration proxyConfiguration;
-    protected final String baseUrl;
+    private final HttpUtils httpUtils = new HttpUtils();
+    private final ProxyConfiguration proxyConfiguration;
 
-    protected HttpUtils httpUtils = new HttpUtils();
+    protected final String baseUrl;
 
     protected BaseApiClient()
     {
@@ -38,6 +40,11 @@ public abstract class BaseApiClient
     {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL can not be null");
         this.proxyConfiguration = proxyConfiguration;
+    }
+
+    protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
+    {
+        return httpUtils.executeHttpCall(request, proxyConfiguration);
     }
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType) throws SmartlingApiException

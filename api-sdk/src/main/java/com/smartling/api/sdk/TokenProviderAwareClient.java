@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public abstract class TokenProviderAwareClient extends BaseApiClient
 {
-    protected final TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider;
 
     protected TokenProviderAwareClient(final String baseUrl, final ProxyConfiguration proxyConfiguration, TokenProvider tokenProvider)
     {
@@ -22,7 +22,7 @@ public abstract class TokenProviderAwareClient extends BaseApiClient
     protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
     {
         addAuthorizationHeader(request);
-        return httpUtils.executeHttpCall(request, proxyConfiguration);
+        return super.executeRequest(request);
     }
 
     private void addAuthorizationHeader(final HttpMessage httpMessage) throws SmartlingApiException
