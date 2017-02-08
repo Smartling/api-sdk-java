@@ -14,11 +14,8 @@ public class AuthApiClient extends BaseApiClient
     private static final String AUTH_API_V2_AUTHENTICATE = "/auth-api/v2/authenticate";
     private static final String AUTH_API_V2_REFRESH      = "/auth-api/v2/authenticate/refresh";
 
-    private final ProxyConfiguration proxyConfiguration;
-
     public AuthApiClient()
     {
-        this(null, DEFAULT_BASE_URL);
     }
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration)
@@ -33,8 +30,7 @@ public class AuthApiClient extends BaseApiClient
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
-        this.proxyConfiguration = proxyConfiguration;
-        this.baseUrl = baseUrl;
+        super(baseUrl, proxyConfiguration);
     }
 
     public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand)
@@ -67,5 +63,4 @@ public class AuthApiClient extends BaseApiClient
     {
         return baseAuthApiUrl + url;
     }
-
 }

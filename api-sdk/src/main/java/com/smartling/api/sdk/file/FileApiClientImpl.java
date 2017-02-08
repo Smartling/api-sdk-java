@@ -49,6 +49,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.FILE_TYPES;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.FILE_URI;
@@ -58,7 +59,7 @@ import static com.smartling.api.sdk.file.parameters.FileApiParameter.LIMIT;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.OFFSET;
 import static com.smartling.api.sdk.file.parameters.FileApiParameter.URI_MASK;
 
-public class FileApiClientImpl extends TokenProviderAwareClient implements FileApiClient
+public final class FileApiClientImpl extends TokenProviderAwareClient implements FileApiClient
 {
     private static final String FILES_API_V2_FILE_DELETE        = "/files-api/v2/projects/%s/file/delete";
     private static final String FILES_API_V2_FILE_RENAME        = "/files-api/v2/projects/%s/file/rename";
@@ -78,10 +79,8 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
 
     private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
-        this.tokenProvider = tokenProvider;
-        this.projectId = projectId;
-        this.proxyConfiguration = proxyConfiguration;
-        this.baseUrl = baseUrl;
+        super(baseUrl, proxyConfiguration, tokenProvider);
+        this.projectId = Objects.requireNonNull(projectId, "Project ID can not be null");
     }
 
     @Override
@@ -427,14 +426,7 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
 
         public FileApiClient build()
         {
-            sanityCheck();
             return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
-        }
-
-        private void sanityCheck()
-        {
-            if (baseSmartlingApiUrl == null) throw new IllegalArgumentException("Wrong Configuration. baseUrl should not be null");
-            if (tokenProvider == null) throw new IllegalArgumentException("Wrong Configuration. tokenProvider should not be null");
         }
     }
 }

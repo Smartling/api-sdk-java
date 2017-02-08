@@ -16,6 +16,7 @@ import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 public abstract class BaseApiClient
 {
@@ -23,11 +24,21 @@ public abstract class BaseApiClient
 
     private static final String APPLICATION_JSON_TYPE = "application/json";
 
-    protected ProxyConfiguration proxyConfiguration;
-
-    protected String baseUrl = DEFAULT_BASE_URL;
+    protected final ProxyConfiguration proxyConfiguration;
+    protected final String baseUrl;
 
     protected HttpUtils httpUtils = new HttpUtils();
+
+    protected BaseApiClient()
+    {
+        this(DEFAULT_BASE_URL, null);
+    }
+
+    protected BaseApiClient(final String baseUrl, final ProxyConfiguration proxyConfiguration)
+    {
+        this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL can not be null");
+        this.proxyConfiguration = proxyConfiguration;
+    }
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType) throws SmartlingApiException
     {
@@ -79,5 +90,4 @@ public abstract class BaseApiClient
 
         return httpPost;
     }
-
 }

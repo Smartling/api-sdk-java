@@ -7,9 +7,17 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpRequestBase;
 
-public class TokenProviderAwareClient extends BaseApiClient
+import java.util.Objects;
+
+public abstract class TokenProviderAwareClient extends BaseApiClient
 {
-    protected TokenProvider tokenProvider;
+    protected final TokenProvider tokenProvider;
+
+    protected TokenProviderAwareClient(final String baseUrl, final ProxyConfiguration proxyConfiguration, TokenProvider tokenProvider)
+    {
+        super(baseUrl, proxyConfiguration);
+        this.tokenProvider = Objects.requireNonNull(tokenProvider, "Token Provider can not be null");
+    }
 
     protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
     {
