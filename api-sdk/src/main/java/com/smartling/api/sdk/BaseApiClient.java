@@ -71,7 +71,7 @@ public abstract class BaseApiClient
         return responseWrapper != null && responseWrapper.getResponse().getCode() != null;
     }
 
-    protected HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
+    protected static HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
     {
         final HttpPost httpPost = new HttpPost(url);
         final StringEntity stringEntity;
