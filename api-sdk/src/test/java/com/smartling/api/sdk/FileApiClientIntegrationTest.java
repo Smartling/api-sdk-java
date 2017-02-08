@@ -26,19 +26,20 @@ import static com.smartling.api.sdk.file.FileType.JAVA_PROPERTIES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class FileApiClientIntegrationTest
 {
     private static final String FILE_URI = "/testfile.properties";
     private static final String FILE_URI_RENAMED = "/testfileRenamed.properties";
 
-    private static final String CHARSET = "UTF-8";
-    private FileApiClient fileApiClient;
-    private File fileToUpload;
-    private File translatedFileToUpload;
     private static final String LOCALE = "en-US";
     private static final String LOCALE_ES = "es";
+    private static final String CHARSET = "UTF-8";
+
+    private FileApiClient fileApiClient;
+
+    private File fileToUpload;
+    private File translatedFileToUpload;
 
     @Before
     public void setup() throws SmartlingApiException
@@ -47,11 +48,9 @@ public class FileApiClientIntegrationTest
         final String userSecret = System.getProperty("userSecret");
         final String projectId = System.getProperty("projectId");
 
-        ProxyConfiguration proxyConfiguration = mock(ProxyConfiguration.class);
         fileApiClient = new FileApiClientImpl.Builder(projectId)
-                                                   .authWithUserIdAndSecret(userId, userSecret)
-                                                   .proxyConfiguration(proxyConfiguration)
-                                                   .build();
+                .authWithUserIdAndSecret(userId, userSecret)
+                .build();
 
         fileToUpload = new File(getClass().getClassLoader().getResource("testfile.properties").getPath());
         translatedFileToUpload = new File(getClass().getClassLoader().getResource("testfileES.properties").getPath());
