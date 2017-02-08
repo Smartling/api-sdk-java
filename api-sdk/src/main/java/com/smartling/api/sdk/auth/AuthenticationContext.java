@@ -1,8 +1,6 @@
 package com.smartling.api.sdk.auth;
 
 import com.smartling.web.api.v2.ResponseData;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpMessage;
 
 public class AuthenticationContext implements ResponseData
 {
@@ -76,32 +74,17 @@ public class AuthenticationContext implements ResponseData
         this.sessionState = sessionState;
     }
 
-    public String getAuthorizationTokenString()
-    {
-        return String.format("%s %s", getTokenType(), getAccessToken());
-    }
-
-    public void applyTo(final HttpMessage httpMessage)
-    {
-        httpMessage.addHeader(HttpHeaders.AUTHORIZATION, getAuthorizationTokenString());
-    }
-
-    public long getParsingTime()
-    {
-        return parsingTime;
-    }
-
-    public void setParsingTime(final long parsingTime)
+    void setParsingTime(final long parsingTime)
     {
         this.parsingTime = parsingTime;
     }
 
-    public long calculateAccessTokenExpireTime()
+    long calculateAccessTokenExpireTime()
     {
         return parsingTime + expiresIn * 1000 - TIME_TO_REFRESH;
     }
 
-    public long calculateRefreshTokenExpireTime()
+    long calculateRefreshTokenExpireTime()
     {
         return parsingTime + refreshExpiresIn * 1000 - TIME_TO_REFRESH;
     }
