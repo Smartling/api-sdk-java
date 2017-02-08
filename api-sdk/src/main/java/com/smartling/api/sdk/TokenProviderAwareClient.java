@@ -1,10 +1,10 @@
 package com.smartling.api.sdk;
 
+import com.smartling.api.sdk.auth.AuthenticationToken;
 import com.smartling.api.sdk.auth.TokenProvider;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.util.Objects;
@@ -21,12 +21,9 @@ public abstract class TokenProviderAwareClient extends BaseApiClient
 
     protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
     {
-        addAuthorizationHeader(request);
-        return super.executeRequest(request);
-    }
+        AuthenticationToken authenticationToken = tokenProvider.getAuthenticationToken();
+        request.addHeader(HttpHeaders.AUTHORIZATION, authenticationToken.getAuthorizationTokenString());
 
-    private void addAuthorizationHeader(final HttpMessage httpMessage) throws SmartlingApiException
-    {
-        httpMessage.addHeader(HttpHeaders.AUTHORIZATION, tokenProvider.getAuthenticationToken().getAuthorizationTokenString());
+        return super.executeRequest(request);
     }
 }
