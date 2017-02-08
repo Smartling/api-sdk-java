@@ -55,17 +55,16 @@ public class FileApiClientIntegrationTest
         translatedFileToUpload = new File(getClass().getClassLoader().getResource("testfileES.properties").getPath());
     }
 
-    @Test
+    @Test(timeout = 5 * 60 * 1000)
     public void testApi() throws Exception
     {
-        fileApiClient.uploadFile(fileToUpload, new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI).charset(CHARSET).localeIdsToAuthorize(Collections.singletonList("es")
-                ).overwriteAuthorizedLocales(true));
-        //File api locks resource after fileUpload for some time
-        Thread.sleep(5000);
+        uploadFile();
+
+        waitForFileToBeProcessed();
+
         fileApiClient.importTranslations(new FileImportParameterBuilder(translatedFileToUpload, TEST_LOCALE_CODE, CHARSET, JAVA_PROPERTIES, FILE_URI).overwrite(true));
 
         StringResponse response = fileApiClient.getFile(new GetFileParameterBuilder(FILE_URI, TEST_LOCALE_CODE));
-        
         assertEquals("test=Test de integración", response.getContents());
 
         FileStatus status = fileApiClient.getFileStatus(FILE_URI);
@@ -73,6 +72,7 @@ public class FileApiClientIntegrationTest
         assertEquals("javaProperties", status.getFileType());
         assertEquals(1, status.getTotalStringCount());
         assertEquals(1, status.getTotalWordCount());
+
         FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, TEST_LOCALE_CODE);
         assertEquals(FILE_URI, localeStatus.getFileUri());
         assertEquals("javaProperties", localeStatus.getFileType());
@@ -99,6 +99,7 @@ public class FileApiClientIntegrationTest
         assertTrue(fileLastModified.getTotalCount() > 0);
 
         fileApiClient.deleteFile(FILE_URI_RENAMED);
+
         try
         {
             fileApiClient.deleteFile(FILE_URI);
@@ -110,5 +111,29 @@ public class FileApiClientIntegrationTest
             assertNotEquals(HttpStatus.SC_OK, ex.getStatusCode());
             assertNotEquals(0, ex.getResponseHeaders().size());
         }
+    }
+
+    private void waitForFileToBeProcessed() throws InterruptedException
+    {
+        while (true) {
+            Thread.sleep(2000);
+            try
+            {
+                fileApiClient.getFileStatus(FILE_URI);
+                break;
+            }
+            catch (SmartlingApiException e) {
+                System.out.println("Still waiting for file to be processed: " + e);
+            }
+        }
+    }
+
+    private void uploadFile() throws SmartlingApiException
+    {
+        FileUploadParameterBuilder parameterBuilder = new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI)
+                .charset(CHARSET)
+                .localeIdsToAuthorize(Collections.singletonList("es"))
+                .overwriteAuthorizedLocales(true);
+        fileApiClient.uploadFile(fileToUpload, parameterBuilder);
     }
 }
