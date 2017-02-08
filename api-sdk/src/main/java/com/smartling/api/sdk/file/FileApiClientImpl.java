@@ -71,11 +71,10 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
     private static final String FILES_API_V2_FILE_UPLOAD        = "/files-api/v2/projects/%s/file";
     private static final String FILES_API_V2_FILE_IMPORT        = "/files-api/v2/projects/%s/locales/%s/file/import";
 
-
     private static final String REQUEST_PARAMS_SEPARATOR = "?";
     private static final String TEXT_PLAIN_TYPE = "text/plain";
 
-    private String projectId;
+    private final String projectId;
 
     private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
@@ -385,17 +384,15 @@ public class FileApiClientImpl extends TokenProviderAwareClient implements FileA
 
     public static class Builder
     {
-        private TokenProvider tokenProvider;
-
         private final String projectId;
+
+        private String baseSmartlingApiUrl = DEFAULT_BASE_URL;
+        private TokenProvider tokenProvider;
         private ProxyConfiguration proxyConfiguration;
-        private String baseSmartlingApiUrl;
 
         public Builder(String projectId)
         {
             this.projectId = projectId;
-            baseSmartlingApiUrl = DEFAULT_BASE_URL;
-            proxyConfiguration = null;
         }
 
         public Builder baseSmartlingApiUrl(String baseAuthApiUrl)
