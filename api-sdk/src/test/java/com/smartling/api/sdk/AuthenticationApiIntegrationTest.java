@@ -1,7 +1,6 @@
 package com.smartling.api.sdk;
 
 import com.smartling.api.sdk.auth.AuthApiClient;
-import com.smartling.api.sdk.auth.AuthenticationCommand;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,9 @@ public class AuthenticationApiIntegrationTest
     @Test
     public void testRefreshToken() throws SmartlingApiException
     {
-        String refreshToken = authApiClient.authenticate(new AuthenticationCommand(System.getProperty("userId"), System.getProperty("userSecret"))).getData().getRefreshToken();
+        String userIdentifier = System.getProperty("userId");
+        String userSecret = System.getProperty("userSecret");
+        String refreshToken = authApiClient.authenticate(userIdentifier, userSecret).getData().getRefreshToken();
 
         assertTrue(authApiClient.refresh(refreshToken).getData().getAccessToken().length() > 10);
     }

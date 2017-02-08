@@ -4,7 +4,6 @@ import com.smartling.api.sdk.file.response.Response;
 import com.smartling.web.api.v2.ResponseCode;
 import org.junit.Test;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -12,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 public class OAuthTokenProviderTest
 {
-
     @Test
     public void testGenerateAuthenticationContext() throws Exception
     {
@@ -26,15 +24,15 @@ public class OAuthTokenProviderTest
         response.setData(context);
         response.setCode(ResponseCode.SUCCESS);
 
-        when(authApiClient.authenticate(any(AuthenticationCommand.class))).thenReturn(response);
+        when(authApiClient.authenticate(anyString(), anyString())).thenReturn(response);
         when(authApiClient.refresh(anyString())).thenReturn(response);
 
         oAuthTokenProvider.getAuthenticationToken();
-        verify(authApiClient).authenticate(new AuthenticationCommand("userId","userSecret"));
+        verify(authApiClient).authenticate("userId", "userSecret");
         context.setRefreshExpiresIn(1000);
         oAuthTokenProvider.getAuthenticationToken();
         verify(authApiClient).refresh("222");
         context.setRefreshExpiresIn(1);
-        verify(authApiClient).authenticate(new AuthenticationCommand("userId","userSecret"));
+        verify(authApiClient).authenticate("userId", "userSecret");
     }
 }

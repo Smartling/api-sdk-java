@@ -3,12 +3,12 @@ package com.smartling.api.sdk.auth;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class AuthenticationCommand
+class AuthenticationCommand
 {
     private final String userIdentifier;
     private final String userSecret;
 
-    public AuthenticationCommand(String userIdentifier, String userSecret)
+    AuthenticationCommand(String userIdentifier, String userSecret)
     {
         this.userIdentifier = userIdentifier;
         this.userSecret = userSecret;
@@ -24,7 +24,8 @@ public class AuthenticationCommand
         return userSecret;
     }
 
-    @Override public boolean equals(final Object o)
+    @Override
+    public boolean equals(final Object o)
     {
         if (this == o)
             return true;
@@ -39,7 +40,8 @@ public class AuthenticationCommand
                 .isEquals();
      }
 
-    @Override public int hashCode()
+    @Override
+    public int hashCode()
     {
         return new HashCodeBuilder()
                 .append(userIdentifier)
@@ -47,7 +49,8 @@ public class AuthenticationCommand
                 .hashCode();
     }
 
-    @Override public String toString()
+    @Override
+    public String toString()
     {
         return "AuthenticationCommand{" +
                 "userIdentifier='" + userIdentifier + '\'' +

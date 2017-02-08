@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 public class AuthApiClientTest
 {
-
     private HttpUtils httpUtils;
     private ArgumentCaptor<HttpRequestBase> requestCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
     private ProxyConfiguration proxyConfiguration;
@@ -61,7 +60,7 @@ public class AuthApiClientTest
     public void testAuthenticate() throws Exception
     {
         when(response.getContents()).thenReturn(AUTH_RESPONSE);
-        Response<AuthenticationContext> response = authApiClient.authenticate(new AuthenticationCommand(USER_ID, USER_SECRET));
+        Response<AuthenticationContext> response = authApiClient.authenticate(USER_ID, USER_SECRET);
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/auth-api/v2/authenticate", request.getURI().toString());

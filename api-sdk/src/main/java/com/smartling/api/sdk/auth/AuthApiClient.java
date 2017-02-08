@@ -33,12 +33,12 @@ public class AuthApiClient extends BaseApiClient
         super(baseUrl, proxyConfiguration);
     }
 
-    public Response<AuthenticationContext> authenticate(AuthenticationCommand authenticationCommand)
+    public Response<AuthenticationContext> authenticate(String userIdentifier, String userSecret)
             throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(AUTH_API_V2_AUTHENTICATE, baseUrl),
-                authenticationCommand
+                new AuthenticationCommand(userIdentifier, userSecret)
         );
 
         final StringResponse response = executeRequest(httpPost);
