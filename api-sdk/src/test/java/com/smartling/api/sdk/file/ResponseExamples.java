@@ -1,8 +1,8 @@
 package com.smartling.api.sdk.file;
 
-public class ResponseExamples
+class ResponseExamples
 {
-    public static final String UPLOAD_RESPONSE = "{\n"
+    static final String UPLOAD_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "      \"code\": \"SUCCESS\",\n"
             + "      \"data\": {\n"
@@ -12,14 +12,14 @@ public class ResponseExamples
             + "}\n"
             + "   }\n"
             + "}\n";
-    public static final String EMPTY_RESPONSE = "{\n"
+    static final String EMPTY_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "      \"code\": \"SUCCESS\",\n"
             + "\"data\": {}\n"
             + "\n"
             + "}\n"
             + "}";
-    public static final String NOT_EXISTING_CODE_RESPONSE = "{\n"
+    static final String NOT_EXISTING_CODE_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "      \"code\": \"NOT_EXISTING_CODE\",\n"
             + "      \"errors\": [\n"
@@ -31,7 +31,7 @@ public class ResponseExamples
             + "     ]\n"
             + "}\n"
             + "}";
-    public static final String ERROR_RESPONSE = "{\n"
+    static final String ERROR_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "      \"code\": \"MAINTENANCE_MODE_ERROR\",\n"
             + "      \"errors\": [\n"
@@ -43,7 +43,7 @@ public class ResponseExamples
             + "     ]\n"
             + "}\n"
             + "}";
-    public static final String LAST_MODIFICATION_RESPONSE = "{\n"
+    static final String LAST_MODIFICATION_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -73,11 +73,11 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String GET_FILE_RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    static final String GET_FILE_RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<contentItems>\n"
             + "    <value>test cancel translation</value>\n"
             + "</contentItems>";
-    public static final String FILE_LIST_RESPONSE = "{\n"
+    static final String FILE_LIST_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -97,7 +97,7 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String FILE_LOCALES_STATUS_RESPONSE = "{\n"
+    static final String FILE_LOCALES_STATUS_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -115,7 +115,7 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String FILE_STATUS_RESPONSE = "{\n"
+    static final String FILE_STATUS_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -175,7 +175,7 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String IMPORT_TRANSLATIONS_RESPONSE = "{\n"
+    static final String IMPORT_TRANSLATIONS_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -185,7 +185,7 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String FILE_AUTHORIZED_LOCALES_RESPONSE = "{\n"
+    static final String FILE_AUTHORIZED_LOCALES_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
@@ -196,7 +196,7 @@ public class ResponseExamples
             + "    }\n"
             + "  }\n"
             + "}";
-    public static final String FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE = "{\n"
+    static final String FILE_AUTHORIZED_LOCALES_EXTRA_FIELDS_RESPONSE = "{\n"
             + "  \"response\": {\n"
             + "    \"code\": \"SUCCESS\",\n"
             + "    \"data\": {\n"
