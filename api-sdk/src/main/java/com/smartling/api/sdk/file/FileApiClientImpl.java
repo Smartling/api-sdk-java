@@ -102,7 +102,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     public EmptyResponse deleteFile(String fileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_FILE_DELETE, baseUrl, projectId),
+                getApiUrl(FILES_API_V2_FILE_DELETE),
                 new FileDeletePayload(fileUri)
         );
         final StringResponse response = executeRequest(httpPost);
@@ -117,7 +117,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     public EmptyResponse renameFile(String fileUri, String newFileUri) throws SmartlingApiException
     {
         final HttpPost httpPost = createJsonPostRequest(
-                getApiUrl(FILES_API_V2_FILE_RENAME, baseUrl, projectId),
+                getApiUrl(FILES_API_V2_FILE_RENAME),
                 new FileRenamePayload(fileUri, newFileUri)
         );
         final StringResponse response = executeRequest(httpPost);
@@ -131,7 +131,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     @Override
     public FileLastModified getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException
     {
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED, baseUrl, projectId), buildParamsQuery(
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LAST_MODIFIED), buildParamsQuery(
                         builder.getNameValueList().toArray(new NameValuePair[builder.getNameValueList().size()])
                 )
         )
@@ -150,7 +150,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
 
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILE, getFileParameterBuilder.getLocale(), baseUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILE, getFileParameterBuilder.getLocale()), params));
 
         final StringResponse response = executeRequest(httpGet);
         if (response.isSuccess())
@@ -175,7 +175,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         final List<NameValuePair> paramsList = getFileParameterBuilder.getNameValueList();
         final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
 
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_ORIGINAL_FILE, baseUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_ORIGINAL_FILE), params));
 
         final StringResponse response = executeRequest(httpGet);
         if (response.isSuccess())
@@ -199,7 +199,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
     {
         final String params = buildFileListParams(fileListSearchParameterBuilder);
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST, baseUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -213,7 +213,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     public FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale, baseUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_LOCALE_STATUS, locale), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -227,7 +227,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     public FileStatus getFileStatus(String fileUri) throws SmartlingApiException
     {
         final String params = buildParamsQuery(new BasicNameValuePair(FILE_URI, fileUri));
-        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS, baseUrl, projectId), params));
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILE_STATUS), params));
 
         final StringResponse response = executeRequest(httpGet);
 
@@ -371,14 +371,14 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         return nameValuePairs;
     }
 
-    private String getApiUrl(String url, String baseFileApiUrl, String projectId)
+    private String getApiUrl(String uri)
     {
-        return baseFileApiUrl + String.format(url, projectId);
+        return baseUrl + String.format(uri, projectId);
     }
 
-    private String getApiUrl(String url, String locale, String baseFileApiUrl, String projectId)
+    private String getApiUrl(String uri, String locale)
     {
-        return baseFileApiUrl + String.format(url, projectId, locale);
+        return baseUrl + String.format(uri, projectId, locale);
     }
 
     public static class Builder
