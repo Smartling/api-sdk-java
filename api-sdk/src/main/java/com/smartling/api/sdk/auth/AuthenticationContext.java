@@ -4,7 +4,7 @@ import com.smartling.web.api.v2.ResponseData;
 
 public class AuthenticationContext implements ResponseData
 {
-    private static final int TIME_TO_REFRESH = 1500;
+    private static final int TIME_TO_REFRESH = 3 * 1000;
 
     private String accessToken;
     private long parsingTime = System.currentTimeMillis();
