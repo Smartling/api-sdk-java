@@ -2,18 +2,21 @@ package com.smartling.api.sdk.auth;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class AuthenticationContextTest
 {
-
     @Test
     public void testGetAccessTokenRefreshTime() throws Exception
     {
         AuthenticationContext context = new AuthenticationContext();
         context.setParsingTime(100000);
         context.setExpiresIn(1);
-        assertEquals(99500, context.calculateAccessTokenExpireTime());
+
+        long tokenExpireTime = context.calculateAccessTokenExpireTime();
+
+        assertThat(tokenExpireTime, equalTo(98000L));
     }
 
     @Test
@@ -22,6 +25,9 @@ public class AuthenticationContextTest
         AuthenticationContext context = new AuthenticationContext();
         context.setParsingTime(100000);
         context.setRefreshExpiresIn(10);
-        assertEquals(108500, context.calculateRefreshTokenExpireTime());
+
+        long tokenExpireTime = context.calculateRefreshTokenExpireTime();
+
+        assertThat(tokenExpireTime, equalTo(107000L));
     }
 }
