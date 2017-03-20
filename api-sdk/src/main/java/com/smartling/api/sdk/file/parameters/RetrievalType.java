@@ -19,5 +19,6 @@ public enum RetrievalType
 {
     PUBLISHED,
     PENDING,
-    PSEUDO
+    PSEUDO,
+    CONTEXTMATCHINGINSTRUMENTED
 }
