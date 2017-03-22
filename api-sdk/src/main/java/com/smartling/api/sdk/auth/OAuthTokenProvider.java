@@ -58,7 +58,7 @@ public class OAuthTokenProvider implements TokenProvider
                         authenticationContext = authApiClient.authenticate(userId, userSecret).retrieveData();
                     }
 
-                    LOGGER.debug("Got a new access token which will expire at " + authenticationContext.calculateAccessTokenExpireTime());
+                    LOGGER.trace("Got a new access token which will expire at " + authenticationContext.calculateAccessTokenExpireTime());
                 }
             }
         }
