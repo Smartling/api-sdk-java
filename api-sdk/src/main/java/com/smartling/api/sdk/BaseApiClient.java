@@ -14,17 +14,15 @@ import com.smartling.web.api.v2.ResponseData;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
 public abstract class BaseApiClient
 {
     public static final String DEFAULT_BASE_URL = "https://api.smartling.com";
-
-    private static final String APPLICATION_JSON_TYPE = "application/json";
 
     private final HttpUtils httpUtils = new HttpUtils();
     private final ProxyConfiguration proxyConfiguration;
@@ -80,20 +78,12 @@ public abstract class BaseApiClient
 
     protected static HttpPost createJsonPostRequest(final String url, final Object command) throws SmartlingApiException
     {
+        final String json = new Gson().toJson(command);
+
         final HttpPost httpPost = new HttpPost(url);
-        final StringEntity stringEntity;
-        try
-        {
-            Gson gson = new Gson();
-            stringEntity = new StringEntity(gson.toJson(command));
-            stringEntity.setContentType(APPLICATION_JSON_TYPE);
-            stringEntity.setContentEncoding(CharEncoding.UTF_8);
-            httpPost.setEntity(stringEntity);
-        }
-        catch (IOException e)
-        {
-            throw new SmartlingApiException(e);
-        }
+        final StringEntity stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
+        stringEntity.setContentEncoding(CharEncoding.UTF_8);
+        httpPost.setEntity(stringEntity);
 
         return httpPost;
     }
