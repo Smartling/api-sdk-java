@@ -20,10 +20,13 @@ import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.util.DateFormatter;
 import com.smartling.api.sdk.util.HttpUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,8 +42,13 @@ import java.io.InputStream;
 import java.util.Collections;
 
 import static mockit.Deencapsulation.setField;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -122,14 +130,20 @@ public class FileApiClientImplTest
     @Test
     public void testDeleteFile() throws Exception
     {
+        String fileUriWithSpecialSymbols = "©¥†çƒ";
         when(response.getContents()).thenReturn(ResponseExamples.EMPTY_RESPONSE);
 
-        EmptyResponse apiResponse = fileApiClient.deleteFile(FILE_URI);
+        EmptyResponse apiResponse = fileApiClient.deleteFile(fileUriWithSpecialSymbols);
 
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(EXPECTED_AUTHORIZATION_HEADER, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());
-        assertEquals(HttpPost.class, request.getClass());
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/file/delete", request.getURI().toString());
+        assertEquals(HttpPost.class, request.getClass());
+        HttpPost postRequest = (HttpPost) request;
+        assertThat(postRequest.getEntity(), instanceOf(StringEntity.class));
+        assertThat(postRequest.getEntity().getContentEncoding().getValue(), equalTo("UTF-8"));
+        assertThat(postRequest.getEntity().getContentType().getValue(), startsWith("application/json"));
+        assertThat(IOUtils.toString(postRequest.getEntity().getContent(), "UTF-8"), containsString(fileUriWithSpecialSymbols));
         assertEquals(EmptyResponse.class, apiResponse.getClass());
     }
 
