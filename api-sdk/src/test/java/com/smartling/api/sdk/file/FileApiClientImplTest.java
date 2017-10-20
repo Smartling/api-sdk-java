@@ -12,6 +12,7 @@ import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFilesArchiveParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
@@ -39,6 +40,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static mockit.Deencapsulation.setField;
@@ -46,6 +48,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -220,6 +223,23 @@ public class FileApiClientImplTest
 
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/locales/" + LOCALE + "/file?fileUri=fileUri", request.getURI().toString());
+    }
+
+    @Test
+    public void testGetFilesArchive() throws Exception
+    {
+        when(response.getContentsRaw()).thenReturn("contents of a zip file".getBytes());
+
+        StringResponse r = fileApiClient.getFilesArchive(new GetFilesArchiveParameterBuilder()
+                .files(Arrays.asList("fileUri1", "fileUri2"))
+                .localeIds(Arrays.asList("locale1", "locale2"))
+        );
+
+        HttpRequestBase request = requestCaptor.getValue();
+        assertEquals("https://api.smartling.com/files-api/v2/projects/testProject/files/zip" +
+                "?fileUris%5B%5D=fileUri1&fileUris%5B%5D=fileUri2&localeIds%5B%5D=locale1&localeIds%5B%5D=locale2",
+                request.getURI().toString());
+        assertArrayEquals("contents of a zip file".getBytes(), r.getContentsRaw());
     }
 
     @Test
