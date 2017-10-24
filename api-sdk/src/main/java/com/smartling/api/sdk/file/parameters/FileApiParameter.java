@@ -39,4 +39,8 @@ public class FileApiParameter
     public static final String OVERWRITE_AUTHORIZED_LOCALES = "overwriteAuthorizedLocales";
     public static final String INCLUDE_ORIGINAL_STRINGS     = "includeOriginalStrings";
     public static final String CLIENT_LIB_ID                = "smartling.client_lib_id";
+    public static final String LOCALE_IDS                   = "localeIds";
+    public static final String FILE_URIS                    = "fileUris";
+    public static final String FILE_NAME_MODE               = "fileNameMode";
+    public static final String LOCALE_MODE                  = "localeMode";
 }

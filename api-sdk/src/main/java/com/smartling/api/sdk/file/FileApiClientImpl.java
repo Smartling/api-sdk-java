@@ -20,6 +20,7 @@ import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileRenamePayload;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFilesArchiveParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.EmptyResponse;
@@ -65,6 +66,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     private static final String FILES_API_V2_FILE_RENAME        = "/files-api/v2/projects/%s/file/rename";
     private static final String FILES_API_V2_FILE_LAST_MODIFIED = "/files-api/v2/projects/%s/file/last-modified";
     private static final String FILES_API_V2_GET_FILE           = "/files-api/v2/projects/%s/locales/%s/file";
+    private static final String FILES_API_V2_GET_FILES_ZIP      = "/files-api/v2/projects/%s/files/zip";
     private static final String FILES_API_V2_GET_ORIGINAL_FILE  = "/files-api/v2/projects/%s/file";
     private static final String FILES_API_V2_FILES_LIST         = "/files-api/v2/projects/%s/files/list";
     private static final String FILES_API_V2_FILE_LOCALE_STATUS = "/files-api/v2/projects/%s/locales/%s/file/status";
@@ -142,6 +144,33 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
                 {
                 }
         ).retrieveData();
+    }
+
+    @Override
+    public StringResponse getFilesArchive(GetFilesArchiveParameterBuilder builder) throws SmartlingApiException
+    {
+        final List<NameValuePair> paramsList = builder.getNameValueList();
+        final String params = buildParamsQuery(paramsList.toArray(new NameValuePair[paramsList.size()]));
+
+        final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_GET_FILES_ZIP), params));
+
+        final StringResponse response = executeRequest(httpGet);
+
+        if (response.isSuccess())
+        {
+            // This is a string representing the ZIP file contents
+            return response;
+        }
+        else
+        {
+            // Trying to get Smartling API exception from a json response
+            getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<EmptyResponse>>()
+                    {
+                    }
+            ).retrieveData();
+            // Throw exception if no Exception has been thrown in previously
+            throw new SmartlingApiException("Failed to get file content");
+        }
     }
 
     @Override

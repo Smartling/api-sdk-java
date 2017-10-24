@@ -9,6 +9,7 @@ import com.smartling.api.sdk.file.parameters.FileLastModifiedParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileListSearchParameterBuilder;
 import com.smartling.api.sdk.file.parameters.FileUploadParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetFileParameterBuilder;
+import com.smartling.api.sdk.file.parameters.GetFilesArchiveParameterBuilder;
 import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
@@ -33,6 +34,8 @@ public interface FileApiClient
     FileLastModified getLastModified(FileLastModifiedParameterBuilder builder) throws SmartlingApiException;
 
     StringResponse getFile(GetFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException;
+
+    StringResponse getFilesArchive(GetFilesArchiveParameterBuilder builder) throws SmartlingApiException;
 
     StringResponse getOriginalFile(GetOriginalFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException;
 
