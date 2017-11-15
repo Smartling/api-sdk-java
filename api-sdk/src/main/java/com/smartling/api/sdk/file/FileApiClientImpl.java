@@ -307,7 +307,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     private Charset getCharset(final FileUploadParameterBuilder fileUploadParameterBuilder)
     {
         final String charsetName = fileUploadParameterBuilder.getCharset();
-        return StringUtils.isEmpty(charsetName)?
+        return StringUtils.isNotEmpty(charsetName)?
                 Charset.forName(charsetName) : null;
     }
 
