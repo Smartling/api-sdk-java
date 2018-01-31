@@ -16,6 +16,7 @@
 package com.smartling.api.sdk.util;
 
 import com.smartling.api.sdk.ProxyConfiguration;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
@@ -24,18 +25,25 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import sun.security.ssl.SSLContextImpl;
+
+import javax.net.ssl.SSLContext;
+
+import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_MOCKS;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -44,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(HttpClientBuilder.class)
+@PrepareForTest({HttpClientBuilder.class, SSLContext.class})
 public class HttpProxyUtilsTest
 {
     private static final String HOST = "HOST";
@@ -54,16 +62,24 @@ public class HttpProxyUtilsTest
     private HttpProxyUtils httpProxyUtils;
     private HttpRequestBase httpRequest;
     private HttpClientBuilder httpClientBuilder;
+    private SSLContext context;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() throws NoSuchAlgorithmException {
         httpProxyUtils = spy(new HttpProxyUtils());
         httpRequest = mock(HttpRequestBase.class);
+
         httpClientBuilder = PowerMockito.mock(HttpClientBuilder.class);
         when(httpProxyUtils.getHttpClientBuilder()).thenReturn(httpClientBuilder);
 
         PowerMockito.when(httpClientBuilder.build()).then(RETURNS_MOCKS);
+
+        // create the mock to return by getInstance()
+        context = PowerMockito.mock(SSLContext.class);
+        // mock the static method getInstance() to return above created mock context
+        PowerMockito.mockStatic(SSLContext.class);
+
+        when(SSLContext.getInstance("TLSv1.2")).thenReturn(context);
     }
 
     @After
@@ -95,19 +111,17 @@ public class HttpProxyUtilsTest
     }
 
     @Test
-    public void testGetHttpClientNoProxy()
-    {
+    public void testGetHttpClientNoProxy() throws SmartlingApiException, NoSuchAlgorithmException {
         CloseableHttpClient closeableHttpClient = mock(CloseableHttpClient.class);
         PowerMockito.when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
         assertNotNull(httpProxyUtils.getHttpClient(null));
 
         verify(httpClientBuilder).build();
-        PowerMockito.verifyNoMoreInteractions(httpClientBuilder);
+        verify(httpClientBuilder).setSSLContext(context);
     }
 
     @Test
-    public void testGetHttpClientNoProxyConfig()
-    {
+    public void testGetHttpClientNoProxyConfig() throws SmartlingApiException {
         CloseableHttpClient closeableHttpClient = mock(CloseableHttpClient.class);
         PowerMockito.when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
         ProxyConfiguration proxyConfiguration = new ProxyConfiguration();
@@ -115,7 +129,7 @@ public class HttpProxyUtilsTest
         assertNotNull(httpProxyUtils.getHttpClient(proxyConfiguration));
 
         verify(httpClientBuilder).build();
-        PowerMockito.verifyNoMoreInteractions(httpClientBuilder);
+        verify(httpClientBuilder).setSSLContext(context);
     }
 
     @Test

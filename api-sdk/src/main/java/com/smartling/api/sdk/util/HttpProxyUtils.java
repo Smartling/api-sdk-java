@@ -15,6 +15,8 @@
  */
 package com.smartling.api.sdk.util;
 
+import com.smartling.api.sdk.ProxyConfiguration;
+import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -26,11 +28,12 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import com.smartling.api.sdk.ProxyConfiguration;
+import javax.net.ssl.SSLContext;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 class HttpProxyUtils
 {
-
     HttpProxyUtils()
     {
 
@@ -52,13 +55,33 @@ class HttpProxyUtils
         return null;
     }
 
+    private SSLContext getSSLConfig() throws SmartlingApiException {
+        SSLContext sslContext = null;
+
+        try {
+            sslContext = SSLContext.getInstance("TLSv1.2");
+            initSSLContext(sslContext);
+        } catch (NoSuchAlgorithmException e) {
+            throw new SmartlingApiException("Error while creating HTTPClient, can not initialize TLS version", e);
+        }
+
+        return sslContext;
+    }
+
+    private void initSSLContext(SSLContext sslContext) throws SmartlingApiException {
+        try {
+            sslContext.init(null, null, null);
+        } catch (KeyManagementException e) {
+            throw new SmartlingApiException("Error while creating HTTPClient", e);
+        }
+    }
+
     /**
      * Get an HttpClient given a proxy config if any
      * @param proxyConfiguration configuration of proxy to use
      * @return org.apache.http.impl.client.CloseableHttpClient
      */
-    CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration)
-    {
+    CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration) throws SmartlingApiException {
         HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
 
         if (proxyAuthenticationRequired(proxyConfiguration))
@@ -70,6 +93,8 @@ class HttpProxyUtils
 
             httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
+
+        httpClientBuilder.setSSLContext(getSSLConfig());
 
         return httpClientBuilder.build();
     }
