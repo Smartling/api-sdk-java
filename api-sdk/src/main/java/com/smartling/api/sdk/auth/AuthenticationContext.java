@@ -88,4 +88,9 @@ public class AuthenticationContext implements ResponseData
     {
         return parsingTime + refreshExpiresIn * 1000 - TIME_TO_REFRESH;
     }
+
+    public long getParsingTime()
+    {
+        return parsingTime;
+    }
 }
