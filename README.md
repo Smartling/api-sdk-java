@@ -24,7 +24,7 @@ Note: Integration tests will fail without a valid Smartling account, however as 
 $ mvn verify -DuserId=<smartling user id> -DuserSecret=<smartling user secret> -DprojectId=<smartling project>
 ```
 
-See https://docs.smartling.com/display/docs/Files+API for more details.
+See https://api-reference.smartling.com/#tag/Files for more details.
 
 
 Versioning
