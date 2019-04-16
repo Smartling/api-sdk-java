@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -32,27 +33,51 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
-class HttpProxyUtils
+class HttpClientFactory
 {
-    HttpProxyUtils()
+    HttpClientFactory()
     {
 
     }
 
     /**
-     * Get a request config given the applicable request and proxy config if any
-     * @param httpRequest request
+     * Get an HttpClient given a proxy config if any
      * @param proxyConfiguration configuration of proxy to use
-     * @return org.apache.http.client.config.RequestConfig
+     * @param httpClientConfiguration configuration of http transport
+     * @return org.apache.http.impl.client.CloseableHttpClient
      */
-    RequestConfig getProxyRequestConfig(HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration)
-    {
+    CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration, final HttpClientConfiguration httpClientConfiguration) throws SmartlingApiException {
+        HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
+
         if (hasActiveProxyConfiguration(proxyConfiguration))
         {
-            HttpHost proxyHttpHost = new HttpHost(proxyConfiguration.getHost(), proxyConfiguration.getPort());
-            return RequestConfig.custom().setProxy(proxyHttpHost).build();
+            HttpHost proxyHost = new HttpHost(proxyConfiguration.getHost(), proxyConfiguration.getPort());
+            httpClientBuilder.setProxy(proxyHost);
+
+            if (proxyAuthenticationRequired(proxyConfiguration))
+            {
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(
+                        new AuthScope(proxyConfiguration.getHost(), proxyConfiguration.getPort()),
+                        new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
+
+                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
         }
-        return null;
+
+        httpClientBuilder.setSSLContext(getSSLConfig());
+
+        if (httpConfigurationRequired(httpClientConfiguration))
+        {
+            final RequestConfig defaultRequestConfig = RequestConfig.custom()
+                    .setSocketTimeout(httpClientConfiguration.getSocketTimeout())
+                    .setConnectTimeout(httpClientConfiguration.getConnectionTimeout())
+                    .setConnectionRequestTimeout(httpClientConfiguration.getConnectionRequestTimeout())
+                    .build();
+            httpClientBuilder.setDefaultRequestConfig(defaultRequestConfig);
+        }
+
+        return httpClientBuilder.build();
     }
 
     private SSLContext getSSLConfig() throws SmartlingApiException {
@@ -76,27 +101,9 @@ class HttpProxyUtils
         }
     }
 
-    /**
-     * Get an HttpClient given a proxy config if any
-     * @param proxyConfiguration configuration of proxy to use
-     * @return org.apache.http.impl.client.CloseableHttpClient
-     */
-    CloseableHttpClient getHttpClient(final ProxyConfiguration proxyConfiguration) throws SmartlingApiException {
-        HttpClientBuilder httpClientBuilder = getHttpClientBuilder();
-
-        if (proxyAuthenticationRequired(proxyConfiguration))
-        {
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(
-                new AuthScope(proxyConfiguration.getHost(), proxyConfiguration.getPort()),
-                new UsernamePasswordCredentials(proxyConfiguration.getUsername(), proxyConfiguration.getPassword()));
-
-            httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-        }
-
-        httpClientBuilder.setSSLContext(getSSLConfig());
-
-        return httpClientBuilder.build();
+    private boolean httpConfigurationRequired(HttpClientConfiguration httpClientConfiguration)
+    {
+        return httpClientConfiguration != null;
     }
 
     HttpClientBuilder getHttpClientBuilder()

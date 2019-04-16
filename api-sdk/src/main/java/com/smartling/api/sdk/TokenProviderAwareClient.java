@@ -13,9 +13,10 @@ public abstract class TokenProviderAwareClient extends BaseApiClient
 {
     private final TokenProvider tokenProvider;
 
-    protected TokenProviderAwareClient(final String baseUrl, final ProxyConfiguration proxyConfiguration, TokenProvider tokenProvider)
+    protected TokenProviderAwareClient(final String baseUrl, final ProxyConfiguration proxyConfiguration, TokenProvider tokenProvider,
+                                       final HttpClientConfiguration httpClientConfiguration)
     {
-        super(baseUrl, proxyConfiguration);
+        super(baseUrl, proxyConfiguration, httpClientConfiguration);
         this.tokenProvider = Objects.requireNonNull(tokenProvider, "Token Provider can not be null");
     }
 

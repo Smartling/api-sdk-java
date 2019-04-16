@@ -26,23 +26,25 @@ public abstract class BaseApiClient
 
     private final HttpUtils httpUtils = new HttpUtils();
     private final ProxyConfiguration proxyConfiguration;
+    private final HttpClientConfiguration httpClientConfiguration;
 
     protected final String baseUrl;
 
     protected BaseApiClient()
     {
-        this(DEFAULT_BASE_URL, null);
+        this(DEFAULT_BASE_URL, null, null);
     }
 
-    protected BaseApiClient(final String baseUrl, final ProxyConfiguration proxyConfiguration)
+    protected BaseApiClient(final String baseUrl, final ProxyConfiguration proxyConfiguration, final HttpClientConfiguration httpClientConfiguration)
     {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL can not be null");
         this.proxyConfiguration = proxyConfiguration;
+        this.httpClientConfiguration = httpClientConfiguration;
     }
 
     protected StringResponse executeRequest(final HttpRequestBase request) throws SmartlingApiException
     {
-        return httpUtils.executeHttpCall(request, proxyConfiguration);
+        return httpUtils.executeHttpCall(request, proxyConfiguration, httpClientConfiguration);
     }
 
     protected static <T extends ResponseData> Response<T> getApiV2Response(final String response, final TypeToken<ApiV2ResponseWrapper<T>> responseType) throws SmartlingApiException

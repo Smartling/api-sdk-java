@@ -2,6 +2,7 @@ package com.smartling.api.sdk.auth;
 
 import com.google.gson.reflect.TypeToken;
 import com.smartling.api.sdk.BaseApiClient;
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
@@ -30,7 +31,12 @@ public class AuthApiClient extends BaseApiClient
 
     public AuthApiClient(final ProxyConfiguration proxyConfiguration, final String baseUrl)
     {
-        super(baseUrl, proxyConfiguration);
+        super(baseUrl, proxyConfiguration, null);
+    }
+
+    public AuthApiClient(final ProxyConfiguration proxyConfiguration, final HttpClientConfiguration httpClientConfiguration, final String baseUrl)
+    {
+        super(baseUrl, proxyConfiguration, httpClientConfiguration);
     }
 
     public Response<AuthenticationContext> authenticate(String userIdentifier, String userSecret)
