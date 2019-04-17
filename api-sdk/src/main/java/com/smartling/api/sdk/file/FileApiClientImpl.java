@@ -470,7 +470,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         {
             TokenProvider tokenProvider = this.tokenProvider;
             if (tokenProvider == null && userId != null && userSecret != null) {
-                tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, baseSmartlingApiUrl));
+                tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, httpClientConfiguration, baseSmartlingApiUrl));
             }
 
             return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl, httpClientConfiguration);

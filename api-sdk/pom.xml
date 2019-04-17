@@ -260,7 +260,7 @@
             <version>3.2.1</version>
         </dependency>
         <dependency>
-            <groupId>com.smartling</groupId>
+            <groupId>com.smartling.api.commons</groupId>
             <artifactId>public-api-commons</artifactId>
             <version>1.4.20-RELEASE</version>
         </dependency>
