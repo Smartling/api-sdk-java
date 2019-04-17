@@ -262,7 +262,7 @@
         <dependency>
             <groupId>com.smartling.api.commons</groupId>
             <artifactId>public-api-commons</artifactId>
-            <version>1.4.20-RELEASE</version>
+            <version>1.3.0-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
