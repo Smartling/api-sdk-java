@@ -9,7 +9,7 @@
 
     <groupId>com.smartling</groupId>
     <artifactId>smartling-api-sdk</artifactId>
-    <version>4.0.24-SNAPSHOT</version>
+    <version>4.0.24</version>
     <packaging>jar</packaging>
     <name>smartling-api-sdk</name>
     <url>http://smartling.com</url>
