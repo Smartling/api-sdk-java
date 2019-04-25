@@ -132,6 +132,7 @@ public class FileApiClientIntegrationTest
     {
         FileUploadParameterBuilder parameterBuilder = new FileUploadParameterBuilder(JAVA_PROPERTIES, FILE_URI)
                 .charset(CHARSET)
+                .directives(Collections.singletonMap("smartling.namespace", "test-namespace"))
                 .localeIdsToAuthorize(Collections.singletonList("es"))
                 .overwriteAuthorizedLocales(true);
         fileApiClient.uploadFile(fileToUpload, parameterBuilder);
