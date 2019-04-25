@@ -24,7 +24,7 @@ public class RefreshCommand
         if (o == null || getClass() != o.getClass())
             return false;
         RefreshCommand that = (RefreshCommand) o;
-        return refreshToken.equals(that.refreshToken);
+        return Objects.equals(refreshToken, that.refreshToken);
     }
 
     @Override
