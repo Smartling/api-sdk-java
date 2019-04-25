@@ -51,7 +51,7 @@ public class AuthApiClient extends BaseApiClient
     {
         final HttpPost httpPost = createJsonPostRequest(
                 getApiUrl(AUTH_API_V2_REFRESH, baseUrl),
-                refreshKey
+                new RefreshCommand(refreshKey)
         );
 
         final StringResponse response = executeRequest(httpPost);
