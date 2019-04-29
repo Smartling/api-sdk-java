@@ -44,6 +44,7 @@ public enum FileType
     STRINGSDICT("application/xml", true),           // iOS/OSX resources in dictionary format
     MADCAP("application/octet-stream", false),      // MADCAP file
     SRT("text/plain", false);                       // SubRip Text Format
+    MARKDOWN("text/markdown", true);                // Markdown text format
 
     private final String identifier;
     private final String mimeType;
