@@ -43,7 +43,8 @@ public enum FileType
     PRES("text/plain", true),                       // Pres resources
     STRINGSDICT("application/xml", true),           // iOS/OSX resources in dictionary format
     MADCAP("application/octet-stream", false),      // MADCAP file
-    SRT("text/plain", false);                       // SubRip Text Format
+    SRT("text/plain", false),                       // SubRip Text Format
+    MARKDOWN("text/markdown", true);                // Markdown Text Format
 
     private final String identifier;
     private final String mimeType;
