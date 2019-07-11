@@ -47,7 +47,11 @@ public enum FileType
     STRINGSDICT("application/xml", true),           // iOS/OSX resources in dictionary format
     MADCAP("application/octet-stream", false),      // MADCAP file
     SRT("text/plain", false),                       // SubRip Text Format
-    MARKDOWN("text/markdown", true);                // Markdown Text Format
+    MARKDOWN("text/markdown", true),                // Markdown Text Format
+    PHP_RESOURCE("text/plain", false),              // PHP resources
+    TMX("application/xml", false),                  // TMX translation memory file format
+    XLIFF_CAT("application/xml", false),            // XLIFF for offline CAT integration
+    DITA("application/xml", false);                 // DITA file format
 
     private final String identifier;
     private final String mimeType;
