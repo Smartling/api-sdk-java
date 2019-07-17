@@ -17,6 +17,9 @@ package com.smartling.api.sdk.file;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum FileType
 {
     JAVA_PROPERTIES("text/plain", true),            // Java resources
@@ -44,13 +47,29 @@ public enum FileType
     STRINGSDICT("application/xml", true),           // iOS/OSX resources in dictionary format
     MADCAP("application/octet-stream", false),      // MADCAP file
     SRT("text/plain", false),                       // SubRip Text Format
-    MARKDOWN("text/markdown", true);                // Markdown Text Format
+    MARKDOWN("text/markdown", true),                // Markdown Text Format
+    PHP_RESOURCE("text/plain", false),              // PHP resources
+    TMX("application/xml", false),                  // TMX translation memory file format
+    XLIFF_CAT("application/xml", false),            // XLIFF for offline CAT integration
+    DITA("application/xml", false);                 // DITA file format
 
     private final String identifier;
     private final String mimeType;
     private final boolean isTextFormat;
 
-    private static String createIdentifier(String s)
+    // Lookup map
+    public final static Map<String, FileType> BY_NAME_LOOKUP = new HashMap<>();
+
+    static
+    {
+        for (final FileType value : FileType.values())
+        {
+            BY_NAME_LOOKUP.put(value.identifier.toLowerCase(), value);
+            BY_NAME_LOOKUP.put(value.name().toLowerCase(), value);
+        }
+    }
+
+    private static String toLowerCamel(String s)
     {
         StringBuilder buf = new StringBuilder();
         String[] parts = s.split("_");
@@ -61,9 +80,9 @@ public enum FileType
         return buf.toString();
     }
 
-    private FileType(final String mimeType, final boolean isTextFormat)
+    FileType(final String mimeType, final boolean isTextFormat)
     {
-        this.identifier = createIdentifier(name());
+        this.identifier = toLowerCamel(name());
         this.mimeType = mimeType;
         this.isTextFormat = isTextFormat;
     }
@@ -85,12 +104,6 @@ public enum FileType
 
     public static FileType lookup(final String fileTypeString)
     {
-        for (final FileType fileType : FileType.values())
-        {
-            if (fileType.identifier.equalsIgnoreCase(fileTypeString))
-                return fileType;
-        }
-
-        return null;
+        return BY_NAME_LOOKUP.get(StringUtils.lowerCase(fileTypeString));
     }
 }
