@@ -1,5 +1,6 @@
 package com.smartling.api.sdk.file;
 
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.auth.AuthenticationToken;
 import com.smartling.api.sdk.auth.TokenProvider;
@@ -27,7 +28,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +52,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,16 +85,19 @@ public class FileApiClientImplTest
     private TokenProvider      tokenProvider;
     @Mock
     private ProxyConfiguration proxyConfiguration;
+    @Mock
+    private HttpClientConfiguration httpClientConfiguration;
 
     @Before
     public void setup() throws SmartlingApiException
     {
         when(tokenProvider.getAuthenticationToken()).thenReturn(new AuthenticationToken("BEARER", "<token>"));
-        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration), eq(httpClientConfiguration))).thenReturn(response);
         when(response.isSuccess()).thenReturn(true);
 
         fileApiClient = new FileApiClientImpl.Builder(PROJECT_ID)
                 .proxyConfiguration(proxyConfiguration)
+                .httpClientConfiguration(httpClientConfiguration)
                 .withCustomTokenProvider(tokenProvider)
                 .build();
         setField(fileApiClient, "httpUtils", httpUtils);

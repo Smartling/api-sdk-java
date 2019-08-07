@@ -1,6 +1,7 @@
 package com.smartling.api.sdk.file;
 
 import com.google.gson.reflect.TypeToken;
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.TokenProviderAwareClient;
 import com.smartling.api.sdk.auth.AuthApiClient;
@@ -79,9 +80,10 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
 
     private final String projectId;
 
-    private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration, final String baseUrl)
+    private FileApiClientImpl(final TokenProvider tokenProvider, final String projectId, final ProxyConfiguration proxyConfiguration,
+                              final String baseUrl, final HttpClientConfiguration httpClientConfiguration)
     {
-        super(baseUrl, proxyConfiguration, tokenProvider);
+        super(baseUrl, proxyConfiguration, tokenProvider, httpClientConfiguration);
         this.projectId = Objects.requireNonNull(projectId, "Project ID can not be null");
     }
 
@@ -419,6 +421,7 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         private String userId;
         private String userSecret;
         private ProxyConfiguration proxyConfiguration;
+        private HttpClientConfiguration httpClientConfiguration;
 
         public Builder(String projectId)
         {
@@ -434,6 +437,12 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         public Builder proxyConfiguration(ProxyConfiguration proxyConfiguration)
         {
             this.proxyConfiguration = proxyConfiguration;
+            return this;
+        }
+
+        public Builder httpClientConfiguration(HttpClientConfiguration httpClientConfiguration)
+        {
+            this.httpClientConfiguration = httpClientConfiguration;
             return this;
         }
 
@@ -461,10 +470,10 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
         {
             TokenProvider tokenProvider = this.tokenProvider;
             if (tokenProvider == null && userId != null && userSecret != null) {
-                tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, baseSmartlingApiUrl));
+                tokenProvider = new OAuthTokenProvider(userId, userSecret, new AuthApiClient(proxyConfiguration, httpClientConfiguration, baseSmartlingApiUrl));
             }
 
-            return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl);
+            return new FileApiClientImpl(tokenProvider, projectId, proxyConfiguration, baseSmartlingApiUrl, httpClientConfiguration);
         }
     }
 }

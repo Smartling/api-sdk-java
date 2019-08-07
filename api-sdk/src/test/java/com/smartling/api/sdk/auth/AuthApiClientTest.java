@@ -1,5 +1,6 @@
 package com.smartling.api.sdk.auth;
 
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
@@ -15,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import static mockit.Deencapsulation.setField;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +55,7 @@ public class AuthApiClientTest
         proxyConfiguration = mock(ProxyConfiguration.class);
         authApiClient = new AuthApiClient(proxyConfiguration, "https://api.smartling.com");
         setField(authApiClient, "httpUtils", httpUtils);
-        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration))).thenReturn(response);
+        when(httpUtils.executeHttpCall(requestCaptor.capture(), eq(proxyConfiguration), isNull(HttpClientConfiguration.class))).thenReturn(response);
     }
 
     @Test

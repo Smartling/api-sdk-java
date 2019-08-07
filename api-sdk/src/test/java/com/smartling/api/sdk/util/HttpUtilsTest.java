@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
@@ -22,8 +23,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,22 +36,20 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class HttpUtilsTest
 {
     private HttpUtils httpUtils;
-    private HttpProxyUtils httpProxyUtils;
+    private HttpClientFactory httpClientFactory;
 
     private HttpRequestBase httpRequest;
     private ProxyConfiguration proxyConfiguration;
+    private HttpClientConfiguration httpClientConfiguration;
     private CloseableHttpResponse httpResponse;
-    private HttpEntity httpEntity;
     private StatusLine statusLine;
 
     private static final String TEST_RESPONSE = "{\"response\":{\"data\":null,\"code\":\"VALIDATION_ERROR\",\"messages\":[\"apiKey parameter is required\"]}}";
@@ -67,12 +64,14 @@ public class HttpUtilsTest
     public void setUp() throws IllegalStateException, IOException
     {
         httpUtils = new HttpUtils();
-        httpUtils.setHttpProxyUtils(httpProxyUtils = mock(HttpProxyUtils.class));
+        httpUtils.setHttpClientFactory(httpClientFactory = mock(HttpClientFactory.class));
 
         httpRequest = mock(HttpRequestBase.class);
         proxyConfiguration = new ProxyConfiguration();
+        httpClientConfiguration = new HttpClientConfiguration();
+
         httpResponse = mock(CloseableHttpResponse.class);
-        httpEntity = mock(HttpEntity.class);
+        HttpEntity httpEntity = mock(HttpEntity.class);
         statusLine = mock(StatusLine.class);
 
         InputStream responseStream = new ByteArrayInputStream(TEST_RESPONSE.getBytes(StandardCharsets.UTF_8));
@@ -82,60 +81,37 @@ public class HttpUtilsTest
     }
     
     @Test
-    public void testExecuteHttpCall() throws SmartlingApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxy() throws SmartlingApiException, IOException
     {
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
-        
+        setSystemProxy(HttpUtils.SCHEME_HTTP, "", "", "", "");
+        setSystemProxy(HttpUtils.SCHEME_HTTPS, "", "", "", "");
+
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        when(httpProxyUtils.getHttpClient(proxyConfiguration)).thenReturn(httpClient);
-        when(httpProxyUtils.getProxyRequestConfig(httpRequest, proxyConfiguration)).thenReturn(null);
+        when(httpClientFactory.getHttpClient(proxyConfiguration, httpClientConfiguration)).thenReturn(httpClient);
         when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
 
-        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
+        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration, httpClientConfiguration);
 
         assertEquals(TEST_RESPONSE, response.getContents());
         verify(httpRequest).addHeader(HttpHeaders.USER_AGENT, USER_AGENT);
-        verify(httpRequest, never()).setConfig(any(RequestConfig.class));
     }
 
     @Test
-    public void testExecuteHttpCallWithProxy() throws SmartlingApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxySystemHttp() throws SmartlingApiException, IOException
     {
-        RequestConfig requestConfig = mock(RequestConfig.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 
-        CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        when(httpProxyUtils.getHttpClient(any(ProxyConfiguration.class))).thenReturn(httpClient);
-        when(httpProxyUtils.getProxyRequestConfig(eq(httpRequest), any(ProxyConfiguration.class))).thenReturn(requestConfig);
-        when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
-
-        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
-
-        assertEquals(TEST_RESPONSE, response.getContents());
-        verify(httpRequest).setConfig(requestConfig);
-    }
-
-    @Test
-    public void testExecuteHttpCallWithProxySystemHttp() throws SmartlingApiException, ClientProtocolException, IOException
-    {
-        RequestConfig requestConfig = mock(RequestConfig.class);
-        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
-
-        System.setProperty(HttpUtils.SCHEME_HTTP + HttpUtils.PROPERTY_SUFFIX_PROXY_HOST, HOST);
-        System.setProperty(HttpUtils.SCHEME_HTTP + HttpUtils.PROPERTY_SUFFIX_PROXY_PORT, PORT);
-        System.setProperty(HttpUtils.SCHEME_HTTP + HttpUtils.PROPERTY_SUFFIX_PROXY_USERNAME, USERNAME);
-        System.setProperty(HttpUtils.SCHEME_HTTP + HttpUtils.PROPERTY_SUFFIX_PROXY_PASSWORD, PASSWORD);
+        setSystemProxy(HttpUtils.SCHEME_HTTP, HOST, PORT, USERNAME, PASSWORD);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         ArgumentCaptor<ProxyConfiguration> proxyConfigurationCaptor = ArgumentCaptor.forClass(ProxyConfiguration.class);
-        when(httpProxyUtils.getHttpClient(proxyConfigurationCaptor.capture())).thenReturn(httpClient);
-        when(httpProxyUtils.getProxyRequestConfig(eq(httpRequest), any(ProxyConfiguration.class))).thenReturn(requestConfig);
+        when(httpClientFactory.getHttpClient(proxyConfigurationCaptor.capture(), eq(httpClientConfiguration))).thenReturn(httpClient);
         when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
 
-        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
+        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration, httpClientConfiguration);
 
         assertEquals(TEST_RESPONSE, response.getContents());
-        verify(httpRequest).setConfig(requestConfig);
 
         ProxyConfiguration proxyConfiguration = proxyConfigurationCaptor.getValue();
         assertEquals(HOST, proxyConfiguration.getHost());
@@ -145,31 +121,33 @@ public class HttpUtilsTest
     }
 
     @Test
-    public void testExecuteHttpCallWithProxySystemHttps() throws SmartlingApiException, ClientProtocolException, IOException
+    public void testExecuteHttpCallWithProxySystemHttps() throws SmartlingApiException, IOException
     {
-        RequestConfig requestConfig = mock(RequestConfig.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 
-        System.setProperty(HttpUtils.SCHEME_HTTPS + HttpUtils.PROPERTY_SUFFIX_PROXY_HOST, HOST);
-        System.setProperty(HttpUtils.SCHEME_HTTPS + HttpUtils.PROPERTY_SUFFIX_PROXY_PORT, PORT);
-        System.setProperty(HttpUtils.SCHEME_HTTPS + HttpUtils.PROPERTY_SUFFIX_PROXY_USERNAME, USERNAME);
-        System.setProperty(HttpUtils.SCHEME_HTTPS + HttpUtils.PROPERTY_SUFFIX_PROXY_PASSWORD, PASSWORD);
+        setSystemProxy(HttpUtils.SCHEME_HTTPS, HOST, PORT, USERNAME, PASSWORD);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         ArgumentCaptor<ProxyConfiguration> proxyConfigurationCaptor = ArgumentCaptor.forClass(ProxyConfiguration.class);
-        when(httpProxyUtils.getHttpClient(proxyConfigurationCaptor.capture())).thenReturn(httpClient);
-        when(httpProxyUtils.getProxyRequestConfig(eq(httpRequest), any(ProxyConfiguration.class))).thenReturn(requestConfig);
+        when(httpClientFactory.getHttpClient(proxyConfigurationCaptor.capture(), eq(httpClientConfiguration))).thenReturn(httpClient);
         when(httpClient.execute(httpRequest)).thenReturn(httpResponse);
 
-        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration);
+        StringResponse response = httpUtils.executeHttpCall(httpRequest, proxyConfiguration, httpClientConfiguration);
 
         assertEquals(TEST_RESPONSE, response.getContents());
-        verify(httpRequest).setConfig(requestConfig);
 
         ProxyConfiguration proxyConfiguration = proxyConfigurationCaptor.getValue();
         assertEquals(HOST, proxyConfiguration.getHost());
         assertEquals(Integer.parseInt(PORT), proxyConfiguration.getPort());
         assertEquals(USERNAME, proxyConfiguration.getUsername());
         assertEquals(PASSWORD, proxyConfiguration.getPassword());
+    }
+
+    private void setSystemProxy(String protocol, String host, String port, String userName, String password)
+    {
+        System.setProperty(protocol + HttpUtils.PROPERTY_SUFFIX_PROXY_HOST, host);
+        System.setProperty(protocol + HttpUtils.PROPERTY_SUFFIX_PROXY_PORT, port);
+        System.setProperty(protocol + HttpUtils.PROPERTY_SUFFIX_PROXY_USERNAME, userName);
+        System.setProperty(protocol + HttpUtils.PROPERTY_SUFFIX_PROXY_PASSWORD, password);
     }
 }

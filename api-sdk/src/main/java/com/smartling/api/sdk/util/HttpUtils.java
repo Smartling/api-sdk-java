@@ -15,6 +15,7 @@
  */
 package com.smartling.api.sdk.util;
 
+import com.smartling.api.sdk.HttpClientConfiguration;
 import com.smartling.api.sdk.LibNameVersionHolder;
 import com.smartling.api.sdk.ProxyConfiguration;
 import com.smartling.api.sdk.dto.file.StringResponse;
@@ -29,7 +30,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -57,16 +57,16 @@ public class HttpUtils
     private static final ThreadLocal<String> requestId = new ThreadLocal<>();
     private static final ThreadLocal<ResponseDetails> responseDetails = new ThreadLocal<>();
 
-    private HttpProxyUtils httpProxyUtils;
+    private HttpClientFactory httpClientFactory;
 
-    void setHttpProxyUtils(HttpProxyUtils httpProxyUtils)
+    void setHttpClientFactory(HttpClientFactory httpClientFactory)
     {
-        this.httpProxyUtils = httpProxyUtils;
+        this.httpClientFactory = httpClientFactory;
     }
 
     public HttpUtils()
     {
-        this.httpProxyUtils = new HttpProxyUtils();
+        this.httpClientFactory = new HttpClientFactory();
     }
 
     public static ThreadLocal<String> getRequestId()
@@ -83,10 +83,12 @@ public class HttpUtils
      * Method for executing http calls and retrieving string response.
      * @param httpRequest request for execute
      * @param proxyConfiguration proxy configuration, if it is set to {@code NULL} proxy settings will be setup from system properties. Otherwise switched off.
+     * @param httpClientConfiguration http transport configuration, if it is set to {@code NULL} defaults will be used
      * @return {@link StringResponse} the contents of the requested file along with the encoding of the file.
      * @throws com.smartling.api.sdk.exceptions.SmartlingApiException if an exception has occurred or non success is returned from the Smartling Translation API.
      */
-    public StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration) throws SmartlingApiException
+    public StringResponse executeHttpCall(final HttpRequestBase httpRequest, final ProxyConfiguration proxyConfiguration,
+                                          final HttpClientConfiguration httpClientConfiguration) throws SmartlingApiException
     {
         CloseableHttpClient httpClient = null;
         try
@@ -98,14 +100,8 @@ public class HttpUtils
 
             logProxyConfiguration(newProxyConfiguration);
 
-            httpClient = httpProxyUtils.getHttpClient(newProxyConfiguration);
+            httpClient = httpClientFactory.getHttpClient(newProxyConfiguration, httpClientConfiguration);
 
-            RequestConfig proxyRequestConfig = httpProxyUtils.getProxyRequestConfig(httpRequest, newProxyConfiguration);
-
-            if (proxyRequestConfig != null)
-            {
-                httpRequest.setConfig(proxyRequestConfig);
-            }
             addUserAgentHeader(httpRequest);
             final HttpResponse response = httpClient.execute(httpRequest);
 
