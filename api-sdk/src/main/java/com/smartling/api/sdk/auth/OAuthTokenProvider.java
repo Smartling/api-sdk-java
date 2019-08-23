@@ -3,6 +3,8 @@ package com.smartling.api.sdk.auth;
 import com.smartling.api.sdk.exceptions.SmartlingApiException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
@@ -47,6 +49,7 @@ public class OAuthTokenProvider implements TokenProvider
                         try
                         {
                             authenticationContext = authApiClient.refresh(refreshToken).retrieveData();
+                            logAuthStats("Refreshed");
                         } catch (SmartlingApiException ex){
                             authenticationContext = null;
                             logRefreshTokenDetails(refreshToken);
@@ -56,6 +59,7 @@ public class OAuthTokenProvider implements TokenProvider
                     else
                     {
                         authenticationContext = authApiClient.authenticate(userId, userSecret).retrieveData();
+                        logAuthStats("Authenticated");
                     }
 
                     LOGGER.trace("Got a new access token which will expire at " + authenticationContext.calculateAccessTokenExpireTime());
@@ -88,6 +92,46 @@ public class OAuthTokenProvider implements TokenProvider
         catch (InvalidJwtException e)
         {
             LOGGER.warn("Failed to parse refresh token:", e);
+        }
+    }
+
+    public void logAuthStats(String message)
+    {
+        if(LOGGER.isTraceEnabled())
+        {
+            JwtConsumer consumer = new JwtConsumerBuilder()
+                    .setSkipAllDefaultValidators()
+                    .setRequireExpirationTime()
+                    .setSkipSignatureVerification()
+                    .build();
+            String refreshToken = authenticationContext.getRefreshToken();
+            String accessToken = authenticationContext.getAccessToken();
+
+            try
+            {
+                JwtClaims jwtAccess = consumer.process(accessToken).getJwtClaims();
+                JwtClaims jwtRefresh = consumer.process(refreshToken).getJwtClaims();
+                LOGGER.warn(String.format("%s. Refresh token info: issuer=\"%s\", issuedAt=\"%s\", expirationDate=\"%s\", notBefore=\"%s\", " +
+                                "Access token info: issuer=\"%s\", issuedAt=\"%s\", expirationDate=\"%s\", notBefore=\"%s\", " +
+                                "authContext: expiresIn=\"%s\", refreshExpiresIn=\"%s\", parsingTime=\"%s\"",
+                        message,
+                        jwtRefresh.getIssuer(),
+                        jwtRefresh.getIssuedAt(),
+                        jwtRefresh.getExpirationTime(),
+                        jwtRefresh.getNotBefore(),
+                        jwtAccess.getIssuer(),
+                        jwtAccess.getIssuedAt(),
+                        jwtAccess.getExpirationTime(),
+                        jwtAccess.getNotBefore(),
+                        authenticationContext.getExpiresIn(),
+                        authenticationContext.getRefreshExpiresIn(),
+                        authenticationContext.getParsingTime()
+                ));
+            }
+            catch (InvalidJwtException | MalformedClaimException e)
+            {
+                LOGGER.warn("Failed to parse refresh token:", e);
+            }
         }
     }
 }
