@@ -332,6 +332,9 @@ public class FileApiClientImplTest
         assertEquals(5, apiResponse.getTotalCount());
         assertEquals(3, apiResponse.getTotalWordCount());
         assertEquals(1, apiResponse.getTotalStringCount());
+        assertEquals("{translate_mode=custom, variants_enabled=true, source_key_paths=/{*}, file_uri_as_namespace=true, placeholder_format_custom={.+?}, "
+                        + "translate_paths=/*, string_format=NONE, namespace=/some/file/path.json, client_lib_id=client-lib-1.0}",
+                apiResponse.getDirectives().toString());
         assertEquals(
                 "FileStatusItem[localeId=be-BY,authorizedStringCount=0,authorizedWordCount=0,completedStringCount=0,completedWordCount=0,excludedStringCount=0,"
                         + "excludedWordCount=0]",

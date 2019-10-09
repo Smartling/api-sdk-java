@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
+import java.util.Map;
 
 public class FileStatus implements ResponseData
 {
@@ -14,6 +15,7 @@ public class FileStatus implements ResponseData
     private int    totalStringCount;
     private int    totalWordCount;
     private int    totalCount;
+    private Map<String, String>  directives;
     private List<FileStatusItem> items;
 
     public String getFileUri()
@@ -51,6 +53,11 @@ public class FileStatus implements ResponseData
         return items;
     }
 
+    public Map<String, String> getDirectives()
+    {
+        return directives;
+    }
+
     @Override
     public String toString()
     {
@@ -61,6 +68,7 @@ public class FileStatus implements ResponseData
                 .append("lastUploaded", getLastUploaded())
                 .append("fileType", getFileType())
                 .append("totalCount", getTotalCount())
+                .append("directives", getDirectives())
                 .append("items", getItems())
                 .toString();
     }

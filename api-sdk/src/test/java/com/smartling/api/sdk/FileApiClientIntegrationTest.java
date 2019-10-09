@@ -72,6 +72,7 @@ public class FileApiClientIntegrationTest
         assertEquals("javaProperties", status.getFileType());
         assertEquals(1, status.getTotalStringCount());
         assertEquals(1, status.getTotalWordCount());
+        assertEquals("test-namespace", status.getDirectives().get("namespace"));
 
         FileLocaleStatus localeStatus = fileApiClient.getFileLocaleStatus(FILE_URI, TEST_LOCALE_CODE);
         assertEquals(FILE_URI, localeStatus.getFileUri());
