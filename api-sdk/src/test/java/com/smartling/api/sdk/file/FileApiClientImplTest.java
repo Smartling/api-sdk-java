@@ -18,6 +18,7 @@ import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.util.DateFormatter;
@@ -288,7 +289,7 @@ public class FileApiClientImplTest
     {
         when(response.getContents()).thenReturn(ResponseExamples.FILE_LIST_RESPONSE);
 
-        FileList apiResponse = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
+        FileList<FileListItem> apiResponse = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
 
         HttpRequestBase request = requestCaptor.getValue();
         assertEquals(EXPECTED_AUTHORIZATION_HEADER, request.getFirstHeader(HttpHeaders.AUTHORIZATION).getValue());

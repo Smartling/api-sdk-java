@@ -14,6 +14,7 @@ import com.smartling.api.sdk.file.parameters.GetOriginalFileParameterBuilder;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
 
@@ -39,7 +40,7 @@ public interface FileApiClient
 
     StringResponse getOriginalFile(GetOriginalFileParameterBuilder getFileParameterBuilder) throws SmartlingApiException;
 
-    FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException;
+    FileList<FileListItem> getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException;
 
     FileLocaleStatus getFileLocaleStatus(String fileUri, String locale) throws SmartlingApiException;
 

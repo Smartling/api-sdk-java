@@ -7,10 +7,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
-public class FileList implements SmartlingData, ResponseData
+public class FileList<Item extends FileListItem> implements SmartlingData, ResponseData
 {
     private int              totalCount;
-    private List<FileListItem> items;
+    private List<Item>       items;
 
     /**
      * Gets the number of files that match the query.
@@ -27,7 +27,7 @@ public class FileList implements SmartlingData, ResponseData
      *
      * @return {@link java.util.List} of items.
      */
-    public List<FileListItem> getItems()
+    public List<Item> getItems()
     {
         return items;
     }

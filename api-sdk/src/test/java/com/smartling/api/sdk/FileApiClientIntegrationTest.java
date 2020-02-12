@@ -85,7 +85,7 @@ public class FileApiClientIntegrationTest
         fileApiClient.renameFile(FILE_URI, FILE_URI_RENAMED);
 
         boolean renamedFileFound = false;
-        FileList list = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
+        FileList<FileListItem> list = fileApiClient.getFilesList(new FileListSearchParameterBuilder());
         for(FileListItem item : list.getItems())
         {
             if (item.getFileUri().equals(FILE_URI_RENAMED))

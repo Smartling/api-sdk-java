@@ -27,6 +27,7 @@ import com.smartling.api.sdk.file.response.ApiV2ResponseWrapper;
 import com.smartling.api.sdk.file.response.EmptyResponse;
 import com.smartling.api.sdk.file.response.FileImportSmartlingData;
 import com.smartling.api.sdk.file.response.FileList;
+import com.smartling.api.sdk.file.response.FileListItem;
 import com.smartling.api.sdk.file.response.FileLocaleStatus;
 import com.smartling.api.sdk.file.response.FileStatus;
 import com.smartling.api.sdk.util.DateFormatter;
@@ -227,14 +228,14 @@ public final class FileApiClientImpl extends TokenProviderAwareClient implements
     }
 
     @Override
-    public FileList getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
+    public FileList<FileListItem> getFilesList(FileListSearchParameterBuilder fileListSearchParameterBuilder) throws SmartlingApiException
     {
         final String params = buildFileListParams(fileListSearchParameterBuilder);
         final HttpGet httpGet = new HttpGet(buildUrl(getApiUrl(FILES_API_V2_FILES_LIST), params));
 
         final StringResponse response = executeRequest(httpGet);
 
-        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileList>>()
+        return getApiV2Response(response.getContents(), new TypeToken<ApiV2ResponseWrapper<FileList<FileListItem>>>()
                 {
                 }
         ).retrieveData();
