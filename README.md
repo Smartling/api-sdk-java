@@ -1,12 +1,6 @@
 [Smartling Translation API](http://docs.smartling.com)
-=================
 
-This repository contains the Java SDK for accessing the Smartling Translation API.
-
-The Smartling Translation API allows developers to seamlessly internationalize their website by automating the translation and integration of their site content.
-Developers can upload resource files and download the translated files in a language of their choosing. There are options to allow for professional translation, community translation and machine translation.
-
-For a full description of the Smartling Translation API, please read the docs at: https://developer.smartling.com/v1.0/reference
+**This SDK is no longer maintained and is superceeded by Smartling's [java-api-sdk](https://github.com/Smartling/java-api-sdk).**
 
 
 Quick start
